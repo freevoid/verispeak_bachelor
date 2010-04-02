@@ -92,3 +92,30 @@ def coerce_no_sf(s1, s2):
     (ns1, x), (ns2, y) = coerce((s1, 1000), (s2, 1000))
     return ns1, ns2
 
+MIN_TRESHHOLD = 200.0
+def calc_treshhold(score_class, sample_features, other_features):
+    def get_min_score(features):
+        n = len(features)
+        smin = MIN_TRESHHOLD
+        for i in range(n-1):
+            score = score_class(features[i])
+            for j in range(i+1, n):
+                s = score.score(features[j])
+                smin = min(s, smin)
+        return smin
+    def get_ave_score(features):
+        n = len(features)
+        score_sum = 0.0
+        nscores = 0
+        for i in range(n-1):
+            score = score_class(features[i])
+            for j in range(i+1, n):
+                score_sum += score.score(features[j])
+                nscores += 1
+        return score_sum / nscores
+
+    min_impostor = get_min_score(other_features)
+    average_self = get_ave_score(sample_features)
+    print "Score limits: %s %s" % (min_impostor, average_self)
+    return min(min_impostor, average_self)
+

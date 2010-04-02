@@ -10,6 +10,11 @@ class Score(Object):
     def score(self, other):
         return 0.0
 
+    def suite_average_score(self, suite):
+        from itertools import imap
+        scores_sum = sum(imap(self.score, suite.samples))
+        return float(scores_sum)/len(suite)
+
 class DTWScore(Score):
     def __init__(self, original, constraint_ratio=0.1, p=1):
         super(DTWScore, self).__init__(original)

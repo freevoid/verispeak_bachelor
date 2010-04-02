@@ -7,6 +7,13 @@ from base import Object
 WAV_EXT = '.wav'
 SUPPORTED_FORMATS = (WAV_EXT,)
 
+def listdir(dirpath):
+    import os
+    import os.path
+    import itertools
+    return itertools.ifilter(lambda filename: os.path.isfile(filename) and os.path.splitext(filename)[1] in SUPPORTED_FORMATS,
+            (os.path.join(os.path.abspath(dirpath), filename) for filename in os.listdir(dirpath)))
+
 def read_file(filename):
     from scikits import audiolab
     from os import path

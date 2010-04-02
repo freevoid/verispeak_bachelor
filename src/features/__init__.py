@@ -4,7 +4,7 @@ __all__  = ['mel2hz', 'hz2mel']
 from mfcc import mfcc
 __all__ += ['mfcc']
 
-from ..base import ScoreObject
+from ..base import ScoreObject, Object
 from .. import utils
 import numpy as np
 
@@ -59,5 +59,4 @@ class CompositeFeatures(Features):
 
     def __flatten__(self):
         return [f.__flatten__()[0] for f in self.features]
-
 
