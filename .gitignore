@@ -1,0 +1,10 @@
+*.swp
+*.vpp~*
+*.sqlite3
+*.pyc
+*.beam
+*.so
+*.log
+*.profile
+*.pid
+*.tmproj
