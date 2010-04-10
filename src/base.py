@@ -13,6 +13,19 @@ class ScoreObject(Object):
     def __flatten__(self):
         return [list(self)]
 
+    def _force_length(self, length):
+        assert len(self) > length
+        class Dummy:
+            def __len__(self):
+                return length
+            def __flatten__(self):
+                return [range(length)]
+            flatten_features = None
+        d = Dummy()
+        
+        [(unified, x)] = self.unify_size(d)
+        return unified
+
     def unify_size(self, other):
         import misc
         import itertools

@@ -11,6 +11,6 @@ try:
 except:
     sc = 'DTWScore'
 
-from src import test
-test.printout_test(test.listdir('sounds'), features_class=fc, scoring_class=sc)
+from src import test, wave
+test.printout_test(wave.listdir('sounds'), features_class=fc, scoring_class=sc)
 

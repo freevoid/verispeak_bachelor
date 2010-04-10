@@ -24,6 +24,10 @@ def read_file(filename):
         raise NotImplementedError("Format '%s' not supported. Supported formats are: %s" % (ext, ', '.join(SUPPORTED_FORMATS)))
     return amplitudes_array, sample_frequency
 
+def read_dir(dirpath):
+    files = listdir(dirpath)
+    return map(Wave, files)
+
 class Wave(Object):
     def __init__(self, filename):
         super(Wave, self).__init__()
@@ -45,6 +49,15 @@ class Wave(Object):
         return misc.plot_amp(*self._data)
 
     def unify_size(self, other):
+        """
+        Resamples two waveforms so that they with equal in size.
+
+        >>> w1 = Wave('test1.wav')
+        >>> w2 = Wave('test2.wav')
+        >>> len(w1)
+        13020
+        """
+
         if isinstance(other, Wave):
             return zip(*misc.coerce(self._data, other._data))[0]
         elif utils.isiterable(other):
@@ -62,4 +75,11 @@ class Wave(Object):
         return self.filename
 
     read_file = staticmethod(read_file)
+
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__=='__main__':
+    _test()
 

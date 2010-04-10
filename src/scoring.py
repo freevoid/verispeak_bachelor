@@ -1,8 +1,10 @@
 from base import Object
 from dtw import dtw
 import math
+from itertools import imap
 
 class Score(Object):
+    MAX_LENGTH = 300
     def __init__(self, original):
         super(Score, self).__init__()
         self.original = original
@@ -10,8 +12,10 @@ class Score(Object):
     def score(self, other):
         return 0.0
 
+    def suite_scores(self, suite):
+        return imap(self.score, suite.samples)
+
     def suite_average_score(self, suite):
-        from itertools import imap
         scores_sum = sum(imap(self.score, suite.samples))
         return float(scores_sum)/len(suite)
 
@@ -20,14 +24,8 @@ class DTWScore(Score):
         super(DTWScore, self).__init__(original)
         self.constraint_ratio = constraint_ratio
         self.p = p
-        if len(original) > 300:
-            class Dummy:
-                def __flatten__(self):
-                    return [range(500)]
-                flatten_features = None
-            d = Dummy()
-            [(unified_flatten_features, x)] = original.unify_size(d)
-            original.flatten_features = [unified_flatten_features]
+        if len(original) > self.MAX_LENGTH:
+            original.flatten_features = [original._force_length(self.MAX_LENGTH)]
 
     def score(self, other):
         score = 0.0

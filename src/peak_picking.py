@@ -2,7 +2,6 @@
 def find_peaks(x, neighbours):
     peaks = []
     nx = x.size
-    print "NX: %d, NEIGHBOURS: %d" % (nx, neighbours)
 
     assert 2 * neighbours + 1 <= nx
 
@@ -16,7 +15,7 @@ def find_peaks(x, neighbours):
             peaks.append(1)
             return peaks
 
-    print("# Handle points which have less than neighs samples on their left")
+    # Handle points which have less than neighs samples on their left
     for i in range(neighbours):
         cur = x[i]
         m = x[i+1]
@@ -33,7 +32,7 @@ def find_peaks(x, neighbours):
             peaks.append(i)
             #assert(pkcnt <= (nx / neighbours + 1))
 
-    print("# Handle points which have at least neighs samples on both their left and right")
+    # Handle points which have at least neighs samples on both their left and right
     for i in xrange(neighbours, nx - neighbours):
         cur = x[i]
         m = max(x[i - neighbours:i].max(), x[i+1:i+neighbours].max())
@@ -41,7 +40,7 @@ def find_peaks(x, neighbours):
         if cur > m:
             peaks.append(i)
 
-    print("# Handle points which have less than neighs samples on their right")
+    # Handle points which have less than neighs samples on their right
     for i in range(nx - neighbours, nx):
         cur = x[i]
         m = x[i-1]

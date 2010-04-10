@@ -28,9 +28,13 @@ class Decision(Object):
     def decise(self, target_wave):
         target_features = self.samples_suite.features_class(target_wave)
         scoring = self.scoring_class(target_features)
+        scores = list(scoring.suite_scores(self.samples_suite))
+        print "scores:", scores
+
         average_score = scoring.suite_average_score(self.samples_suite)
-
-        return average_score < self.treshhold
-
+        max_score = max(scores)
+        min_score = min(scores)
+        return max_score < self.treshhold
+            # average_score < self.treshhold
 
 
