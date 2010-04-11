@@ -1,37 +1,50 @@
 from base import Object
 from wave import listdir, Wave
-from features import CompositeFeatures
+from features import MFCCFeatureVectors
 
 from itertools import ifilter, imap
 
 class FeaturesSuite(Object):
     person_id = None
     features_class = None
-    def __init__(self, phrase_prefix, person_id=0, features_class=CompositeFeatures):
+    def __init__(self, phrase_prefix, person_id=0, features_class=MFCCFeatureVectors):
         self.person_id = person_id
         self.phrase_prefix = phrase_prefix
-        self.samples = set()
+        self._samples = set()
         self.features_class = features_class
         super(FeaturesSuite, self).__init__()
 
     def __len__(self):
-        return len(self.samples)
+        return len(self._samples)
 
     def add_sample(self, features):
-        self.samples.add(features)
+        self._samples.add(features)
+
+    def add_samples(self, features_list):
+        self._samples.update(features_list)
 
     def del_sample(self, features):
         try:
-            self.samples.remove(features)
+            self._samples.remove(features)
         except KeyError:
             pass
+
+    @property
+    def flat(self):
+        for s in self.samples:
+            for f in s.features:
+                yield f
+
+    @property
+    def samples(self):
+        return list(self._samples)
 
     def read_dir(self, path):
         files = ifilter(self._has_prefix,
                 listdir(path))
         waves = imap(Wave, files)
         features = imap(self.features_class, waves)
-        self.samples.update(features)
+        self.add_samples(features)
         
     def _has_prefix(self, path):
         import os.path

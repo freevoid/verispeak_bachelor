@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scoring, wave
 import features as features_module
 
@@ -18,4 +19,19 @@ def printout_test(soundfiles, features_class='MFCCFeatures',
         scoring_class='DTWScore'):
     map(print_score, enumerate(sorted(test(soundfiles,
         features_class=features_class, scoring_class=scoring_class))))
+
+def timeseries(features_class, scoring_class, **kwargs):
+    from src import test, wave
+    test.printout_test(wave.listdir('sounds'),
+            features_class=features_class,
+            scoring_class=scoring_class)
+
+def gmm(**kwargs):
+    from src import gmm, feature_suite
+    features_class = getattr(features_module, 'MFCCFeatureVectors')
+    fs1 = feature_suite.FeaturesSuite('инсценировать', features_class=features_class)
+    fs1.read_dir('sounds')
+    print len(fs1.samples)
+    m = gmm.GMM(K=4)
+    print m.train(fs1.flat)
 

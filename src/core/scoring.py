@@ -4,7 +4,7 @@ import math
 from itertools import imap
 
 class Score(Object):
-    MAX_LENGTH = 300
+    MAX_LENGTH = 3000
     def __init__(self, original):
         super(Score, self).__init__()
         self.original = original
@@ -25,16 +25,13 @@ class DTWScore(Score):
         self.constraint_ratio = constraint_ratio
         self.p = p
         if len(original) > self.MAX_LENGTH:
-            original.flatten_features = [original._force_length(self.MAX_LENGTH)]
+            original.flatten_features = original._force_length(self.MAX_LENGTH)
 
     def score(self, other):
-        score = 0.0
-        i=0
-        for a1, a2 in self.original.unify_size(other):
-            i+=1
-            n = len(a1)
-            assert(n == len(a2))
-            d = dtw(n, int(self.constraint_ratio*n))
-            score += d.fastdynamic(a1, a2)**2
-        return score**(1/2.0)#math.sqrt(score)
+        a1, a2 = self.original.unify_size(other)
+        n = len(a1)
+        assert(n == len(a2))
+        d = dtw(n, int(self.constraint_ratio*n))
+        score = d.fastdynamic(a1, a2)
+        return score
 
