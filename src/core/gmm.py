@@ -1,24 +1,62 @@
 import numpy as np
 import math
 from itertools import imap
+from currying import curry
 
 from stats import mvn
 
-class Codebook(object):
+from base import Object
+from training import EM, DiagonalCovarianceEM
+
+class Codebook(Object):
+    training_procedure = None
+
+    def __init__(self):
+        self.iterations = 0
+
     def likelihood(self, samples):
         return 0.0
 
-    def train(self, train_samples):
-        return 0
+    def train(self, train_samples, **kwargs):
+        """
+        Train the codebook on a train samples.
+
+        @retval: number of iterations
+        @val train_samples: iterable of numpy arrays (feature vectors)
+        """
+        iterations = self.training_procedure(self, train_samples, **kwargs)
+        if kwargs.get('no_init'):
+            self.iterations += iterations
+        else:
+            self.iterations = iterations
+        return iterations
 
     def serialize(self):
         import cPickle
         return cPickle.dumps(self, -1)
+        training_procedure = self.training_procedure
+        self.training_procedure = None
+        dump = cPickle.dumps(self, -1)
+        self.training_procedure = training_procedure
+        return dump
+
+    def dump_to_file(self, filename):
+        f = open(filename, "wb")
+        f.write(self.serialize())
+        f.close()
+        return True
+
+    @staticmethod
+    def load(filename):
+        import cPickle
+        f = open(filename)
+        return cPickle.load(f)
 
 class GMM(Codebook):
-    MAX_ITERATION = 50
+    training_procedure = EM()
+    mvn_dist = mvn.MultiVariateNormalDistribution
 
-    def __init__(self, K=15, D=26):
+    def __init__(self, K=16, D=24):
         """
         @var D: number of dimensions
         @var K: quantity of Gaussian components
@@ -30,7 +68,7 @@ class GMM(Codebook):
         initial_mu = np.zeros(D)
         initial_cov = np.eye(D)
         self._components = [
-            mvn.MultiVariateNormalDistribution(
+            self.mvn_dist(
                 initial_mu.copy(), initial_cov.copy()
             ) for i in xrange(K)]
 
@@ -46,7 +84,7 @@ class GMM(Codebook):
                 for j in range(self.k)]
 
     def reload_components(self, mu_vector_list, cov_matrix_list):
-        self._components = [mvn.MultiVariateNormalDistribution(mu_vector, cov_matrix)\
+        self._components = [self.mvn_dist(mu_vector, cov_matrix)\
                 for (mu_vector, cov_matrix)\
                     in zip(mu_vector_list, cov_matrix_list)]
 
@@ -74,72 +112,14 @@ class GMM(Codebook):
     def reset_weights(self):
         self.weights = np.repeat(1.0/self.k, self.k)
 
+    def __unicode__(self):
+        return u"k=%d d=%d iterations=%d" % (self.k, self.d, self.iterations)
+
+class DiagonalCovarianceGMM(GMM):
+    training_procedure = DiagonalCovarianceEM()
+    mvn_dist = mvn.DiagonalCovarianceMVN
+
     def train(self, samples, **kwargs):
-        return self._train_em(samples, **kwargs)
-
-    def _train_em(self, samples, no_init=False, max_iteration=MAX_ITERATION):
-        if hasattr(samples, 'next'):
-            samples = list(samples)
-
-        print "Training GMM from %d samples" % (len(samples))
-        if not no_init:
-            self.initialize(samples)
-        def expectation():
-            #print "Expectation.."
-            T = np.zeros((self.k, nT))
-
-            for i in xrange(nT):
-                sample = samples[i]
-                pdfs = map(lambda c: c.pdf(sample), self._components)
-                weighted = self.weights*pdfs
-                T[:,i] = weighted/weighted.sum()
-            #print "T:", T
-            return T
-
-        def maximization(T):
-            #print "Maximization.."
-            current_likelihood = self.loglikelihood(samples)
-            #print "current likelihood: %s;" % current_likelihood,
-
-            self.weights = np.zeros(self.k)
-            mu_vector_list = np.zeros(self.k).tolist()
-            cov_matrix_list = np.zeros(self.k).tolist()
-            for j in xrange(self.k):
-                row = T[j,:]
-                row_sum = row.sum()
-                self.weights[j] = row_sum / nT
-
-                new_mu_vector = sum(row.reshape((nT, 1))*samples) / row_sum
-                mu_vector_list[j] = new_mu_vector
-
-                def vector_sqr(v):
-                    return v*v.reshape((v.size, 1))
-                new_cov_matrix =  sum(T[j,i]*vector_sqr(samples[i] - new_mu_vector) for i in xrange(nT)) / row_sum
-                cov_matrix_list[j] = new_cov_matrix
-
-            old_components = self._components
-            self.reload_components(mu_vector_list, cov_matrix_list)
-            new_components = self._components
-
-            new_likelihood = self.loglikelihood(samples)
-            #print "new likelihood: %s." % new_likelihood,
-            print new_likelihood > current_likelihood, new_likelihood - current_likelihood
-
-        def is_enough():
-            return False
-
-        nT = len(samples)
-        iter_count = 0
-
-        try:
-            while not is_enough():
-                iter_count += 1
-                if iter_count > max_iteration:
-                    break
-                T = expectation()
-                maximization(T)
-        except KeyboardInterrupt:
-            return iter_count
-
-        return iter_count
-
+        samples = np.array(list(samples))
+        kwargs.update({'samples_sqr': np.square(samples)})
+        return super(DiagonalCovarianceGMM, self).train(samples, **kwargs)
