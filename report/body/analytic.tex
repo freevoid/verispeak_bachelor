@@ -1,0 +1,60 @@
+\chapter{Аналитический раздел}
+
+В данном разделе будет дано обоснование поставленной задачи, а также обзор современных подходов к решению проблемы голосовой верификации.
+
+\section{Обоснование задачи}
+
+\section{Обзор существующих решений}
+
+Работу системы верификации говорящего можно разделить на четыре логические стадии: анализ, выделение характерных признаков, моделирование и тест (принятие решения). В данном разделе дан обзор основных методов, используемых при построении современных систем такого рода, для каждой из стадий. Раздел заканчивается краткими выводами и предположениями о направлениях исследований в данной сфере.
+
+\subsection{Анализ речи}
+
+Среди основных известные проблемы в данной области можно выделить следующие (по \cite{Jayanna09overview}):
+\begin{itemize}
+\item Современные системы распознавания говорящего теряют в производительности, если входной сигнал зашумлен из-за окружения, канала передачи и прочих внешний причин. Важным моментом является попытка улучшить сигнал на этой предварительной стадии (\cite{});
+\item Дискриминативная сила моделей теряется при появлении в речи девиантных составляющих, привносимых различными психологическими состояниями говорящего (эмоции, напряжение). Существуют решения, позволяющие компенсировать данные составляющие (\cite{});
+\item Для биометрической аутентификации человека современным системам требуется значительное количество речевых данных (порядка десятков минут на человека). В таких условиях возрастает и требовательность системы к вычислительным ресурсам. Применимость технологий верификации по голосу увеличится, если удастся разработать технологии, позволяющие получить удовлетворительную производительность с использованием относительно малого количества данных (10-15 секунд). Существующим решением является использование модели гауссовой смеси с использованием так называемой универсальной фоновой модели (UBM -- \important{Universal Background Model}) \cite{Reynolds00speakerverification}.
+\end{itemize}
+
+Рассмотрим более подробно методы и решения, применяемые в существующих системах.
+
+\subsection{Сегментальный анализ}
+
+In this case, speech is analyzed using the frame size and
+shift in the range of 10-30 ms to extract the speaker infor-
+mation mainly due to the vocal tract. The speaker-specific
+vocal tract information may be assumed to be stationary
+for all practical analyses and processing when viewed
+in frames of size and shift in the range of 10-30 ms [13].
+Studies made in [14-19] used segmental analysis to extract
+the vocal tract information for speaker recognition.
+
+\subsubsection{Суб-сегментальный анализ}
+
+ Speech analyzed using the frame size and shift in the
+range of 3-5 ms is known as sub-segmental analysis [20].
+This technique is used mainly to analyze and extract
+the characteristics of the excitation source. Since the
+excitation source information is relatively fast varying
+compared to the vocal tract information, small frame
+size and shift are required to best capture the speaker-
+specific information, which is the reason for the choice of
+3-5 ms for frame size and shift. Studies made in [21-26]
+demonstrated that speaker-specific excitation source
+information captured using the sub-segmental analysis,
+indeed, contains speaker information.
+
+
+\subsubsection{Супра-сегментальный анализ}
+
+\subsubsection{Вывод}
+% сравнение
+
+\subsection{Выделение речевых признаков}
+
+\subsection{Моделирование говорящего}
+
+\subsection{Принятие решения}
+
+\section{Выводы}

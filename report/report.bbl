@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\language\csname l@#1\endcsname\fi}
+\ifx\undefined\url\def\url#1{{\small #1}}\else\fi
+\ifx\undefined\BibUrl\def\BibUrl#1{\url{#1}}\else\fi
+\ifx\undefined\BibAnnote\long\def\BibAnnote#1{}\else\fi
+\ifx\undefined\BibEmph\def\BibEmph#1{\emph{#1}}\else\fi
+
+\bibitem{Jayanna09overview}
+\selectlanguageifdefined{english}
+\BibEmph{H.S.~Jayanna, S.R.~Mahadeva~Prasanna}. Analysis, Feature Extraction,
+  Modeling and Testing Techniques for Speaker Recognition~// \BibEmph{IETE Tech
+  Rev}. ---
+\newblock 2009. --- May. ---
+\newblock Vol.~26, no.~3. ---
+\newblock Pp.~181--190.
+
+\bibitem{Reynolds00speakerverification}
+\selectlanguageifdefined{english}
+\BibEmph{Reynolds~Douglas~A., Quatieri~Thomas~F., Dunn~Robert~B.} Speaker
+  verification using Adapted Gaussian mixture models~// Digital Signal
+  Processing. ---
+\newblock 2000. ---
+\newblock P.~2000.
+
+\end{thebibliography}

@@ -1,0 +1,77 @@
+\documentclass{beamer}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+
+\usepackage{float}
+
+% Библиография по ГОСТу
+\bibliographystyle{utf8gost71s}
+
+\usepackage{amssymb}
+
+% Картнки и tikz
+%\usepackage[pdftex]{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,calc,decorations,chains,scopes,positioning,snakes}
+
+% Некоторая русификация.
+\usepackage{indentfirst}
+
+%\renewcommand{\labelitemi}{\normalfont\bfseries{--}}
+\sloppy
+
+% Для исходного кода в тексте
+\newcounter{lstnum}
+\makeatletter
+\@addtoreset{lstnum}{chapter}
+\makeatother
+
+\newenvironment{listingenv}[1]
+{
+\par\phantom{\rule{0pt}{0pt}}
+\addtocounter{lstnum}{1}
+\noindent\textbf{Листинг \thechapter.\arabic{lstnum}}. #1
+%\noindent\rule{\textwidth}{0.5pt}\ttfamily
+}
+{
+%\normalfont\rule[+1cm]{\textwidth}{0.5pt}
+}
+
+\newcommand{\Code}[1]{\texttt{#1}}
+\newcommand{\Link}[1]{\mbox{\emph{#1}}}
+\newcommand{\Soft}[1]{\mbox{\textbf{#1}}}
+\usepackage{moreverb}
+%\renewcommand{\figurename}{"Листинг"}
+
+% Свои дополнения
+
+\usepackage{dot2texi}
+\usepackage{gnuplottex}
+%\usepackage{lscape}
+\usepackage{amsmath}
+
+%\oddsidemargin 0.5cm
+%\textwidth 16.5cm
+
+\newcommand{\important}[1]{\emph{#1}}
+\newcommand{\linux}{\mbox{GNU/Linux}}
+\newcommand{\oslinux}{\mbox{ОС \linux}}
+\newcommand{\modulesrc}{\Code{statmod.c}}
+
+\providecommand{\refeq}[1]{(\ref{#1})}
+
+\newenvironment{lscommand}%
+    {\nopagebreak\par\small\addvspace{3.2ex plus 0.8ex minus 0.2ex}%
+     \vskip -\parskip
+     \noindent%
+     \begin{tabular}{|l|}\hline\rule{0pt}{1em}\ignorespaces}%
+    {\\\hline\end{tabular}\par\nopagebreak\addvspace{3.2ex plus 0.8ex
+        minus 0.2ex}%
+     \vskip -\parskip}
+
+\newcommand{\inputdefspread}[1]{
+    \linespread{1}
+    \input{#1}
+}
+

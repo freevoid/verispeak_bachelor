@@ -1,0 +1,114 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+Script for russification of epydoc latex output.
+
+Usage: apirus <reruns> <output_directory> file1.tex file2.tex ...
+"""
+
+import os
+import sys
+import re
+
+initspec = r'\n\\hspace{\.8(\n|.)+Overrides: object(\n|.)+\\end{boxedminipage}\n'
+
+substitutes_rerun = {
+        r'\n\\large{(?P<content>.+)}\n':r'\n\g<content>\n'
+        #r'\n{\large{\g<content>}}\n',
+        }
+
+substitutes = {
+        initspec:'\\n',
+        r'\\subsubsection':'\\subsubsection*',
+        r'\\subsection':'\\subsubsection*',
+        r'\\section':'\\subsubsection*',
+        r'\\section{Package':r'\subsubsection{Пакет',
+        r'Inherited from':'Унаследованы от',
+        r'Known Subclasses':'Известные субклассы',
+        r'Parameters':'Параметры',
+        r'Return Value':'Возвращаемое значение',
+        r'{Module ':'{Модуль ',
+        r'{Packages}':'{Пакеты}',
+        r'{Classes':'{Классы',
+        r'{Variables':'{Переменные',
+        r'{Class ':'{Класс ',
+        r'{Class Variables':'{Переменные класса',
+        r'Instance Variables':'Переменные объекта',
+        r'Value:':'Значение:',
+        r'{Package ':'{Пакет ',
+        r'{Modules}':'{Модули}',
+        r'{Methods}':'{Методы}',
+        r'{Functions}':'{Функции}',
+        r'{Properties}':'{Свойства}',
+        r'{Name}':'{Имя}',
+        r'{Description}':'{Описание}',
+        r'\(\Section (?P<section>\\ref{.+?})\)':r' \mbox{(раздел~\g<section>)}',
+        r'\(Section .+?, p\..+?\)':'',
+        r'\\index.+?\n':'',
+        r'{continued on next page}':'{продолжение на следующей странице}',
+        }
+
+print("Creating submatches regexp")
+def regexp_from_list(List):
+    return r'|'.join([r'(?P<i%d>%s)' % ikey for ikey in enumerate(List)])
+
+submatch = regexp_from_list(substitutes.keys())
+submatch_rerun = regexp_from_list(substitutes_rerun.keys())
+
+def find_substitute_index(match):
+    subindex = None
+    groupdict = filter(lambda (key,val): val is not None,
+            match.groupdict().items())
+    for group, val in groupdict:
+        imatch = re.match(r'^i(\d+)$', group)
+        if imatch is not None:
+            subindex = int(imatch.expand(r'\1'))
+            break
+    return subindex
+
+def substitute(match, substitutes):
+    #print "Match found: ", match.group(), match.groupdict()
+
+    subindex = find_substitute_index(match)
+    if subindex is None:
+        raise ValueError("Match index not found")
+    #print "Index: %s" % subindex
+    subkey, subval = substitutes.items()[subindex]
+    #print "Subkey found:", subkey
+    #print "Replacing by:", subval
+    return match.expand(subval)
+
+def make_outfilename(outdir, filename, postfix):
+    base, ext = os.path.splitext(os.path.basename(filename))
+    return os.path.join(outdir,
+        "%s%s%s" % (base, postfix, ext))
+
+def _russify_run(infiles, outfiles, submatch, substitutes, subfunc):
+    for inname, outname in zip(infiles, outfiles):
+        print "    Russifying '%s'.." % inname,
+        s = open(inname, 'r').read()
+        new_s = re.sub(submatch, subfunc, s)
+        print " Writing to '%s'.." % outname,
+        open(outname, 'w').write(new_s)
+        print "Done."
+
+def _russify(rerun=False, outdir='.', postfix='', files=[]):
+    print "Output will be written to %s" % outdir
+    outfiles = map(lambda f: make_outfilename(outdir, f, postfix),
+            files)
+    print "Russification, Initial run."
+    _russify_run(files, outfiles, submatch, substitutes,
+            lambda s: substitute(s, substitutes=substitutes))
+
+    if rerun:
+        print "Russification, Second run."
+       # Substituting fname by outname to rerun on the output
+        _russify_run(outfiles, outfiles,
+                submatch_rerun, substitutes_rerun,
+            lambda s: substitute(s, substitutes=substitutes_rerun))
+    print "Done."
+
+if __name__=="__main__":
+    _russify(rerun=int(sys.argv[1]),
+            outdir=sys.argv[2], files=sys.argv[3:])
+    print "All done."

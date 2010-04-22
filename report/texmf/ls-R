@@ -1,0 +1,27 @@
+% ls-R -- filename database for kpathsea; do not change this line.
+./:
+.:
+bibtex
+ls-R
+tex
+
+./bibtex:
+bst
+
+./bibtex/bst:
+utf8gost71s.bst
+
+./tex:
+latex
+
+./tex/latex:
+dot2texi.sty
+gost
+lshort.sty
+tikz-er2.sty
+
+./tex/latex/gost:
+G2-105.sty
+G7-32.cls
+G7-32.sty
+GostBase.clo
