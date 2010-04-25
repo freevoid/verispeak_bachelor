@@ -8,3 +8,9 @@
 *.profile
 *.pid
 *.tmproj
+*.aux
+*.toc
+*.out
+*.brf
+*.blg
+*.pdf

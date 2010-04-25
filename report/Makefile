@@ -23,12 +23,12 @@ INCLUDEDIR=include
 TIKZDIR=tikz
 TIKZINCL=
 
-DIAINCL= main_arch
+DIAINCL= #main_arch
 DIAPS = $(DIAINCL)
 
 FIXBB=./fixbb
 FONTHACK=./hackfont.sh 
-EPSINCL=#foo bar
+EPSINCL= waveform#foo bar
 
 $(INCLUDEDIR)/%_dia.eps: dia/%.dia
 	dia --export=$@ -t eps-pango $<
