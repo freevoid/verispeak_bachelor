@@ -13,7 +13,9 @@ class MFCCFeatureVectors(Object):
         nwin = window_length_ms*wave.samplerate/1000.0
         overlap = int(nwin*0.375)
         nwin = int(nwin)
-        self.features = mfcc(wave.waveform, fs=wave.samplerate, nwin=nwin, over=overlap)[0]
+        from ..misc import normalize
+        normalized, fs = normalize(wave.waveform, wave.samplerate)
+        self.features = mfcc(normalized, fs=fs, nwin=nwin, over=overlap)[0]
         #NOTE delete first coefficient from feature set
         self.features = self.features[:, 1:]
         self.features = normalize_func(self.features)
@@ -34,5 +36,5 @@ class MFCCFeatureVectors(Object):
             for ic, c in enumerate(mfcc_vector):
                 delta_c.append(next_vector[ic] - prev_vector[ic])
             mfcc_array[i] = np.append(mfcc_vector, delta_c)
-        return np.array(mfcc_array[2:-2])
+        return np.array(mfcc_array[2:-2], dtype='float64')
 

@@ -6,7 +6,7 @@ import gmm as gmm_module, feature_suite
 def print_score((pos, (score, o, i))):
     print u"%3d). %30s <-> %30s: %10.4f" % (pos, o.wave.filename, i.wave.filename, score)
 
-def test(soundfiles, features_class='MFCCFeatures', scoring_class='DTWScore'):
+def test(soundfiles, features_class='MFCCFeaturesSlice', scoring_class='DTWScore'):
     waves = map(wave.Wave, soundfiles)
     features = map(getattr(features_module, features_class), waves)
     scorings = map(getattr(scoring, scoring_class), features)
@@ -16,14 +16,13 @@ def test(soundfiles, features_class='MFCCFeatures', scoring_class='DTWScore'):
             original.score(impostor)
             yield(original.score(impostor), original.original, impostor)
 
-def printout_test(soundfiles, features_class='MFCCFeatures',
+def printout_test(soundfiles, features_class='MFCCFeaturesSlice',
         scoring_class='DTWScore'):
     map(print_score, enumerate(sorted(test(soundfiles,
         features_class=features_class, scoring_class=scoring_class))))
 
 def timeseries(features_class, scoring_class, **kwargs):
-    from src import test, wave
-    test.printout_test(wave.listdir('sounds'),
+    printout_test(wave.listdir('sounds'),
             features_class=features_class,
             scoring_class=scoring_class)
 
@@ -39,13 +38,13 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     m.dump_to_file(filename)
     print "GMM Codebook saved to file: '%s'" % filename
 
-def gmmcmp(features_class, gmm_file, **kwargs):
+def gmmcmp(features_class, gmm_file, gmm_class='GMM', **kwargs):
     features_class = getattr(features_module, features_class)
-    import cPickle
-    gmm = cPickle.load(open(unicode(gmm_file)))
+    gmm_class = getattr(gmm_module, gmm_class)
+    gmm = gmm_class.load(unicode(gmm_file))
     
     features_pool = map(features_class, wave.read_dir('sounds'))
- 
+
     d = dict((gmm.loglikelihood(features_vectors.features),(features_vectors.wave.filename)) for features_vectors in features_pool)
 
     print u"%s: %s" % (gmm_file, repr(gmm))

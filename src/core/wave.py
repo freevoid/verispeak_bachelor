@@ -45,8 +45,8 @@ class Wave(Object):
     def timelength(self):
         return 1000*len(self.waveform) / float(self.samplerate) # in ms
 
-    def plot_amp(self):
-        return misc.plot_amp(*self._data)
+    def plot_amp(self, **matplotlib_kwargs):
+        return misc.plot_amp(*self._data, **matplotlib_kwargs)
 
     def unify_size(self, other):
         """

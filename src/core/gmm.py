@@ -52,6 +52,42 @@ class Codebook(Object):
         f = open(filename)
         return cPickle.load(f)
 
+import em
+class CournapeauGMM(Codebook):
+    MAXITER = 30
+    def __init__(self, K=32, D=24):
+        self.gm = em.GM(D, K)
+
+    def train(self, train_samples, **kwargs):
+        if not isinstance(train_samples, np.ndarray):
+            train_samples = np.array(list(train_samples))
+        gmm = em.GMM(self.gm)
+        trainer = em.EM()
+        return trainer.train(train_samples, gmm, maxiter=self.MAXITER, **kwargs)
+
+    def likelihood(self, samples):
+        return self.gm.pdf(samples)
+
+    def loglikelihood(self, samples):
+        gmm = em.GMM(self.gm)
+        gmm.isinit = True
+        return gmm.likelihood(samples)
+
+    def serialize(self):
+        import cPickle
+        gm = self.gm
+        self.gm = None
+        dump = cPickle.dumps([self, gm], -1)
+        self.gm = gm
+        return dump
+
+    @staticmethod
+    def load(filename):
+        import cPickle
+        [instance, gm] = cPickle.load(open(filename, 'rb'))
+        instance.gm = gm
+        return instance
+
 class GMM(Codebook):
     training_procedure = EM()
     mvn_dist = mvn.MultiVariateNormalDistribution

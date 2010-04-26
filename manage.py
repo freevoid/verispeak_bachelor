@@ -38,9 +38,14 @@ elif action == 'gmmcmp':
         gmm_file = sys.argv[2]
 
         try:
-            features_class = sys.argv[3]
+            gmm_class = sys.argv[3]
+            try:
+                features_class = sys.argv[4]
+            except:
+                features_class = 'MFCCFeatureVectors'
         except:
             features_class = 'MFCCFeatureVectors'
+            gmm_class = 'GMM'
     except:
         gmm_file = 'инсценировать.gmm'
         features_class = 'MFCCFeatureVectors'
