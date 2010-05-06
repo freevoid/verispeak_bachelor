@@ -1,20 +1,20 @@
-\chapter{Технологический раздел}
+\chapter{Технологическая часть}
 \section{Выбор среды разработки}
 
-\subsection{Общие сведения}
+\section{Общие сведения}
 \label{sec:soft_description:general}
 
 Для функционирования программы необходимо следующее программное обеспечение:
 \begin{itemize}
 \item Python 2.5.2;
 \item Django 1.1.1;
-\item Apache 2.2.14 с модулем mod\_python, WebDAV;
-\item Поддерживаемая Django СУБД: PostgreSQL версии 8.2 или выше, MySQL 4.1/5.0, Oracle версии 9i или выше, SQLite версии 3.3.6 или выше; возможно использование других СУБД при наличии соответствующего интерфейса (см.~\url{http://docs.djangoproject.com/en/dev/ref/databases/#using-a-3rd-party-database-backend}, 2009);
-\item Одна или несколько систем контроля версий: Subversion 1.6.3, Git 1.6.5;
-\item Одна или несколько систем управления проектами (на данный момент поддерживается Trac 0.11.5).
+\item Apache 2.2.14 с модулем mod\_python или wsgi;
+\item Erlang R13;
+\item erlyvideo (\url{http://github.com/erlyvideo/erlyvideo}, 2010);
+\item Поддерживаемая Django СУБД: PostgreSQL версии 8.2 или выше, MySQL 4.1/5.0, Oracle версии 9i или выше, SQLite версии 3.3.6 или выше; возможно использование других СУБД при наличии соответствующего интерфейса (см.~\url{http://docs.djangoproject.com/en/dev/ref/databases/#using-a-3rd-party-database-backend}, 2010);
 \end{itemize}
 
-Программа написана полностью на языке \Soft{Python} (\url{http://www.python.org}, 2009) с использованием веб-фреймворка \Soft{Django} (\url{http://www.djangoproject.com}, 2009). Все вышеперечисленное ПО (за исключением СУБД Oracle) является свободным и кроссплатформенным.
+Программа написана полностью на языке \Soft{Python} (\url{http://www.python.org}, 2010) с использованием веб-фреймворка \Soft{Django} (\url{http://www.djangoproject.com}, 2010). Все вышеперечисленное ПО (за исключением СУБД Oracle) является свободным и кроссплатформенным.
 
 \subsection{Функциональное назначение}
 

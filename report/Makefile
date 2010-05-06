@@ -21,9 +21,9 @@ HEADER=header.tex
 INCLUDEDIR=include
 
 TIKZDIR=tikz
-TIKZINCL=
+TIKZINCL=#er_main
 
-DIAINCL= #main_arch
+DIAINCL= use_cases idef0_main idef0_pre learning_fsm_times#main_arch
 DIAPS = $(DIAINCL)
 
 FIXBB=./fixbb
@@ -44,6 +44,7 @@ $(INCLUDEDIR)/%_eps.pdf: eps/%.eps
 
 $(INCLUDEDIR)/%_tikz.pdf: tikz/%.tex
 	$(LATEX) -output-directory $(INCLUDEDIR) $< &&\
+		echo "Echoing $*" &&\
 		$(CROPPAGE) $(INCLUDEDIR)/$* $@ &&\
 		rm -vf $(INCLUDEDIR)/$*.*
 

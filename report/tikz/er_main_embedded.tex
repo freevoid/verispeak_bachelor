@@ -1,0 +1,85 @@
+\input{tikz/er_header.tex}
+
+\begin{comment}\end{comment}%\tikzstyle{every relationship} = [font=\footnotesize]
+
+\newcommand*{\drawER}[2]{
+\scalebox{#1}{
+\begin{tikzpicture}
+    \node [entity]      (speaker) {Пользователь};
+    \node [attribute]   (sid)       [above=of speaker]        {\key{ID}} edge (speaker);
+    \node [attribute]   (sname)     [above right=of speaker]  {Имя/Отчество} edge (speaker);
+    \node [attribute]   (sfname)    [right=of speaker, xshift=1ex]  {Фамилия} edge (speaker);
+    \node [attribute]   (susername) [above left=of speaker, xshift=3ex] {Имя учетной записи} edge (speaker);
+    \node [attribute]   (semail)    [left=of speaker]   {E-mail} edge (speaker);
+
+    \node [entity]      (recordsession) [below=of speaker] {Сессия записи};
+    \node [isa]         (sessionisa)    [below=of recordsession] {ISA}   edge (recordsession);
+    \node [entity]      (enrollmentsession) [below left=of sessionisa] {Сессия регистрации} edge (sessionisa);
+    \node [entity]      (verificationsession) [below right=of sessionisa] {Сессия верификации} edge (sessionisa);
+
+    \node [relationship] (enrolled) [below left=of speaker]  {Участвовал} edge (speaker);
+    \draw [link] (enrolled) -- (enrollmentsession);
+\end{tikzpicture}}}
+
+\begin{comment}
+    \node [entity]      (project)   [right=3cm of assignment] {Проект} edge (enrolled);
+    \node [attribute]   (projectid) [above right=of project] {\key{ID}} edge (project);
+    \node [attribute]   (pactive)   [right=of project,yshift=-2ex] {Активный} edge (project);
+    \node [attribute]   (pcrdate)   [below right=of project] {Дата создания} edge (project);
+    \node [attribute]   (ppathname) [below left=of project] {Путь к проекту} edge (project);
+    \node [attribute]   (pcodename) [above=of project, yshift=+6ex]      {Имя проекта} edge (project);
+    \node [attribute]   (pguest)    [above right=of project, xshift=5ex, yshift=-5ex] {Гостевой доступ} edge (project);
+
+    \node [relationship] (vcsproj)  [above left=of project] {Использует} edge [total] (project);
+    \node [entity]      (vcs)       [above left=of vcsproj, yshift=3ex] {СКВ} edge (vcsproj);
+    \node [attribute]   (vcsname)   [above=of vcs]          {Название} edge (vcs);
+    \node [attribute]   (vcsurl)    [left=of vcs]    {URL} edge (vcs);
+    \node [attribute]   (vcsid)    [above left=of vcs]    {\key{ID}} edge (vcs);
+
+    \node [relationship] (vcsfe)    [right=of vcs,xshift=5ex]     {Использует} edge [total] (vcs);
+    \node [entity]      (frontend)  [right=of vcsfe]        {СУП} edge (vcsfe);
+    \node [attribute]   (feid)      [above left=of frontend]     {\key{ID}} edge (frontend);
+    \node [attribute]   (fename)    [above=of frontend]     {Название} edge (frontend);
+    \node [attribute]   (feurl)     [right=of frontend] {URL} edge (frontend);
+    
+    \node [relationship] (vcsaccount) [above=of human] {Имеет доступ} edge (human);
+    \draw [link] (vcsaccount) -| (vcs);
+
+    \node [ident relationship] (humansecret) [left=of human]      {Имеет} edge (human);
+    \node [weak entity] (secret)        [below=of hemail, xshift=-2ex]       {Пароль};
+    \draw [link]        (humansecret)   [total] -- ++(-10ex, 0) |- (secret);
+    \node [attribute]   (ssecret)       [below=of secret]       {Значение} edge (secret);
+
+    \node [ident relationship] (humantrans) [below=of hid, xshift=1ex]  {Имеет} edge (human);
+    \node [weak entity]      (transition)  [right=of humantrans] {Перевод} edge [total] (humantrans);
+    \node [attribute]   (transdate)   [above=of transition, xshift=-3ex] {Дата} edge (transition);
+    \node [attribute]   (trasterm)    [above right=of transition, xshift=-4ex] {Семестр} edge (transition);
+
+    \node [ident relationship] (humanrole) [below=of human]  {Имеет} edge (human);
+    \node [weak entity]      (courserole) [below=of humanrole]  {Роль в курсе} edge [total] (humanrole);
+
+    \node [relationship] (projlab)  [below=of project] {Включает} edge [total] (project);
+    \node [weak entity]      (lab)       [below=of projlab]      {Задание} edge (projlab);
+    \node [attribute]   (labid)     [above right=of lab]    {Идентификатор} edge (lab);
+    \node [attribute]   (labdescr)     [right=of lab]    {Описание} edge (lab);
+
+    \node [ident relationship] (labcourse) [below=8ex of lab] {Относится} edge [total] (lab);
+    \node [weak entity]      (course)    [left=of labcourse] {Курс}    edge (labcourse);
+    \node [attribute]   (year)      [above=of course]   {Год чтения}    edge (course);
+
+    \node [ident relationship] (subjcourse) [below=of course] {Относится} edge [total] (course);
+    \node [entity]      (subject)   [right=of subjcourse]   {Предмет} edge (subjcourse);
+    \node [attribute]   (subjname)  [above right=of subject] {Название} edge (subject);
+    \node [attribute]   (subjterm)  [right=of subject] {Семестр} edge (subject);
+    \node [attribute]   (subjdescr)  [below right=of subject] {Описание} edge (subject);
+    \node [attribute]   (subjcode)  [below=of subject] {Кодовое имя} edge (subject);
+
+    \node [relationship] (coursetorole) [left=of course] {Относится} edge (course);
+    \draw [link] (coursetorole) -| (courserole);
+
+    \node [relationship] (roleperm) [below left=of courserole, yshift=-3ex] {Содержит} edge(courserole);
+    \node [entity] (perm) [below=of roleperm] {Привилегия} edge (roleperm);
+    \node [attribute] (permname) [right=of perm] {Название} edge (perm);
+    \node [attribute] (permcode) [below right=of perm] {\key{Код}} edge (perm);
+\end{comment}
+
