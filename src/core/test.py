@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scoring, wave
 import features as features_module
+import processors as speech_processors
 import gmm as gmm_module, feature_suite
 
 def print_score((pos, (score, o, i))):
@@ -28,9 +29,9 @@ def timeseries(features_class, scoring_class, **kwargs):
             scoring_class=scoring_class)
 
 def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
-    features_class = getattr(features_module, features_class)
+    features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
-    fs1 = feature_suite.FeaturesSuite(phrase, features_class=features_class)
+    fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')
     print 'Got %d samples' % len(fs1.samples)
     m = gmm_class(K=model_order)
@@ -40,13 +41,14 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     print "GMM Codebook saved to file: '%s'" % filename
 
 def gmmcmp(features_class, gmm_file, **kwargs):
-    features_class = getattr(features_module, features_class)
+    features_class = getattr(speech_processors, features_class)
     import cPickle
     gmm = cPickle.load(open(unicode(gmm_file)))
     
-    features_pool = map(features_class, wave.read_dir('sounds'))
+    processor = features_class()
+    features_pool = map(processor.process, wave.listdir('sounds'))
  
-    d = dict((gmm.loglikelihood(features_vectors.features),(features_vectors.wave.filename)) for features_vectors in features_pool)
+    d = dict((gmm.loglikelihood(features_vectors.features),(features_vectors.frames.wave.filename)) for features_vectors in features_pool)
 
     print u"%s: %s" % (gmm_file, repr(gmm))
     for target_score in sorted(d, reverse=True):
@@ -57,11 +59,11 @@ def gmm_retrain(features_class, gmm_file, phrase=None, **kwargs):
     if phrase is None:
         import os
         phrase = os.path.basename(gmm_file).rsplit('.', 1)[0]
-    features_class = getattr(features_module, features_class)
+    features_class = getattr(speech_processors, features_class)
     import cPickle
     gmm = cPickle.load(open(gmm_file))
 
-    fs1 = feature_suite.FeaturesSuite(phrase, features_class=features_class)
+    fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')
 
     print 'Got %d samples' % len(fs1.samples)

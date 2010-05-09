@@ -1,16 +1,9 @@
 import numpy as np
 
-from scipy.io import loadmat
-try:
-    from scipy.signal import lfilter, hamming
-except:
-    pass
 from scipy.fftpack import fft
 from scipy.fftpack.realtransforms import dct
 
-from segmentaxis import segment_axis
-
-from mel import hz2mel
+from framing import frame_signal
 
 def trfbank(fs, nfft, lowfreq, linsc, logsc, nlinfilt, nlogfilt):
     """Compute triangular filterbank for MFCC computation."""
@@ -48,6 +41,10 @@ def trfbank(fs, nfft, lowfreq, linsc, logsc, nlinfilt, nlogfilt):
     return fbank, freqs
 
 def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13, over=None):
+    frames = frame_signal(input, nwin=nwin, over=over)
+    return mfcc_framed(frames, nfft=nfft, fs=fs, nceps=nceps)
+
+def mfcc_framed(framed, nfft=512, fs=16000, nceps=13):
     """Compute Mel Frequency Cepstral Coefficients.
 
     Parameters
@@ -79,12 +76,6 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13, over=None):
            spoken sentences", IEEE Trans. Acoustics. Speech, Signal Proc.
            ASSP-28 (4): 357-366, August 1980."""
 
-    # MFCC parameters: taken from auditory toolbox
-    over = over if over is not None else nwin - 160
-    # Pre-emphasis factor (to take into account the -6dB/octave rolloff of the
-    # radiation at the lips level)
-    prefac = 0.97
-
     #lowfreq = 400 / 3.
     lowfreq = 133.33
     #highfreq = 6855.4976
@@ -95,17 +86,11 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13, over=None):
     nlogfil = 27
     nfil = nlinfil + nlogfil
 
-    w = hamming(nwin, sym=0)
-
     fbank = trfbank(fs, nfft, lowfreq, linsc, logsc, nlinfil, nlogfil)[0]
 
     #------------------
     # Compute the MFCC
-    #------------------
-    extract = preemp(input, prefac)
-    framed = segment_axis(extract, nwin, over) * w
-
-    # Compute the spectrum magnitude
+    #------------------    # Compute the spectrum magnitude
     spec = np.abs(fft(framed, nfft, axis=-1))
     # Filter the spectrum through the triangle filterbank
     mspec = np.log10(np.dot(spec, fbank.T))
@@ -114,10 +99,5 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13, over=None):
 
     return ceps, mspec, spec
 
-def preemp(input, p):
-    """Pre-emphasis filter."""
-    return lfilter([1., -p], 1, input)
-
 if __name__ == '__main__':
-    extract = loadmat('extract.mat')['extract']
-    ceps = mfcc(extract)
+    pass

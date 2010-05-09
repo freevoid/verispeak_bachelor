@@ -1,17 +1,17 @@
 from base import Object
-from wave import listdir, Wave
-from features import MFCCFeatureVectors
+from wave import listdir
+from processors import CommonMFCCStack
 
 from itertools import ifilter, imap
 
 class FeaturesSuite(Object):
     person_id = None
-    features_class = None
-    def __init__(self, phrase_prefix, person_id=0, features_class=MFCCFeatureVectors):
+    speech_processor = None
+    def __init__(self, phrase_prefix, person_id=0, speech_processor=CommonMFCCStack):
         self.person_id = person_id
         self.phrase_prefix = phrase_prefix
         self._samples = set()
-        self.features_class = features_class
+        self.speech_processor = speech_processor
         super(FeaturesSuite, self).__init__()
 
     def __len__(self):
@@ -42,8 +42,7 @@ class FeaturesSuite(Object):
     def read_dir(self, path):
         files = ifilter(self._has_prefix,
                 listdir(path))
-        waves = imap(Wave, files)
-        features = imap(self.features_class, waves)
+        features = imap(self.speech_processor.process, files)
         self.add_samples(features)
         
     def _has_prefix(self, path):

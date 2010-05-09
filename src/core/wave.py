@@ -24,6 +24,15 @@ def read_file(filename):
         raise NotImplementedError("Format '%s' not supported. Supported formats are: %s" % (ext, ', '.join(SUPPORTED_FORMATS)))
     return amplitudes_array, sample_frequency
 
+def write_file(wave, filename):
+    from scikits import audiolab
+    from os import path
+    ext = path.splitext(filename)[1].lower()
+    if ext == WAV_EXT:
+        return audiolab.wavwrite(wave.waveform, filename, fs=wave.samplerate)
+    else:
+        raise NotImplementedError("Format '%s' not supported. Supported formats are: %s" % (ext, ', '.join(SUPPORTED_FORMATS)))
+
 def read_dir(dirpath):
     files = listdir(dirpath)
     return map(Wave, files)
@@ -44,6 +53,10 @@ class Wave(Object):
     @property
     def timelength(self):
         return 1000*len(self.waveform) / float(self.samplerate) # in ms
+
+    def resample(self, new_fs=16000):
+        self._data = misc.resample(self.waveform, self.samplerate, new_fs), new_fs
+        return self
 
     def plot_amp(self):
         return misc.plot_amp(*self._data)
@@ -75,6 +88,7 @@ class Wave(Object):
         return self.filename
 
     read_file = staticmethod(read_file)
+    write_file = write_file
 
 def _test():
     import doctest

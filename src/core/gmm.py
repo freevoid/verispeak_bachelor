@@ -55,6 +55,7 @@ class Codebook(Object):
 class GMM(Codebook):
     training_procedure = EM()
     mvn_dist = mvn.MultiVariateNormalDistribution
+    mode = 'full'
 
     def __init__(self, K=16, D=24):
         """
@@ -77,11 +78,40 @@ class GMM(Codebook):
     def initialize(self, samples):
         initial_cov = np.eye(self.d)
         import random
+        initial_cov = np.eye(self.d)
         self._components = [
-                mvn.MultiVariateNormalDistribution(
+                self.mvn_dist(
                     random.choice(samples),
-                    np.eye(self.d))
+                    initial_cov.copy())
                 for j in range(self.k)]
+
+    def initialize(self, data, niter=5):
+        from scipy.cluster.vq import kmeans2 as kmeans
+
+        d = self.d
+        k = self.k
+        (code, label) = kmeans(data, self.k, niter, minit='random')
+
+        w   = np.ones(k) / k
+        mu  = code.copy()
+        if self.mode == 'diag':
+            va = np.zeros((k, d))
+            for i in range(k):
+                for j in range(d):
+                    va[i, j] = np.cov(data[np.where(label==i), j], rowvar = 0)
+        elif self.mode == 'full':
+            va  = np.zeros((k*d, d))
+            for i in range(k):
+                va[i*d:i*d+d, :] = \
+                    np.cov(data[np.where(label==i)], rowvar = 0)
+            va = va.reshape((k, d, d))
+        else:
+            raise AttributeError("mode " + str(self.mode) + \
+                    " not recognized")
+
+        self.weights = w
+        self.reload_components(mu, va)
+        print "K-MEANS initialization done!"
 
     def reload_components(self, mu_vector_list, cov_matrix_list):
         self._components = [self.mvn_dist(mu_vector, cov_matrix)\
@@ -118,6 +148,7 @@ class GMM(Codebook):
 class DiagonalCovarianceGMM(GMM):
     training_procedure = DiagonalCovarianceEM()
     mvn_dist = mvn.DiagonalCovarianceMVN
+    mode = 'diag'
 
     def train(self, samples, **kwargs):
         samples = np.array(list(samples))
