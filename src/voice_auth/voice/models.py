@@ -1,4 +1,5 @@
 from django.contrib.admin.models import User
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
@@ -47,6 +48,11 @@ class RecordSession(models.Model):
             stamp]))
         return session_id
 
+    def __unicode__(self):
+        return u'%s - %s - %s' % (self.created_time.strftime('%d.%m.%Y %H:%M:%S'),
+                self.target_speaker,
+                self.uploadedutterance_set.count())
+
 class LearningProcess(StateMachine):
 
     CREATED = 'waiting_for_data'
@@ -82,7 +88,6 @@ class SpeakerModel(models.Model):
 
 class VerificationSession(RecordSession):
     verification_result = models.BooleanField()
-    verificated_by = models.ForeignKey(SpeakerModel)
 
 class UploadedUtterance(models.Model):
     def get_filename(instance, filename=None):
@@ -90,7 +95,8 @@ class UploadedUtterance(models.Model):
         stamp = now.strftime("%H%M%S%f")
         if not instance.session or not instance.session.id:
             raise ValueError("Need a session to be set to determine upload path")
-        return 'recordings/%s/%s.wav' % (instance.session.id, stamp)
+        base_dir = settings.RECORDING_SESSION_DIR
+        return '%s/%s/%s.wav' % (base_dir, instance.session.id, stamp)
 
     utterance_file = models.FileField(upload_to=get_filename)
     uploaded_date = models.DateTimeField(auto_now_add=True)
@@ -123,6 +129,10 @@ class UploadedUtterance(models.Model):
         save_uploaded_file(uploaded_file, abspath)
         utterance.save()
 
+    def __unicode__(self):
+        return u'%s - %s' % (self.uploaded_date.strftime('%d.%m.%Y %H:%M:%S'),
+                self.utterance_file.name)
+
 class VerificationProcess(StateMachine):
     CREATED = 'waiting_for_data'
     STARTED = 'started'
@@ -146,4 +156,5 @@ class VerificationProcess(StateMachine):
     start_time = models.DateTimeField(auto_now_add=True)
     target_session = models.ForeignKey(VerificationSession)
     finish_time = models.DateTimeField(null=True)
+    verificated_by = models.ForeignKey(SpeakerModel)
 
