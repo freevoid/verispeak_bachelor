@@ -8,3 +8,4 @@
 *.profile
 *.pid
 *.tmproj
+report/*
