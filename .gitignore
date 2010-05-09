@@ -9,3 +9,4 @@
 *.pid
 *.tmproj
 report/*
+report/
