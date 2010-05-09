@@ -21,7 +21,7 @@ HEADER=header.tex
 INCLUDEDIR=include
 
 TIKZDIR=tikz
-TIKZINCL=#er_main
+TIKZINCL=er_main
 
 DIAINCL= use_cases idef0_main idef0_pre learning_fsm_times#main_arch
 DIAPS = $(DIAINCL)
