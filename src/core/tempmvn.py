@@ -12,7 +12,7 @@ class MultiVariateNormalDistribution(object):
         self.mu = np.array(mu_vector)
         self.covariance = np.mat(covariance_matrix)
         self.n = self.mu.size
-        assert (self.covariance.shape == (self.n, self.n)), "Wrong covariance matrix shape: %s" % (self.covariance.shape,)
+        assert(self.covariance.shape == (self.n, self.n))
 
         try:
             self.inv_covariance = self.covariance.getI()
@@ -23,14 +23,8 @@ class MultiVariateNormalDistribution(object):
         #print "DET:", det
         if det < 0:
             print "ALARM! DET IS NEGATIVE!", det
-            print self.covariance
-            print '\n\n\n'
-            print self.covariance.diagonal()
-            raise SingularCovarianceMatrixError
-            self.det_is_negative = True
             det = self.__class__.det_min
         else:
-            self.det_is_negative = False
             self.__class__.det_min = min(det, self.__class__.det_min)
             
         #print "SQRTDET:", math.sqrt(det)
@@ -44,12 +38,6 @@ class MultiVariateNormalDistribution(object):
         assert (x.size == self.n)
         _x = (x - self.mu)
         exp = -0.5*_x*self.inv_covariance*_x.reshape((self.n, 1))
-        #print "EXP:",exp
-        if self.det_is_negative:
-            print "EXP:", exp
-            exp = -abs(exp)
-            print "INV_DENOM:", self._inv_denominator
-
         try:
             return self._inv_denominator*math.exp(exp)
         except OverflowError:

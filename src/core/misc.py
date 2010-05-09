@@ -9,9 +9,13 @@ WINDOW_LENGTH = 20 # in ms
 
 RESAMPLE_TYPE = 'sinc_best'
 
-SILENCE_TIME = 100 # ms
+SILENCE_TIME = 50 # ms
 
 cycle_colors = itertools.cycle(['red','green','blue','yellow','magenta','k','orange','lightgreen','cyan'])
+
+def get_timelength(array, sf):
+    return 1000*len(array) / float(sf) # in ms
+
 def resample(source, source_sf, target_sf):
     if source_sf != target_sf:
         from scikits import samplerate
@@ -48,11 +52,11 @@ def naive_noise_filter(source, noise_level):
 
 def normalize(array, sample_frequency):
     # downsample to 16000
-    array, sample_frequency = resample(array, sample_frequency, 16000), 16000
+    # array, sample_frequency = resample(array, sample_frequency, 16000), 16000
 
     # remove silence
     noise_level = detect_noise(array, sample_frequency)
-    #array = naive_noise_filter(array, noise_level)
+    array = naive_noise_filter(array, noise_level)
     
     # TODO reduce noise
     return array, sample_frequency
@@ -67,10 +71,10 @@ def plot_simple(array, color=None):
     color = cycle_colors.next() if color is None else color
     plot(np.arange(len(array)), array, color=color)
 
-def plot_amp(source, sample_frequency, color=None):
+def plot_amp(source, sample_frequency, color=None, **matplotlib_kwargs):
     color = cycle_colors.next() if color is None else color
     time_array = np.arange(len(source)) * 1000.0 / sample_frequency
-    plot(time_array, source, color=color)
+    plot(time_array, source, color=color, **matplotlib_kwargs)
 
 def coerce(*args):
     (s1, sf1), (s2, sf2) = args

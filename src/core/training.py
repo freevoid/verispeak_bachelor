@@ -16,6 +16,8 @@ class GMMTrainingProcedure(TrainingProcedure):
 class EM(GMMTrainingProcedure):
     MAX_ITERATION = 150
 
+    GLOBAL_COV_ABS_MIN = np.float64(10.0)
+
     @staticmethod
     def expectation(gmm, nT, samples):
         #print "Expectation.."
@@ -32,7 +34,13 @@ class EM(GMMTrainingProcedure):
     @staticmethod
     def maximization(gmm, nT, T, samples, **extra_args):
         def cov_constraint(cov):
-            pass
+            return
+            maxi = maxj = len(cov)
+            for i in range(maxi):
+                for j in range(i, maxj):
+                    if abs(cov[i,j]) < EM.MIN_COV:
+                        print "REPLACED COV", cov[i,j]
+                        cov[i,j] = cov[j,i] = EM.MIN_COV*np.sign(cov[i,j])
             #print "COV MEAN:", cov.mean(), "MIN:", cov.min()
         #print "Maximization.."
         current_likelihood = gmm.loglikelihood(samples)
@@ -86,22 +94,24 @@ class EM(GMMTrainingProcedure):
         except KeyboardInterrupt:
             return iter_count
 
+        print EM.GLOBAL_COV_ABS_MIN
         return iter_count
 
 class DiagonalCovarianceEM(EM):
-    MIN_SIGMA = 0.01
+    MIN_SIGMA = 0.005
 
     @staticmethod
     def maximization(gmm, nT, T, samples, samples_sqr):
         def sigma_constraint(sigma_vector):
-            return
             min_sigma = DiagonalCovarianceEM.MIN_SIGMA
             #print "Sigma vector: min %s, mean %s" % (sigma_vector.min(), sigma_vector.mean())
             j=0
             for (i, sigma) in enumerate(sigma_vector):
                 if sigma < min_sigma:
                     sigma_vector[i] = min_sigma
-            #print '%d/%d filtered' % (j, gmm.d)
+                    j += 1
+            if j:
+                print '%d/%d filtered' % (j, gmm.d)
 
         #print "Maximization.."
         current_likelihood = gmm.loglikelihood(samples)

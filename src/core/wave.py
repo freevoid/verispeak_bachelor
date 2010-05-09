@@ -58,8 +58,8 @@ class Wave(Object):
         self._data = misc.resample(self.waveform, self.samplerate, new_fs), new_fs
         return self
 
-    def plot_amp(self):
-        return misc.plot_amp(*self._data)
+    def plot_amp(self, **matplotlib_kwargs):
+        return misc.plot_amp(*self._data, **matplotlib_kwargs)
 
     def unify_size(self, other):
         """
