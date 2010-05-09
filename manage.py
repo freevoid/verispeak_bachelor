@@ -15,17 +15,17 @@ if action == 'gmm':
                 try:
                     features_class = sys.argv[5]
                 except:
-                    features_class = 'MFCCFeatureVectors'
+                    features_class = 'CommonMFCCStack'
             except:
                 phrase = 'инсценировать'
-                features_class = 'MFCCFeatureVectors'
+                features_class = 'CommonMFCCStack'
         except:
             phrase = 'инсценировать'
-            features_class = 'MFCCFeatureVectors'
+            features_class = 'CommonMFCCStack'
     except:
         phrase = 'инсценировать'
         gmm_class = 'GMM'
-        features_class = 'MFCCFeatureVectors'
+        features_class = 'CommonMFCCStack'
 
 elif action == 'timeseries':
     features_class = sys.argv[2]
@@ -40,10 +40,10 @@ elif action == 'gmmcmp':
         try:
             features_class = sys.argv[3]
         except:
-            features_class = 'MFCCFeatureVectors'
+            features_class = 'CommonMFCCStack'
     except:
         gmm_file = 'инсценировать.gmm'
-        features_class = 'MFCCFeatureVectors'
+        features_class = 'CommonMFCCStack'
 elif action == 'gmm_retrain':
     try:
         gmm_file = sys.argv[2]
@@ -51,10 +51,10 @@ elif action == 'gmm_retrain':
         try:
             features_class = sys.argv[3]
         except:
-            features_class = 'MFCCFeatureVectors'
+            features_class = 'CommonMFCCStack'
     except:
         gmm_file = 'инсценировать.gmm'
-        features_class = 'MFCCFeatureVectors'
+        features_class = 'CommonMFCCStack'
 else:
     features_class = 'MFCCFeaturesSlice'
     action = 'timeseries'

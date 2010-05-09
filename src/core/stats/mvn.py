@@ -12,7 +12,7 @@ class MultiVariateNormalDistribution(object):
         self.mu = np.array(mu_vector)
         self.covariance = np.mat(covariance_matrix)
         self.n = self.mu.size
-        assert(self.covariance.shape == (self.n, self.n))
+        assert (self.covariance.shape == (self.n, self.n)), "Wrong covariance matrix shape: %s" % (self.covariance.shape,)
 
         try:
             self.inv_covariance = self.covariance.getI()
