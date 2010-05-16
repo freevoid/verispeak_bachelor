@@ -1,7 +1,14 @@
 import numpy as np
 
 from scipy.fftpack import fft
-from scipy.fftpack.realtransforms import dct
+
+try:
+    from scipy.fftpack.realtransforms import dct
+    from functools import partial
+    dct = partial(dct, type=2, norm='ortho', axis=-1)
+except ImportError:
+    from fftpack.realtransforms import dct
+    dct = partial(dct, type=2, norm='ortho', axis=-1)
 
 from framing import frame_signal
 
@@ -95,7 +102,7 @@ def mfcc_framed(framed, nfft=512, fs=16000, nceps=13):
     # Filter the spectrum through the triangle filterbank
     mspec = np.log10(np.dot(spec, fbank.T))
     # Use the DCT to 'compress' the coefficients (spectrum -> cepstrum domain)
-    ceps = dct(mspec, type=2, norm='ortho', axis=-1)[:, :nceps]
+    ceps = dct(mspec)[:, :nceps]
 
     return ceps, mspec, spec
 
