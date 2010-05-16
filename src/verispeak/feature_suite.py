@@ -7,7 +7,7 @@ from itertools import ifilter, imap
 class FeaturesSuite(Object):
     person_id = None
     speech_processor = None
-    def __init__(self, phrase_prefix, person_id=0, speech_processor=CommonMFCCStack):
+    def __init__(self, phrase_prefix, person_id=0, speech_processor=CommonMFCCStack()):
         self.person_id = person_id
         self.phrase_prefix = phrase_prefix
         self._samples = set()

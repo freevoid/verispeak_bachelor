@@ -40,10 +40,8 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     print "GMM Codebook saved to file: '%s'" % filename
 
 def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
-    print gmm_class
     features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
-    print gmm_class
     gmm = gmm_class.load(unicode(gmm_file))
     print "Got gmm:", gmm
     assert(hasattr(gmm, 'loglikelihood'))
