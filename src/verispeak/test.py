@@ -39,10 +39,11 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     m.dump_to_file(filename)
     print "GMM Codebook saved to file: '%s'" % filename
 
-def gmmcmp(features_class, gmm_file, **kwargs):
+def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
     features_class = getattr(speech_processors, features_class)
-    import cPickle
-    gmm = cPickle.load(open(unicode(gmm_file)))
+    gmm_class = getattr(gmm_module, gmm_class)
+    gmm = gmm_class.load(unicode(gmm_file))
+    print "Got gmm:", gmm
     
     processor = features_class()
     features_pool = map(processor.process, wave.listdir('sounds'))

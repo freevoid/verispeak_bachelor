@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import math
 from itertools import imap
-from currying import curry
+from functools import partial as curry
 
 from stats import mvn
 
@@ -55,14 +56,17 @@ class Codebook(Object):
 import em
 class CournapeauGMM(Codebook):
     MAXITER = 30
-    def __init__(self, K=32, D=24):
-        self.gm = em.GM(D, K)
+    trainer_cls = em.gmm_em.RegularizedEM
+    def __init__(self, K=32, D=24, mode='full'):
+        self.gm = em.GM(D, K, mode=mode)
 
-    def train(self, train_samples, **kwargs):
+    def train(self, train_samples, no_init=False, **kwargs):
         if not isinstance(train_samples, np.ndarray):
             train_samples = np.array(list(train_samples))
-        gmm = em.GMM(self.gm)
-        trainer = em.EM()
+
+        init = 'test' if no_init else 'kmean'
+        gmm = em.GMM(self.gm, init=init)
+        trainer = self.trainer_cls()
         return trainer.train(train_samples, gmm, maxiter=self.MAXITER, **kwargs)
 
     def likelihood(self, samples):
@@ -87,6 +91,9 @@ class CournapeauGMM(Codebook):
         [instance, gm] = cPickle.load(open(filename, 'rb'))
         instance.gm = gm
         return instance
+
+    def get_params(self):
+        return self.gm.w, self.gm.mu, self.gm.va
 
 class GMM(Codebook):
     training_procedure = EM()
@@ -128,7 +135,11 @@ class GMM(Codebook):
         k = self.k
         (code, label) = kmeans(data, self.k, niter, minit='random')
 
-        w   = np.ones(k) / k
+        nsamples = float(len(data))
+        w   = np.ones(k)# / k
+        for i in range(k):
+            w[i] = len(np.where(label==i)[0]) / nsamples
+
         mu  = code.copy()
         if self.mode == 'diag':
             va = np.zeros((k, d))
@@ -178,6 +189,11 @@ class GMM(Codebook):
     def reset_weights(self):
         self.weights = np.repeat(1.0/self.k, self.k)
 
+    def get_params(self):
+        mu = np.array([c.mu for c in self._components])
+        va = np.array([c.covariance.diagonal() for c in self._components]).reshape((self.k, self.d))
+        return self.weights, mu, va
+
     def __unicode__(self):
         return u"k=%d d=%d iterations=%d" % (self.k, self.d, self.iterations)
 
@@ -190,3 +206,70 @@ class DiagonalCovarianceGMM(GMM):
         samples = np.array(list(samples))
         kwargs.update({'samples_sqr': np.square(samples)})
         return super(DiagonalCovarianceGMM, self).train(samples, **kwargs)
+
+    def get_params(self):
+        mu = np.array([c.mu for c in self._components])
+        va = np.array([c.covariance for c in self._components])
+        return self.weights, mu, va
+
+from ruplot import pyplot
+class GMMPlotter(Object):
+    def __init__(self, gmm):
+        assert hasattr(gmm, 'get_params')
+        self.gmm = gmm
+        self.refresh_params()
+
+        maxvar = 3*self.sigmas.max()
+        self.set_lim(self.mus.min() - maxvar, self.mus.max() + maxvar)
+        self._pdfs = {}
+
+        self._cache_dirty = False
+
+    def refresh_params(self):
+        self.weights, self.mus, self.sigmas = self.gmm.get_params()
+
+    @staticmethod
+    def plot_mfcc_pdf(samples, idx, bins=30, align_lim=True, **plotargs):
+        pyplot.title(u"Гистограмма распределения")
+        pyplot.xlabel(u"Значение кепстрального коэффициента")
+        pyplot.ylabel(u"Вероятность")
+        return pyplot.hist(samples[:, idx], bins=bins, normed=True,
+                **plotargs)
+
+    def plot_mfcc_and_align(self, samples, idx, bins=30, **plotargs):
+        vals, bins, patches = self.plot_mfcc_pdf(samples, idx, bins=bins, **plotargs)
+        self.set_lim(bins[0], bins[-1])
+        self._cache_dirty = True
+        return vals, bins, patches
+
+    def set_lim(self, min, max):
+        self._min, self._max = min, max
+        self._interval = max - min
+
+    def _prepare_pdfs(self, idx, divs):
+        pyplot.title(u"Плотность распределения смеси")
+        pyplot.xlabel(u"Значение кепстрального коэффициента")
+        pyplot.ylabel(u"Вероятность")
+        if self._pdfs.has_key((idx, divs)) and not self._cache_dirty: return self._pdfs[(idx, divs)]
+        gmm = self.gmm
+
+        mus = self.mus[:, idx]
+        sigmas = self.sigmas[:, idx]
+
+        bins = np.arange(self._min, self._max, self._interval / divs)
+        from scipy import stats
+        norms = (stats.norm(mu, sigma) for (mu, sigma) in zip(mus, sigmas))
+        pdfs = [self.weights[i]*norm.pdf(bins) for i, norm in enumerate(norms)]
+        self._pdfs[(idx, divs)] = (bins, pdfs)
+        self._cache_dirty = False
+        return bins, pdfs
+
+    def plot_component_pdfs(self, idx, divs=100, **plotargs):
+        bins, pdfs = self._prepare_pdfs(idx, divs)
+        for pdf in pdfs:
+            pyplot.plot(bins, pdf, **plotargs)
+
+    def plot_overall_pdf(self, idx, divs=100, **plotargs):
+        bins, pdfs = self._prepare_pdfs(idx, divs)
+        return pyplot.plot(bins, sum(pdfs), **plotargs)
+

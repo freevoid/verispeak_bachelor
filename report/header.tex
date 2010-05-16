@@ -64,6 +64,18 @@
 \usepackage{pdfpages}
 \usepackage{multirow}
 
+\newcommand{\executeiffilenewer}[3]{%
+  \ifnum\pdfstrcmp{\pdffilemoddate{#1}}%
+  {\pdffilemoddate{#2}}>0%
+  {\immediate\write18{#3}}\fi%
+}
+\newcommand{\includesvg}[1]{%
+  \executeiffilenewer{svg/#1.svg}{include/#1.pdf}%
+  {inkscape -z -D --file=svg/#1.svg %
+  --export-pdf=include/#1.pdf --export-latex}%
+  \input{include/#1.tex}%
+}
+
 %\oddsidemargin 0.5cm
 %\textwidth 16.5cm
 

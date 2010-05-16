@@ -9,7 +9,6 @@ def mean_normalization(feature_vectors):
     return feature_vectors
 
 def delta_mfcc(feature_vectors):
-    print feature_vectors.__class__
     assert isinstance(feature_vectors, MFCCFeatureVectors)
     mfcc_array = feature_vectors.features.tolist()
     for i, mfcc_vector in enumerate(mfcc_array[2:-2]):

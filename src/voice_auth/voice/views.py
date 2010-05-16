@@ -9,6 +9,7 @@ import datetime
 import time
 
 from misc.snippets import allowed_methods, implicit_render
+from misc.ip import dotted_quad_to_num
 from models import UploadedUtterance, RecordSession
 
 DEFAULT_APPLET_PARAMS = {
@@ -30,7 +31,14 @@ def upload_handler(request):
     try:
         uploaded_file = request.FILES['userfile']
         session_id = uploaded_file.name
-        session, created = RecordSession.objects.get_or_create(session_id=session_id)
+        remote_addr = request.META['REMOTE_ADDR']
+        # if ip is different from the initial, next statement
+        # will raise an IntegrityError (and it's what we actually want)
+        session, created = RecordSession.objects.get_or_create(
+                session_id=session_id,
+                remote_ip=dotted_quad_to_num(remote_addr)
+                )
+
         UploadedUtterance.save_uploaded_utterance(
                 request,
                 uploaded_file,

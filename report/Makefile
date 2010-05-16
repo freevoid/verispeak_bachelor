@@ -26,9 +26,14 @@ TIKZINCL=er_main
 DIAINCL= use_cases idef0_main idef0_pre learning_fsm_times#main_arch
 DIAPS = $(DIAINCL)
 
+SVGINCL=gmm_pdf gmm_hist gmm_merged_full
+
 FIXBB=./fixbb
 FONTHACK=./hackfont.sh 
 EPSINCL= waveform#foo bar
+
+$(INCLUDEDIR)/%_svg.pdf: svg/%.svg
+	inkscape $< --export-pdf $@
 
 $(INCLUDEDIR)/%_dia.eps: dia/%.dia
 	dia --export=$@ -t eps-pango $<
@@ -48,7 +53,7 @@ $(INCLUDEDIR)/%_tikz.pdf: tikz/%.tex
 		$(CROPPAGE) $(INCLUDEDIR)/$* $@ &&\
 		rm -vf $(INCLUDEDIR)/$*.*
 
-$(REPORT_NAME).pdf: $(TEXFILE) $(HEADER) ${PARTS:%=body/%.tex} eps tikz dia $(BIBLE)
+$(REPORT_NAME).pdf: $(TEXFILE) $(HEADER) ${PARTS:%=body/%.tex} eps tikz dia svg $(BIBLE)
 	$(LATEX) $(TEXFILE)
 
 $(REPORT_NAME).ps: $(TEXFILE) $(HEADER) ${PARTS:%=%.tex} $(BIBLE) tikz diaps
@@ -65,6 +70,7 @@ eps: ${EPSINCL:%=$(INCLUDEDIR)/%_eps.pdf}
 tikz: $(TIKZINCL:%=$(INCLUDEDIR)/%_tikz.pdf)
 dia: ${DIAINCL:%=$(INCLUDEDIR)/%_dia.pdf}
 diaps: ${DIAINCL:%=$(INCLUDEDIR)/%_dia.ps}
+svg: ${SVGINCL:%=$(INCLUDEDIR)/%_svg.pdf}
 #dot: $(DOTINCL)
 
 $(BIBLE): $(BIBLE_BASE).bib

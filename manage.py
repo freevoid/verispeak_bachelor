@@ -42,7 +42,7 @@ elif action == 'gmmcmp':
             try:
                 features_class = sys.argv[4]
             except:
-                features_class = 'MFCCFeatureVectors'
+                features_class = 'CommonMFCCStack'
         except:
             features_class = 'CommonMFCCStack'
             gmm_class = 'GMM'
@@ -65,7 +65,7 @@ else:
     features_class = 'MFCCFeaturesSlice'
     action = 'timeseries'
 
-from src.core import test
+from verispeak import test
 f=getattr(test, action)
 #print "Calling action %s with attributes: %s" % (action, locals())
 f(**locals())

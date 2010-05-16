@@ -1,6 +1,6 @@
 import numpy as np
 
-from core.features.segmentaxis import segment_axis
+from verispeak.features.segmentaxis import segment_axis
 
 def remove_silence(wave, empirical_silence_time=50, window_length_ms=10, w=0.5):
     fs = wave.samplerate

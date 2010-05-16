@@ -8,25 +8,7 @@ import time
 
 from state_machine.models import StateMachine
 from misc.signature import sign_string
-
-def ip_wrapper_property(ip_attr_name):
-    import socket, struct
-    def dotted_quad_to_num(ip):
-        "convert decimal dotted quad string to long integer"
-        return struct.unpack('L',socket.inet_aton(ip))[0]
-
-    def num_to_dotted_quad(n):
-        "convert long int to dotted quad string"
-        return socket.inet_ntoa(struct.pack('L',n))
-
-    def getter(self):
-        return num_to_dotted_quad(getattr(self, ip_attr_name))
-
-    def setter(self, dotted_quad):
-        setattr(self, ip_attr_name,
-                dotted_quad_to_num(dotted_quad))
-
-    return property(getter, setter)
+from misc.ip import ip_wrapper_property
 
 class Speaker(User):
     """
@@ -38,6 +20,9 @@ class RecordSession(models.Model):
     session_id = models.CharField(max_length=32, unique=True)
     created_time = models.DateTimeField(auto_now_add=True)
     target_speaker = models.ForeignKey(Speaker, null=True)
+
+    remote_ip = models.IntegerField()
+    remote_ip_dotted_quad = ip_wrapper_property('remote_ip')
 
     @staticmethod
     def generate_session_id(request):
@@ -86,9 +71,6 @@ class SpeakerModel(models.Model):
     speaker = models.ForeignKey(Speaker)
     learning_process = models.OneToOneField(LearningProcess)
 
-class VerificationSession(RecordSession):
-    verification_result = models.BooleanField()
-
 class UploadedUtterance(models.Model):
     def get_filename(instance, filename=None):
         now = datetime.datetime.now()
@@ -100,8 +82,6 @@ class UploadedUtterance(models.Model):
 
     utterance_file = models.FileField(upload_to=get_filename)
     uploaded_date = models.DateTimeField(auto_now_add=True)
-    uploader_ip = models.IntegerField()
-    uploader_ip_dotted_quad = ip_wrapper_property('uploader_ip')
     
     session = models.ForeignKey(RecordSession)
 
@@ -117,7 +97,6 @@ class UploadedUtterance(models.Model):
         print "Saving new utterance from %s: name='%s', size=%s" % (ip_dotted_quad, uploaded_file.name, uploaded_file.size)
         utterance = UploadedUtterance()
         utterance.session=record_session
-        utterance.uploader_ip_dotted_quad = ip_dotted_quad
 
         filename = utterance.get_filename()
         utterance.utterance_file.name = filename
@@ -154,7 +133,8 @@ class VerificationProcess(StateMachine):
             }
 
     start_time = models.DateTimeField(auto_now_add=True)
-    target_session = models.ForeignKey(VerificationSession)
+    target_session = models.ForeignKey(RecordSession)
     finish_time = models.DateTimeField(null=True)
+    verification_result = models.NullBooleanField(blank=True, null=True)
     verificated_by = models.ForeignKey(SpeakerModel)
 
