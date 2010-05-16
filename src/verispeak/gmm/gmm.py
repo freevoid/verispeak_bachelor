@@ -1,13 +1,14 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import math
 from itertools import imap
 from functools import partial as curry
 
-from stats import mvn
+from verispeak.stats import mvn
+from verispeak.base import Object
+from verispeak.training import EM, DiagonalCovarianceEM
 
-from base import Object
-from training import EM, DiagonalCovarianceEM
+__all__ = ['Codebook', 'CournapeauGMM', 'CournapeauDiagonalGMM',
+    'GMM', 'DiagonalGMM']
 
 class Codebook(Object):
     training_procedure = None
@@ -53,12 +54,16 @@ class Codebook(Object):
         f = open(filename)
         return cPickle.load(f)
 
-import em
+import cournapeau as em
 class CournapeauGMM(Codebook):
     MAXITER = 30
-    trainer_cls = em.gmm_em.RegularizedEM
-    def __init__(self, K=32, D=24, mode='full'):
-        self.gm = em.GM(D, K, mode=mode)
+    trainer_cls = em.gmm_em.EM
+    mode = 'full'
+    def __init__(self, K=32, D=24, mode=None):
+        if mode is not None:
+            self.mode = mode
+        self.gm = em.GM(D, K, mode=self.mode)
+        super(CournapeauGMM, self).__init__()
 
     def train(self, train_samples, no_init=False, **kwargs):
         if not isinstance(train_samples, np.ndarray):
@@ -67,7 +72,7 @@ class CournapeauGMM(Codebook):
         init = 'test' if no_init else 'kmean'
         gmm = em.GMM(self.gm, init=init)
         trainer = self.trainer_cls()
-        return trainer.train(train_samples, gmm, maxiter=self.MAXITER, **kwargs)
+        return trainer.train(train_samples, gmm, maxiter=self.MAXITER, log=True, **kwargs)
 
     def likelihood(self, samples):
         return self.gm.pdf(samples)
@@ -94,6 +99,9 @@ class CournapeauGMM(Codebook):
 
     def get_params(self):
         return self.gm.w, self.gm.mu, self.gm.va
+
+class CournapeauDiagonalGMM(CournapeauGMM):
+    mode = 'diag'
 
 class GMM(Codebook):
     training_procedure = EM()
@@ -197,7 +205,7 @@ class GMM(Codebook):
     def __unicode__(self):
         return u"k=%d d=%d iterations=%d" % (self.k, self.d, self.iterations)
 
-class DiagonalCovarianceGMM(GMM):
+class DiagonalGMM(GMM):
     training_procedure = DiagonalCovarianceEM()
     mvn_dist = mvn.DiagonalCovarianceMVN
     mode = 'diag'
@@ -205,71 +213,10 @@ class DiagonalCovarianceGMM(GMM):
     def train(self, samples, **kwargs):
         samples = np.array(list(samples))
         kwargs.update({'samples_sqr': np.square(samples)})
-        return super(DiagonalCovarianceGMM, self).train(samples, **kwargs)
+        return super(DiagonalGMM, self).train(samples, **kwargs)
 
     def get_params(self):
         mu = np.array([c.mu for c in self._components])
         va = np.array([c.covariance for c in self._components])
         return self.weights, mu, va
-
-from ruplot import pyplot
-class GMMPlotter(Object):
-    def __init__(self, gmm):
-        assert hasattr(gmm, 'get_params')
-        self.gmm = gmm
-        self.refresh_params()
-
-        maxvar = 3*self.sigmas.max()
-        self.set_lim(self.mus.min() - maxvar, self.mus.max() + maxvar)
-        self._pdfs = {}
-
-        self._cache_dirty = False
-
-    def refresh_params(self):
-        self.weights, self.mus, self.sigmas = self.gmm.get_params()
-
-    @staticmethod
-    def plot_mfcc_pdf(samples, idx, bins=30, align_lim=True, **plotargs):
-        pyplot.title(u"Гистограмма распределения")
-        pyplot.xlabel(u"Значение кепстрального коэффициента")
-        pyplot.ylabel(u"Вероятность")
-        return pyplot.hist(samples[:, idx], bins=bins, normed=True,
-                **plotargs)
-
-    def plot_mfcc_and_align(self, samples, idx, bins=30, **plotargs):
-        vals, bins, patches = self.plot_mfcc_pdf(samples, idx, bins=bins, **plotargs)
-        self.set_lim(bins[0], bins[-1])
-        self._cache_dirty = True
-        return vals, bins, patches
-
-    def set_lim(self, min, max):
-        self._min, self._max = min, max
-        self._interval = max - min
-
-    def _prepare_pdfs(self, idx, divs):
-        pyplot.title(u"Плотность распределения смеси")
-        pyplot.xlabel(u"Значение кепстрального коэффициента")
-        pyplot.ylabel(u"Вероятность")
-        if self._pdfs.has_key((idx, divs)) and not self._cache_dirty: return self._pdfs[(idx, divs)]
-        gmm = self.gmm
-
-        mus = self.mus[:, idx]
-        sigmas = self.sigmas[:, idx]
-
-        bins = np.arange(self._min, self._max, self._interval / divs)
-        from scipy import stats
-        norms = (stats.norm(mu, sigma) for (mu, sigma) in zip(mus, sigmas))
-        pdfs = [self.weights[i]*norm.pdf(bins) for i, norm in enumerate(norms)]
-        self._pdfs[(idx, divs)] = (bins, pdfs)
-        self._cache_dirty = False
-        return bins, pdfs
-
-    def plot_component_pdfs(self, idx, divs=100, **plotargs):
-        bins, pdfs = self._prepare_pdfs(idx, divs)
-        for pdf in pdfs:
-            pyplot.plot(bins, pdf, **plotargs)
-
-    def plot_overall_pdf(self, idx, divs=100, **plotargs):
-        bins, pdfs = self._prepare_pdfs(idx, divs)
-        return pyplot.plot(bins, sum(pdfs), **plotargs)
 

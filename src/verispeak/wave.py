@@ -59,7 +59,8 @@ class Wave(Object):
         return self
 
     def plot_amp(self, **matplotlib_kwargs):
-        return misc.plot_amp(*self._data, **matplotlib_kwargs)
+        import plotting
+        return plotting.plot_amp(*self._data, **matplotlib_kwargs)
 
     def unify_size(self, other):
         """

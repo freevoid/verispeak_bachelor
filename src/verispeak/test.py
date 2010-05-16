@@ -40,10 +40,13 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     print "GMM Codebook saved to file: '%s'" % filename
 
 def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
+    print gmm_class
     features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
+    print gmm_class
     gmm = gmm_class.load(unicode(gmm_file))
     print "Got gmm:", gmm
+    assert(hasattr(gmm, 'loglikelihood'))
     
     processor = features_class()
     features_pool = map(processor.process, wave.listdir('sounds'))
@@ -55,13 +58,13 @@ def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
         filename = d[target_score]
         print "%15.5f %s" % (target_score, filename)
 
-def gmm_retrain(features_class, gmm_file, phrase=None, **kwargs):
+def gmm_retrain(features_class, gmm_file, gmm_class, phrase=None, **kwargs):
     if phrase is None:
         import os
         phrase = os.path.basename(gmm_file).rsplit('.', 1)[0]
     features_class = getattr(speech_processors, features_class)
-    import cPickle
-    gmm = cPickle.load(open(gmm_file))
+    gmm_class = getattr(gmm_module, gmm_class)
+    gmm = gmm_class.load(unicode(gmm_file))
 
     fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')

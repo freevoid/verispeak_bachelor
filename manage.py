@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import sys
 
+DEFAULT_GMM_CLASS = 'CournapeauDiagonalGMM'
+DEFAULT_EXTRACTOR = 'CommonMFCCStack'
+
 kwargs = {}
 action = sys.argv[1]
 if action == 'gmm':
@@ -15,17 +18,19 @@ if action == 'gmm':
                 try:
                     features_class = sys.argv[5]
                 except:
-                    features_class = 'CommonMFCCStack'
+                    features_class = DEFAULT_EXTRACTOR
             except:
                 phrase = 'инсценировать'
-                features_class = 'CommonMFCCStack'
+                features_class = DEFAULT_EXTRACTOR
         except:
+            model_order = 16
             phrase = 'инсценировать'
-            features_class = 'CommonMFCCStack'
+            features_class = DEFAULT_EXTRACTOR
     except:
+        model_order = 16
         phrase = 'инсценировать'
-        gmm_class = 'GMM'
-        features_class = 'CommonMFCCStack'
+        gmm_class = DEFAULT_GMM_CLASS
+        features_class = DEFAULT_EXTRACTOR
 
 elif action == 'timeseries':
     features_class = sys.argv[2]
@@ -42,25 +47,30 @@ elif action == 'gmmcmp':
             try:
                 features_class = sys.argv[4]
             except:
-                features_class = 'CommonMFCCStack'
+                features_class = DEFAULT_EXTRACTOR
         except:
-            features_class = 'CommonMFCCStack'
-            gmm_class = 'GMM'
+            features_class = DEFAULT_EXTRACTOR
+            gmm_class = DEFAULT_GMM_CLASS
     except:
-        gmm_class = 'GMM'
+        gmm_class = DEFAULT_GMM_CLASS
         gmm_file = 'инсценировать.gmm'
-        features_class = 'CommonMFCCStack'
+        features_class = DEFAULT_EXTRACTOR
 elif action == 'gmm_retrain':
     try:
         gmm_file = sys.argv[2]
-
         try:
-            features_class = sys.argv[3]
+            gmm_class = sys.argv[3]
+            try:
+                features_class = sys.argv[4]
+            except:
+                features_class = DEFAULT_EXTRACTOR
         except:
-            features_class = 'CommonMFCCStack'
+            features_class = DEFAULT_EXTRACTOR
+            gmm_class = DEFAULT_GMM_CLASS
     except:
         gmm_file = 'инсценировать.gmm'
-        features_class = 'CommonMFCCStack'
+        gmm_class = DEFAULT_GMM_CLASS
+        features_class = DEFAULT_EXTRACTOR
 else:
     features_class = 'MFCCFeaturesSlice'
     action = 'timeseries'
