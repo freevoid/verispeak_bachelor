@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import scoring, wave
+import wave
 import features as features_module
 import processors as speech_processors
 import gmm as gmm_module, feature_suite
@@ -8,6 +8,7 @@ def print_score((pos, (score, o, i))):
     print u"%3d). %30s <-> %30s: %10.4f" % (pos, o.wave.filename, i.wave.filename, score)
 
 def test(soundfiles, features_class='MFCCFeaturesSlice', scoring_class='DTWScore'):
+    import scoring
     waves = map(wave.Wave, soundfiles)
     features = map(getattr(features_module, features_class), waves)
     scorings = map(getattr(scoring, scoring_class), features)
@@ -42,7 +43,7 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
 def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
     features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
-    gmm = gmm_class.load(unicode(gmm_file))
+    gmm = gmm_class.load(gmm_file)
     print "Got gmm:", gmm
     assert(hasattr(gmm, 'loglikelihood'))
     
@@ -51,7 +52,7 @@ def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
  
     d = dict((gmm.loglikelihood(features_vectors.features),(features_vectors.frames.wave.filename)) for features_vectors in features_pool)
 
-    print u"%s: %s" % (gmm_file, repr(gmm))
+    print "%s: %s" % (gmm_file, repr(gmm))
     for target_score in sorted(d, reverse=True):
         filename = d[target_score]
         print "%15.5f %s" % (target_score, filename)
@@ -62,7 +63,7 @@ def gmm_retrain(features_class, gmm_file, gmm_class, phrase=None, **kwargs):
         phrase = os.path.basename(gmm_file).rsplit('.', 1)[0]
     features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
-    gmm = gmm_class.load(unicode(gmm_file))
+    gmm = gmm_class.load(gmm_file)
 
     fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')
