@@ -28,7 +28,7 @@ DEFAULT_APPLET_PARAMS = {
         'readyScript': 'recordAppletLoaded();',
         'packButtons': 'yes',
         'frameRate': 16000,
-        'trimEnable': 'yes'
+        'trimEnable': 'no'
         }
 
 APPLET_FILENAME = 'userfile'
@@ -38,7 +38,7 @@ APPLET_FILENAME = 'userfile'
 def upload_handler(request):
     try:
         uploaded_file = request.FILES['userfile']
-        session_id = uploaded_file.name
+        session_id = request.POST['session_id']
         remote_addr = request.META['REMOTE_ADDR']
         # if ip is different from the initial, next statement
         # will raise an IntegrityError (and it's what we actually want)
@@ -52,6 +52,8 @@ def upload_handler(request):
                 uploaded_file,
                 session
             )
+
+        print "Uploaded utterance, sid:", session_id
     except BaseException, e:
         log_exception()
         response = u'ERROR ' + unicode(e)
@@ -115,12 +117,13 @@ def verification_confirm(request):
     remote_addr = request.META['REMOTE_ADDR']
     form = VerificationRequestForm(request.REQUEST,
             remote_ip=dotted_quad_to_num(remote_addr))
+    print request.POST
 
     if form.is_valid(): # raises valid exceptions on errors
         # All validation done, so we need to verificate a session
         speaker_model = form.cleaned_data['speaker_model']
         verification_process = form.cleaned_data['verification_process']
-        assert verification_process.target_session.utterance_count > 0
+        assert verification_process.target_session.utterance_count > 0, "Need at least 1 utterance to authenticate"
         verification_process.transition(VerificationProcess.STARTED)
         send_message("voice.verification",
                 verification_process_id=verification_process.id,

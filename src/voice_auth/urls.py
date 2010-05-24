@@ -5,6 +5,10 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+from misc import amqp
+amqp.autodiscover()
+amqp.setup_queues()
+
 urlpatterns = patterns('',
     #(r'^upload_sound/', 'voice_auth.amf.gateway.upload_gateway'),
     (r'^voice/', include('voice.urls')),
@@ -12,7 +16,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 )
-
 
 if settings.DEBUG:
     urlpatterns += patterns('', url(r'^media/(?P<path>.*)$', 'django.views.static.serve', 

@@ -4,15 +4,6 @@ $(document).ready(function () {
     uploadedTime = 0.0;
     MIN_UTTERANCE_LENGTH = 1.5;
 });
-
-function recordAppletLoaded () {
-    console.log("Applet loaded.");
-    window.recorder = document.ListenUpRecorder;
-    recorder.setUploadCompletionScript("uploadCompleted();");
-    recorder.setUploadFailureScript("uploadFailed();");
-    initialState(verificationBlock);
-}
-
 function canSendToVerification () {
     // Checks all conditions that must be met to verificate utterance
     // such as minimal length

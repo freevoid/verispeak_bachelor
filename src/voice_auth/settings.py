@@ -4,6 +4,14 @@ PROJECT_PATH = os.path.dirname(__file__)
 def relative_path(path):
     return os.path.join(PROJECT_PATH, path)
 
+import logging
+LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
+
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = LOG_FORMAT
+    )
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -23,8 +31,6 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
-import logging
-logging.error(DATABASES)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -68,6 +74,12 @@ SECRET_KEY = '891h=_51$c*xry+*)rvbn)q^2+9^-5oohr*2zp9!(k*3a0+yva'
 
 RECORDING_SESSION_DIR = 'recordings'
 RECORDING_SESSION_DIR = 'recordings_production'
+MAX_SESSION_TTL = 5 # in minutes
+GLOBAL_LLR_TRESHHOLD = 1000.00
+
+AMQP_HOST = 'localhost'
+AMQP_EXCHANGE_NAME = 'trns'
+AMQP_PASSWORD = ''
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -81,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -110,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
 
+    'south',
     'debug_toolbar',
     'django_extensions',
 

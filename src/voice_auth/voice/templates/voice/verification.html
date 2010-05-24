@@ -6,25 +6,24 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/voice.css" type="text/css" />
 <script src="{{ MEDIA_URL }}js/voice_common.js" type="text/javascript"></script>
 <script src="{{ MEDIA_URL }}js/voice_verification.js" type="text/javascript"></script>
-<script src="{{ MEDIA_URL }}js/voice_upload.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function () {
     console.log("Setting initial vars..");
-    verificationBlock = $("div.voice_auth_wrapper");
     verification = new VerificationBlock("div.voice_auth_wrapper",
-        document.ListenUpRecorder,
+        {
+            appletReadyScriptName: "recordAppletLoaded",
+            recordStateChangedScriptName: "recordStateChanged",
+            appletName: "ListenUpRecorder"
+        },
         {
             monitorURL: "{% url voice.views.verification_state %}",
             confirmURL: "{% url voice.views.verification_confirm %}",
             cancelURL: "{% url voice.views.verification_cancel %}",
             redirectURL: "{{ redirect_to }}",
             fallbackURL: "{{ login_url }}"
-        });
-    monitorURL = "{% url voice.views.verification_state %}";
-    confirmURL = "{% url voice.views.verification_confirm %}";
-    cancelURL = "{% url voice.views.verification_cancel %}";
-    redirectURL = "{{ redirect_to }}";
-    fallbackURL = "{{ login_url }}";
+            }
+        );
+
     console.log("Page init done.");
 });
 </script>
@@ -35,9 +34,8 @@ $(document).ready(function () {
     <h2 class="voice_auth_header">Голосовая аутентификация</h2>
     <div class="voice_auth_content"></div>
     <div class="voice_auth_inputs">
-        <input type="button" value="Запись" id="id_record_button" onclick="toggleRecording(this);" />
-
-        <input type="button" value="Возврат" id="id_cancel_button" onclick="cancelVerification(this);" />
+        <input type="button" value="Запись" id="id_record_button" />
+        <input type="button" value="Возврат" id="id_cancel_button" />
     </div>
     <div class="voice_auth_form">
         <form action="" method="post" id="id_uploadConfirmation_form">
