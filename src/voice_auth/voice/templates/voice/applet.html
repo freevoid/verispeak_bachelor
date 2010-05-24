@@ -1,0 +1,13 @@
+<applet 
+    code="com.softsynth.javasonics.recplay.RecorderUploadApplet"
+    mayscript="true"
+    codebase="{{ MEDIA_URL }}codebase"
+    archive="JavaSonicsListenUp.jar,OggXiphSpeexJS.jar"
+    name="ListenUpRecorder"
+    width="0"
+    height="0">
+    {% for name, value in applet_params.iteritems %}
+        <param name="{{ name }}" value="{{ value }}" />
+    {% endfor %}
+</applet>
+

@@ -1,6 +1,7 @@
 from django.contrib.admin.models import User
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import smart_str
 from django.db import models
 
 import datetime
@@ -16,27 +17,35 @@ class Speaker(User):
     class Meta:
         proxy = True
 
+    def get_active_model(self):
+        return SpeakerModel.objects.get(speaker=self,
+                is_active=True)
+
 class RecordSession(models.Model):
     session_id = models.CharField(max_length=32, unique=True)
     created_time = models.DateTimeField(auto_now_add=True)
     target_speaker = models.ForeignKey(Speaker, null=True)
+    authentic = models.NullBooleanField(blank=True, null=True)
 
     remote_ip = models.IntegerField()
     remote_ip_dotted_quad = ip_wrapper_property('remote_ip')
 
     @staticmethod
-    def generate_session_id(request):
-        now = datetime.datetime.now()
-        #stamp = now.strftime("%H%M%S%f")
+    def generate_session_id(request, **extra_data):
         stamp = str(time.time())
         session_id = sign_string('\n'.join([request.META['REMOTE_ADDR'],
-            stamp]))
+            stamp,
+            smart_str(extra_data)]))
         return session_id
+
+    @property
+    def utterance_count(self):
+        return self.uploadedutterance_set.count()
 
     def __unicode__(self):
         return u'%s - %s - %s' % (self.created_time.strftime('%d.%m.%Y %H:%M:%S'),
                 self.target_speaker,
-                self.uploadedutterance_set.count())
+                self.utterance_count)
 
 class LearningProcess(StateMachine):
 
@@ -53,7 +62,7 @@ class LearningProcess(StateMachine):
             (FINISHED, _('Learning finished')),
             )
 
-    state = models.CharField(max_length=24, choices=states)
+    state_id = models.CharField(max_length=24, choices=states)
     #STATE_DISPLAY = dict(states)
 
     transition_table = {
@@ -69,7 +78,48 @@ class LearningProcess(StateMachine):
 class SpeakerModel(models.Model):
     model_file = models.FileField(upload_to='speaker_models')
     speaker = models.ForeignKey(Speaker)
-    learning_process = models.OneToOneField(LearningProcess)
+    learning_process = models.OneToOneField(LearningProcess, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+
+    def _set_active(self, active):
+        if self.is_active != active:
+            if active:
+                old_active = SpeakerModel.objects.get(speaker=self.speaker, is_active=active)
+                old_active.is_active = False
+                self.is_active = True
+                return old_active
+            else:
+                self.is_active = active
+                return self
+
+    def set_active(self, active):
+        old = self._set_active(active)
+        if old != self:
+            old.save()
+        self.save()
+    def get_active(self):
+        return self.is_active
+    active_prop = property(get_active, set_active)
+
+    def save(self, *args, **kwargs):
+        '''
+        if self.is_active:
+            old_active = SpeakerModel.objects.get(speaker=self.speaker, is_active=True)
+            if self != old_active:
+                old_active.is_active = False
+                old_active.save()
+        '''
+        super(SpeakerModel, self).save(*args, **kwargs)
+
+    class Meta:
+        get_latest_by = 'learning_process__finish_time'
+
+class UniversalBackgroundModel(models.Model):
+    model_file = models.FileField(upload_to='ubm')
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = 'created_time'
 
 class UploadedUtterance(models.Model):
     def get_filename(instance, filename=None):
@@ -82,6 +132,7 @@ class UploadedUtterance(models.Model):
 
     utterance_file = models.FileField(upload_to=get_filename)
     uploaded_date = models.DateTimeField(auto_now_add=True)
+    is_trash = models.BooleanField(default=False)
     
     session = models.ForeignKey(RecordSession)
 
@@ -112,29 +163,45 @@ class UploadedUtterance(models.Model):
         return u'%s - %s' % (self.uploaded_date.strftime('%d.%m.%Y %H:%M:%S'),
                 self.utterance_file.name)
 
+class LLRVerificator(models.Model):
+    treshhold = models.FloatField()
+    null_estimator = models.OneToOneField(SpeakerModel, related_name='llr_verificator')
+    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, blank=True)
+    
+    def save(self, *args, **kwargs):
+        # if alternative estimator was not set, trying to set most recent one
+        if self.alternative_estimator is None:
+            self.alternative_estimator = UniversalBackgroundModel.objects.latest()
+        super(LLRVerificator, self).save(*args, **kwargs)
+
 class VerificationProcess(StateMachine):
-    CREATED = 'waiting_for_data'
+    WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
     CANCELED = 'canceled'
     VERIFIED = 'verified'
+    FAILED = 'failed'
 
-    states = ((CREATED, _('Waiting for speech data')),
+    initial_state = WAIT_FOR_DATA
+
+    states = ((WAIT_FOR_DATA, _('Waiting for speech data')),
             (STARTED, _('Processing..')),
             (CANCELED, _('Verification has been canceled')),
             (VERIFIED, _('Verification finished')),
+            (FAILED, _('Error occured during verification'))
             )
 
-    state = models.CharField(max_length=24, choices=states)
+    state_id = models.CharField(max_length=24, choices=states)
     #STATE_DISPLAY = dict(states)
 
     transition_table = {
-            CREATED: (STARTED, CANCELED, CREATED),
-            STARTED: (VERIFIED, STARTED),
+            WAIT_FOR_DATA: (STARTED, CANCELED, WAIT_FOR_DATA),
+            STARTED: (VERIFIED, FAILED, WAIT_FOR_DATA, STARTED),
             }
 
     start_time = models.DateTimeField(auto_now_add=True)
     target_session = models.ForeignKey(RecordSession)
     finish_time = models.DateTimeField(null=True)
     verification_result = models.NullBooleanField(blank=True, null=True)
-    verificated_by = models.ForeignKey(SpeakerModel)
+    verification_score = models.FloatField(blank=True, null=True)
+    verificated_by = models.ForeignKey(LLRVerificator, blank=True, null=True)
 

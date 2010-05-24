@@ -78,12 +78,12 @@ def log_exception(msg=None):
     
 def log_exceptions(func):
     """
-    Decorator for Django views that logging internal unexpected errors.
+    Decorator that logging internal unexpected errors.
     """
     @wraps(func)
-    def wrapper(request, *args, **kw):
+    def wrapper(*args, **kw):
         try:
-            return func(request, *args, **kw)
+            return func(*args, **kw)
         except:
             log_exception()
             raise
@@ -311,3 +311,38 @@ def permission_required_with_403(perm, login_url=None, fail_template='403.html')
     enabled, redirecting to the log-in page or rendering a 403 as necessary.
     """
     return user_passes_test_with_403(lambda u: u.has_perm(perm), login_url=login_url, fail_template=fail_template)
+
+def dummy_init(klass):
+    def set_attrs_call_super(self, **kwargs):
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)
+        return super(klass, self)
+    klass.__init__ = set_attrs_call_super
+    return klass
+
+def autodiscover(cb_module_name, site_cls, registry_attr_name='_registry'):
+    """
+    Auto-discover INSTALLED_APPS cb_module_name.py modules and fail silently when
+    not present. This forces an import on them to register any  neccessary bits.
+    """
+
+    import copy
+    from django.conf import settings
+    from django.utils.importlib import import_module
+    from django.utils.module_loading import module_has_submodule
+
+    for app in settings.INSTALLED_APPS:
+        mod = import_module(app)
+        # Attempt to import the app's cb module.
+        try:
+            before_import_registry = copy.copy(getattr(site_cls, registry_attr_name))
+            import_module('%s.%s' % (app, cb_module_name))
+        except:
+            setattr(site_cls, registry_attr_name, before_import_registry)
+
+            # Decide whether to bubble up this error. If the app just
+            # doesn't have a neccessary module, we can ignore the error
+            # attempting to import it, otherwise we want it to bubble up.
+            if module_has_submodule(mod, cb_module_name):
+                raise
+

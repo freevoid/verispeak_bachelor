@@ -1,26 +1,34 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import cache_control
+from django.db import transaction
+from django.utils.translation import ugettext as _
 
-import datetime
-import time
-
-from misc.snippets import allowed_methods, implicit_render
+from misc.snippets import allowed_methods, implicit_render, log_exception
 from misc.ip import dotted_quad_to_num
-from models import UploadedUtterance, RecordSession
+from misc.amqp import register_queue, send_message
+
+from exceptions import DoesNotExistError
+from models import UploadedUtterance, RecordSession, Speaker,\
+        SpeakerModel, VerificationProcess
+from logic import api_enabled
+from forms import VerificationRequestForm
 
 DEFAULT_APPLET_PARAMS = {
         'showLogo': 'no',
         'showPauseButton': 'no',
+        'showTransport': 'no',
+        'showVUMeter': 'no',
         'uploadFileName': 'voice.wav',
         'requestStateChanges': 'yes',
         'stateChangeCallback': 'recordStateChanged',
         'readyScript': 'recordAppletLoaded();',
         'packButtons': 'yes',
-        #'trimEnable': 'yes'
+        'frameRate': 16000,
+        'trimEnable': 'yes'
         }
 
 APPLET_FILENAME = 'userfile'
@@ -44,12 +52,95 @@ def upload_handler(request):
                 uploaded_file,
                 session
             )
-    except BaseException as e:
+    except BaseException, e:
+        log_exception()
         response = u'ERROR ' + unicode(e)
         print e.__class__, e
     else:
         response = 'SUCCESS'
     return HttpResponse(response, mimetype='text/plain')
+
+@api_enabled()
+def verification_state(request):
+    session_id = request.GET.get('session_id')
+    try:
+        verification_process = VerificationProcess.objects.get(target_session__session_id=session_id)
+    except VerificationProcess.DoesNotExist:
+        raise DoesNotExistError("Verification process", session_id)
+    
+    state = verification_process.state_id
+    if state == verification_process.VERIFIED:
+        state = 'verification_success'\
+                if verification_process.verification_result\
+                    else 'verification_failed'
+    return state
+
+@implicit_render
+@allowed_methods('GET')
+def verification(request):
+    print "Verification", request.method, request.REQUEST
+    remote_addr = request.META['REMOTE_ADDR']
+
+    if request.method == 'GET':
+        redirect_to = request.GET.get('redirect_to', settings.LOGIN_REDIRECT_URL)
+
+        target_speaker = get_object_or_404(Speaker, username=request.REQUEST.get('username'))
+        speaker_model = get_object_or_404(SpeakerModel,
+                speaker__username=request.REQUEST.get('username'),
+                is_active=True)
+
+        session_id = RecordSession.generate_session_id(request, target_speaker=target_speaker.id)
+        session, created = RecordSession.objects.get_or_create(
+                session_id=session_id,
+                remote_ip=dotted_quad_to_num(remote_addr),
+                target_speaker=target_speaker
+                )
+        assert created
+
+        verification_process = VerificationProcess.objects.create(target_session=session)
+
+        applet_params = DEFAULT_APPLET_PARAMS.copy()
+        applet_params['uploadURL'] = reverse('voice.views.upload_handler')
+        applet_params['uploadFileName'] = session_id
+        return {'username': target_speaker.username,
+                'session_id': session_id,
+                'applet_params': applet_params,
+                'redirect_to': redirect_to,
+                'login_url': settings.LOGIN_URL}
+
+@api_enabled()
+@allowed_methods('POST')
+@transaction.autocommit
+def verification_confirm(request):
+    remote_addr = request.META['REMOTE_ADDR']
+    form = VerificationRequestForm(request.REQUEST,
+            remote_ip=dotted_quad_to_num(remote_addr))
+
+    if form.is_valid(): # raises valid exceptions on errors
+        # All validation done, so we need to verificate a session
+        speaker_model = form.cleaned_data['speaker_model']
+        verification_process = form.cleaned_data['verification_process']
+        assert verification_process.target_session.utterance_count > 0
+        verification_process.transition(VerificationProcess.STARTED)
+        send_message("voice.verification",
+                verification_process_id=verification_process.id,
+                speaker_model_id=speaker_model.id)
+
+        return _("Verification in progress")
+    else:
+        raise NotImplementedError
+
+@api_enabled()
+def verification_cancel(request):
+    remote_addr = request.META['REMOTE_ADDR']
+    form = VerificationRequestForm(request.REQUEST,
+            remote_ip=dotted_quad_to_num(remote_addr))
+
+    if form.is_valid():
+        verification_process = form.cleaned_data['verification_process']
+        verification_process.transition(verification_process.CANCELED)
+    else:
+        raise NotImplementedError
 
 @allowed_methods('GET')
 @implicit_render

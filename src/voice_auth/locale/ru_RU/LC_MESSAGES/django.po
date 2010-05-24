@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-05-24 22:43+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: voice/exceptions.py:46
+msgid "Target speaker"
+msgstr "Целевой источник речи"
+
+#: voice/exceptions.py:53
+msgid "Speaker model"
+msgstr "Модель источника речи"
+
+#: voice/exceptions.py:60
+msgid "Record session"
+msgstr "Сессия записи"
+
+#: voice/exceptions.py:65
+msgid "Need more speech to verificate"
+msgstr "Необходимо больше данных для верификации"
+
+#: voice/models.py:58 voice/models.py:186
+msgid "Waiting for speech data"
+msgstr "Ожидание речевых данных"
+
+#: voice/models.py:59 voice/models.py:187
+msgid "Processing.."
+msgstr "В процессе.."
+
+#: voice/models.py:60
+msgid "Learning failed"
+msgstr "Обучение завершилось неудачно"
+
+#: voice/models.py:61
+msgid "Learning canceled"
+msgstr "Обучение отменено"
+
+#: voice/models.py:62
+msgid "Learning finished"
+msgstr "Обучение завершено"
+
+#: voice/models.py:188
+msgid "Verification has been canceled"
+msgstr "Аутентификация отменена"
+
+#: voice/models.py:189
+msgid "Verification finished"
+msgstr "Аутентификация завершена"
+
+#: voice/models.py:190
+msgid "Error occured during verification"
+msgstr "Ошибка при аутентификации"
+
+#: voice/views.py:129
+msgid "Verification in progress"
+msgstr "Аутентификация в процессе.."

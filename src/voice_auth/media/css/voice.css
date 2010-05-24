@@ -1,0 +1,43 @@
+.voice_auth_wrapper {
+    border:1px solid gray;
+    width:300px;
+    height:135px;
+    background:#eeeeee;
+}
+
+.voice_auth_wrapper input[type=button] {
+    border:1px solid #000066;
+    background:#CCCCFF;
+}
+
+.voice_auth_header {
+    border:1px solid black;
+    font-family:serif;
+    font-size:0.8em;
+    margin:-1px -1px 5px;
+    padding-left:1ex;
+    text-align:left;
+    background:#dddddd;
+}
+
+.voice_auth_inputs {
+    text-align: center;
+}
+
+.voice_auth_content {
+    padding: 5px 2ex;
+    font-size:0.9em;
+    height:60px;
+}
+
+.voice_auth_content {
+}
+
+.voice_auth_content .note {
+}
+
+.voice_auth_content .errornote {
+    color:#d00;
+    font-size:0.8em;
+}
+

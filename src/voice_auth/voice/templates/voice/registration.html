@@ -1,0 +1,30 @@
+{% extends "voice/base.html" %}
+
+{% block title %}Аутентификация{% endblock %}
+
+{% block extrahead %}
+<script src="{{ MEDIA_URL }}js/voice_upload.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    console.log("Setting initial vars..");
+    monitorURL = "{% url voice.views.verification_state %}?session_id={{ session_id }}";
+    verificationBlock = $("div.voice_auth_wrapper");
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="voice_auth_wrapper">
+    <span class="voice_auth_header"><h2>Голосовая аутентификация</h2></span>
+    <div class="voice_auth_content"></div>
+    <div class="voice_auth_form">
+        <input type="button" value="Запись" onclick="toggleRecording(this);" />
+        <form action="" method="POST" id="id_uploadConfirmation_form">
+            <input type="hidden" name="username" value="{{ username }}" />
+            <input type="hidden" name="session_id" value="{{ session_id }}" />
+            <input type="button" value="Продолжить" onclick="uploadConfirmationClicked('{% url voice.views.verification %}', $('#id_uploadConfirmation_form'));" />
+        </form>
+        {% include "voice/applet.html" %}
+    </div>
+</div>
+{% endblock %}
