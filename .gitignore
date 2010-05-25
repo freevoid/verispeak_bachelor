@@ -1,4 +1,5 @@
 *.swp
+*license.txt
 *.vpp~*
 *.sqlite3
 *.pyc
@@ -16,3 +17,10 @@
 *.bbl
 *.pdf
 *.wav
+*.mo
+*/speaker_models/
+*/recordings_production/
+*/recordings/
+*/ubm/
+*.gmm
+*.mfcc

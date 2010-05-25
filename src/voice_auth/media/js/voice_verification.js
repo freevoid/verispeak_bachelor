@@ -7,7 +7,8 @@ function VerificationBlock (selector, params, urls) {
         error_in_verification: "return_back",
         verification_failed: "return_back",
         insufficient_to_upload: "cancel_verification",
-        insufficient_to_verify: "cancel_verification"
+        insufficient_to_verify: "cancel_verification",
+        failed_to_upload: "return_back"
     };
 
     this.transitionTable["verification_started"] = {
@@ -44,7 +45,6 @@ function VerificationBlock (selector, params, urls) {
                     if (state == "verification_success") {
                         console.log("Verificated!")
                         this_.event("verification_success");
-                        window.location = redirectURL;
                     } else if (state == "verification_failed") {
                         this_.event("verification_failed");
                     } else if (state == "waiting_for_data") {
@@ -54,7 +54,7 @@ function VerificationBlock (selector, params, urls) {
                     } else if (state == "canceled") {
                         this_.event("cancel");
                     } else {
-                        setTimeout(this_.monitorProgress, 1500);
+                        setTimeout(this_.monitorProgress, this_.monitorDelay);
                     }
                 } else {
                     alert("Необработанный ответ:", data);

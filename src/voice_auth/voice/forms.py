@@ -1,21 +1,23 @@
 from django import forms
 
 from models import RecordSession, Speaker, SpeakerModel,\
-        VerificationProcess
+        VerificationProcess, LearningProcess
 import exceptions
 
-class VerificationRequestForm(forms.Form):
+class RequestForm(forms.Form):
     session_id = forms.CharField(required=False)
-    username = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.remote_ip = kwargs.pop('remote_ip')
-        super(VerificationRequestForm, self).__init__(*args, **kwargs)
+        super(RequestForm, self).__init__(*args, **kwargs)
 
     def _check_required(self, field_names, data):
         for f in field_names:
             if not data.get(f):
                 raise exceptions.ArgumentRequiredError(f)
+
+class VerificationRequestForm(RequestForm):
+    username = forms.CharField(required=False)
 
     def clean(self):
         data = self.cleaned_data
@@ -52,5 +54,28 @@ class VerificationRequestForm(forms.Form):
         data['speaker_model'] = speaker_model
         data['verification_process'] = verification_process
 
+        return data
+
+class EnrollmentRequestForm(RequestForm):
+    def clean(self):
+        data = self.cleaned_data
+        self._check_required(('session_id',), data)
+
+        session_id = data['session_id']
+        try:
+            record_session = RecordSession.objects.get(
+                session_id=session_id,
+                remote_ip=self.remote_ip,
+                )
+
+            enrollment_process = LearningProcess.objects.get(
+                    sample_sessions__in=[record_session])
+        except RecordSession.DoesNotExist:
+            raise exceptions.SessionDoesNotExistError(session_id)
+        except LearningProcess.DoesNotExist:
+            raise exceptions.DoesNotExistError("Learning process",
+                    session_id)
+
+        data['enrollment_process'] = enrollment_process
         return data
 

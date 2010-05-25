@@ -99,6 +99,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     this.uploadedTime = 0.0;
     this.minLengthToUpload = params.minLengthToUpload || 1.5;
     this.appletName = params.appletName || "ListenUpRecorder";
+    this.monitorDelay = params.monitorDelay || 2000; // 2 sec polling
 
     console.log('Applet name:', this.appletName);
 

@@ -44,9 +44,8 @@ class CournapeauGMM(Codebook):
         return dump
 
     @staticmethod
-    def load(filename):
-        import cPickle
-        [instance, gm] = cPickle.load(open(filename, 'rb'))
+    def deserialize(unpickled_data):
+        [instance, gm] = unpickled_data
         instance.gm = gm
         return instance
 

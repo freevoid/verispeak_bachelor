@@ -49,13 +49,15 @@ class RecordSession(models.Model):
 
 class LearningProcess(StateMachine):
 
-    CREATED = 'waiting_for_data'
+    WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
     FAILED = 'failed'
     INTERRUPTED = 'interrupted'
     FINISHED = 'finished'
 
-    states = ((CREATED, _('Waiting for speech data')),
+    initial_state = WAIT_FOR_DATA
+
+    states = ((WAIT_FOR_DATA, _('Waiting for speech data')),
             (STARTED, _('Processing..')),
             (FAILED, _('Learning failed')),
             (INTERRUPTED, _('Learning canceled')),
@@ -66,14 +68,17 @@ class LearningProcess(StateMachine):
     #STATE_DISPLAY = dict(states)
 
     transition_table = {
-            CREATED: (STARTED, INTERRUPTED, CREATED),
-            STARTED: (FAILED, FINISHED, CREATED, INTERRUPTED),
+            WAIT_FOR_DATA: (STARTED, INTERRUPTED, WAIT_FOR_DATA),
+            STARTED: (FAILED, FINISHED, WAIT_FOR_DATA, INTERRUPTED),
             }
 
     start_time = models.DateTimeField(auto_now_add=True)
     finish_time = models.DateTimeField(blank=True, null=True)
 
     sample_sessions = models.ManyToManyField(RecordSession)
+
+    def sample_sessions_count(self):
+        return self.sample_sessions.count()
 
 class SpeakerModel(models.Model):
     model_file = models.FileField(upload_to='speaker_models')

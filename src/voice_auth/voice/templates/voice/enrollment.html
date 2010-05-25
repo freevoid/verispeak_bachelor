@@ -1,0 +1,50 @@
+{% extends "voice/base.html" %}
+
+{% block title %}Регистрация в системе голосовой аутентификации{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/voice.css" type="text/css" />
+<script src="{{ MEDIA_URL }}js/voice_common.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}js/voice_registration.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    console.log("Setting initial vars..");
+    verification = new RegistrationBlock("div.voice_auth_wrapper",
+        {
+            appletReadyScriptName: "recordAppletLoaded",
+            recordStateChangedScriptName: "recordStateChanged",
+            appletName: "ListenUpRecorder"
+        },
+        {
+            monitorURL: "{% url voice.views.enrollment_state %}",
+            confirmURL: "{% url voice.views.enrollment_confirm %}",
+            cancelURL: "{% url voice.views.enrollment_cancel %}",
+            redirectURL: "{{ redirect_to }}",
+            fallbackURL: "{{ login_url }}"
+            }
+        );
+
+    console.log("Page init done.");
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="voice_auth_wrapper">
+    <h2 class="voice_auth_header">Регистрация</h2>
+    <div class="voice_auth_content"></div>
+    <div class="voice_auth_inputs">
+        <input type="button" value="Запись" id="id_record_button" />
+        <input type="button" value="Готово" id="id_confirm_button" />
+        <input type="button" value="Возврат" id="id_cancel_button" />
+    </div>
+    <div class="voice_auth_form">
+        <form action="" method="post" id="id_uploadConfirmation_form">
+            <input type="hidden" name="username" value="{{ username }}" />
+            <input type="hidden" name="session_id" value="{{ session_id }}" />
+        </form>
+        {% include "voice/applet.html" %}
+    </div>
+</div>
+{% endblock %}
+

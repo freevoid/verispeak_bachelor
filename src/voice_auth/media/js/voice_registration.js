@@ -1,121 +1,145 @@
-$(document).ready(function () {
-    console.log("Configuring upload..");
-    uploadedCount = 0;
-    uploadedTime = 0.0;
-    MIN_UTTERANCE_LENGTH = 1.5;
-});
+function RegistrationBlock (selector, params, urls) {
+    BaseVoiceBlock.call(this, selector, params, urls, true);
 
-function recordAppletLoaded () {
-    console.log("Applet loaded.");
-    window.recorder = document.ListenUpRecorder;
-    recorder.setUploadCompletionScript("uploadCompleted();");
-    recorder.setUploadFailureScript("uploadFailed();");
-}
+    this_ = this;
+    this.CONFIRM_BUTTON_SELECTOR = params.confirmButtonId || "#id_confirm_button";
+    this.confirmButtonClicked = function () {
+        this_.event("confirm");
+    };
+    $(this.CONFIRM_BUTTON_SELECTOR).click(this.confirmButtonClicked);
 
-function canSendToVerification () {
-    // Checks all conditions that must be met to verificate utterance
-    // such as minimal length
-    return (recorder.isPlayable() && recorder.getMaxPlayableTime() > MIN_UTTERANCE_LENGTH);
-}
+    this.transitionTable["cancel"] = {
+        initial: "return_back",
+        failed: "return_back",
+        error_in_verification: "return_back",
+        verification_failed: "return_back",
+        failed_to_upload: "return_back",
+        insufficient_to_upload: "cancel_registration",
+        insufficient_to_registrate: "cancel_registration"
+    };
 
-function recordStateChanged (from, to) {
-    console.log("State changed:", from, "=>", to);
-    if (from=='recording' && to=='stopped') {
-        console.log("Recorded utterance, going to send..");
-        if (canSendToVerification()) {
-            setLoading("Запись отправляется на сервер..");
-            recorder.sendRecordedMessage();
-        } else {
-            waitForDataState(verificationBlock);
-        }
-    }
-}
+    this.transitionTable["record"] = {
+        initial: "to_recording",
+        insufficient_to_upload: "to_recording",
+        upload_completed: "record_another_one"
+    };
 
-function setLoading(message) {
-    currentUploadingTime = recorder.getMaxPlayableTime();
-    getContent(verificationBlock).html(
-        '<img src="/media/img/loading.gif" id="id_loading_img" /><span class="loadingMessage">' + message + '</span>'
-    );
-}
+    this.transitionTable["confirm"] = {
+        upload_completed: "to_confirmed"
+    };
 
-function unsetLoading() {
-    clearContent(verificationBlock);
-}
+    this.transitionTable["learning_started"] = {
+        confirmed: "to_learning"
+    };
 
-function uploadCompleted () {
-    console.log("Uploaded!");
-    window.uploadedCount += 1;
-    window.uploadedTime += window.currentUploadingTime;
-    unsetLoading();
-}
+    this.transitionTable["error_in_learning"] = {
+        verificating: "to_error_in_learning"
+    };
+    
+    this.transitionTable["learning_success"] = {
+        verificating: "to_learning_success"
+    };
 
-function uploadFailed () {
-    console.log("Upload failed:(");
-    unsetLoading();
-}
+    this.transitionTable["insufficient_to_enroll"] = {
+        verificating: "to_insufficient_to_enroll"
+    };
 
-function toggleRecording (this_) {
-    console.log("Toggle recording..");
-    var recorder = document.ListenUpRecorder;
-    if (recorder.isRecording()) {
-        recorder.stopAudio();
-        $(this_).val("Запись");
-    } else {
-        recorder.record();
-        $(this_).val("Стоп");
-    }
-}
+    this.maskButtons = function (record_mask, cancel_mask, confirm_mask) {
+        this.setButtonEnabled(this.RECORD_BUTTON_SELECTOR, record_mask);
+        this.setButtonEnabled(this.CANCEL_BUTTON_SELECTOR, cancel_mask);
+        this.setButtonEnabled(this.CONFIRM_BUTTON_SELECTOR, confirm_mask);
+    };
 
-function confirmVerification (url, form) {
-    console.log("Proceeding to verification..");
-    $.post(url, form.serializeArray(),
+    var this_ = this;
+    this.monitorProgress = function() {
+        console.log("Monitoring..");
+        $.get(this_.urls.monitorURL, this_.sessionContext(),
             function (data) {
-                console.log("Got response:", data);
-                if (data.result == 0) { // all ok
-                    setTimeout(monitorProgress, 1500);
+                console.log("Monitor state:", data.result, data.message);
+
+                var code = data.result;
+                if (code == 0) {
+                    var state = data.message;
+                    if (state == "finished") {
+                        console.log("Learning phase completed!")
+                        this_.event("learning_success");
+                    } else if (state == "waiting_for_data") {
+                        this_.event("insufficient_to_enroll");
+                    } else if (state == "failed") {
+                        this_.event("error_in_verification", {description: "В процессе аутентификации произошла ошибка"});
+                    } else if (state == "interrupted") {
+                        this_.event("cancel");
+                    } else {
+                        setTimeout(this_.monitorProgress, this_.monitorDelay);
+                    }
                 } else {
-                    // XXX response parsing + client notifying
+                    alert("Необработанный ответ:", data);
                 }
             }, "json");
+    };
+
+    this.event("created");
 }
 
-function getContent(verificationBlock) {
-    return verificationBlock.find(".voice_auth_content");
-}
+RegistrationBlock.inherits(BaseVoiceBlock);
 
-function clearContent(verificationBlock) {
-    getContent(verificationBlock).html('');
-}
+RegistrationBlock.method('to_upload_completed', function (args) {
+    this.uber('to_upload_completed');
+    this.maskButtons(true, true, true);
+});
 
-function waitForDataState(verificationBlock) {
-    getContent(verificationBlock).html('<p class="note">' +
-        'Голосовых данных недостаточно для аутентификации. Пожалуйста, запишите ещё один образец.' +
-        '</p>');
-}
-
-function monitorProgress () {
-    console.log("Monitoring..");
-    $.get(monitorURL, {},
-        function (data) {
-            console.log("Monitor state:", data.result, data.message);
-
-            var code = data.result;
-            if (code == 0) {
-                var state = data.message;
-                if (state == "verification_success") {
-                    console.log("Verificated!")
-                } else if (state == "verification_failed") {
-                    console.log("Access denied!")
-                } else if (state == "waiting_for_data") {
-                    waitForDataState(verificationBlock);
-                } else if (state == "failed") {
-                } else if (state == "canceled") {
+RegistrationBlock.method('cancel_registration', function (args) {
+    console.log("Canceled");
+    this_ = this;
+    $.post(this.cancelURL, this.sessionContext(),
+            function (data) {
+                if (data.result == 0) {
+                    window.location = this_.fallbackURL;
                 } else {
-                    setTimeout(monitorProgress, 1500);
+                    alert(data);
                 }
+            }, "json");
+});
+
+RegistrationBlock.method('to_confirmed', function (args) {
+    this_ = this;
+    $.post(this.confirmURL, this.sessionContext(),
+        function (data) {
+            if (data.result == 0) {
+                this_.state = "confirmed";
+                this_.event("learning_started");
             } else {
-                alert("Unexpected error occured:", data);
+                alert(data);
             }
         }, "json");
-}
+});
+
+RegistrationBlock.method('to_verificating', function (args) {
+    this.state = "verificating";
+    this.setLoading("Подождите, идёт процесс верификации..");
+    this.maskButtons(false, false);
+    this.monitorProgress();
+});
+
+RegistrationBlock.method('to_error_in_verification', function (args) {
+    this.state = "error_in_verification";
+    this.pasteError(args.description +
+            '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
+    this.maskButtons(false, true);
+});
+
+RegistrationBlock.method('to_verification_failed', function (args) {
+    this.state = "verification_failed";
+    this.pasteError("Аутентификация завершилась неудачно. Попробуйте ещё раз или воспользуйтесь обычным способом, нажав кнопку &laquo;Возврат&raquo;.");
+    this.maskButtons(false, true);
+});
+
+RegistrationBlock.method('to_verification_success', function (args) {
+    window.location = this.urls.redirectURL;
+});
+
+RegistrationBlock.method('record_another_one', function (args) {
+    this.applet.erase();
+    this.uber("to_recording");
+});
 

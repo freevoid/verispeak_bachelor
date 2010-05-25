@@ -35,7 +35,10 @@ def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
     fs1.read_dir('sounds')
     print 'Got %d samples' % len(fs1.samples)
     m = gmm_class(K=model_order)
-    print m.train(fs1.flat)
+    try:
+        print m.train(fs1.flat)
+    except KeyboardInterrupt:
+        pass
     filename = phrase + '.gmm'
     m.dump_to_file(filename)
     print "GMM Codebook saved to file: '%s'" % filename
@@ -69,7 +72,10 @@ def gmm_retrain(features_class, gmm_file, gmm_class, phrase=None, **kwargs):
     fs1.read_dir('sounds')
 
     print 'Got %d samples' % len(fs1.samples)
-    print gmm.train(fs1.flat, no_init=True)
+    try:
+        print gmm.train(fs1.flat, no_init=True)
+    except KeyboardInterrupt:
+        pass
     gmm.dump_to_file(gmm_file)
     print "Retrained GMM Codebook saved to file: '%s'" % gmm_file
 

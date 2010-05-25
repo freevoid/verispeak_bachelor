@@ -53,12 +53,10 @@ class Cp2DiagonalGMM(Codebook):
         return dump
 
     @staticmethod
-    def load(filename):
-        import cPickle
-        [instance, params] = cPickle.load(open(filename, 'rb'))
+    def deserialize(unpickled_data):
+        [instance, params] = unpickled_data
         instance.params = params
         instance.gm = em2.gm.GM.fromvalues(params.w, params.mu, params.va)
-        print type(instance.gm)
         return instance
 
     def get_params(self):

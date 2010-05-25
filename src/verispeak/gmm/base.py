@@ -25,7 +25,7 @@ class Codebook(Object):
 
     def serialize(self):
         import cPickle
-        return cPickle.dumps(self, -1)
+        return cPickle.dumps(self.serializable(), -1)
         training_procedure = self.training_procedure
         self.training_procedure = None
         dump = cPickle.dumps(self, -1)
@@ -38,10 +38,16 @@ class Codebook(Object):
         f.close()
         return True
 
+    def serializable(self):
+        return self
+
     @staticmethod
-    def load(filename):
+    def deserialize(unpickled_data):
+        return unpickled_data
+
+    @classmethod
+    def load(cls, filename):
         import cPickle
         f = open(filename)
-        return cPickle.load(f)
-
+        return cls.deserialize(cPickle.load(f))
 

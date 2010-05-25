@@ -63,10 +63,10 @@ class GMM(ExpMixtureModel):
         """ Init the model with kmean."""
         k = self.gm.k
         d = self.gm.d
-        init = data[0:k, :]
+        #init = data[0:k, :]
 
         # XXX: This is bogus initialization should do better (in kmean with CV)
-        (code, label)   = kmean(data, init, niter, minit = 'matrix')
+        (code, label)   = kmean(data, k, niter, minit = 'random')
 
         w   = N.ones(k) / k
         mu  = code.copy()

@@ -27,12 +27,18 @@ class SpeakerModelAdmin(admin.ModelAdmin):
 class VerificationProcessAdmin(admin.ModelAdmin):
     list_display = ('id', 'state_id', 'verification_result', 'verification_score', 'target_session')
     list_filter = ('state_id', 'verification_result')
+    date_hierarchy = 'start_time'
+
+class LearningProcessAdmin(admin.ModelAdmin):
+    list_display = ('id', 'state_id',  'start_time', 'finish_time', 'sample_sessions_count')
+    list_filter = ('state_id',)
+    date_hierarchy = 'start_time'
 
 admin.site.register(UploadedUtterance, UploadedUtteranceAdmin)
 admin.site.register(RecordSession, RecordSessionAdmin)
 admin.site.register(VerificationProcess, VerificationProcessAdmin)
 admin.site.register(UniversalBackgroundModel)
-admin.site.register(LearningProcess)
+admin.site.register(LearningProcess, LearningProcessAdmin)
 admin.site.register(LLRVerificator)
 admin.site.register(SpeakerModel, SpeakerModelAdmin)
 
