@@ -1,3 +1,5 @@
+import numpy as np
+
 from base import Object
 from wave import listdir
 from processors import CommonMFCCStack
@@ -17,6 +19,9 @@ class FeaturesSuite(Object):
     def __len__(self):
         return len(self._samples)
 
+    def add_samplefile(self, filename):
+        self.add_sample(self.speech_processor.process(filename))
+
     def add_sample(self, features):
         self._samples.add(features)
 
@@ -34,6 +39,9 @@ class FeaturesSuite(Object):
         for s in self.samples:
             for f in s.features:
                 yield f
+
+    def flatten(self):
+        return np.fromiter(self.flat)
 
     @property
     def samples(self):
