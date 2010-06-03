@@ -3,6 +3,10 @@
     width:300px;
     height:135px;
     background:#eeeeee;
+    position:absolute;
+    top: 25%;
+    left: 50%;
+    margin-left:-150px;
 }
 
 .voice_auth_wrapper input[type=button] {
@@ -39,5 +43,11 @@
 .voice_auth_content .errornote {
     color:#d00;
     font-size:0.8em;
+}
+
+.voice_auth_content .timingBlock {
+    color:#000066;
+    position: relative;
+    float: right;
 }
 

@@ -43,7 +43,7 @@ class RecordSession(models.Model):
         return self.uploadedutterance_set.count()
 
     def __unicode__(self):
-        return u'%s - %s - %s' % (self.created_time.strftime('%d.%m.%Y %H:%M:%S'),
+        return u'%d %s - %s - %s' % (self.pk, self.created_time.strftime('%d.%m.%Y %H:%M:%S'),
                 self.target_speaker,
                 self.utterance_count)
 
@@ -126,6 +126,9 @@ class UniversalBackgroundModel(models.Model):
     class Meta:
         get_latest_by = 'created_time'
 
+    def __unicode__(self):
+        return u"[%s %s]" % (self.pk, self.model_file.name)
+
 class UploadedUtterance(models.Model):
     def get_filename(instance, filename=None):
         now = datetime.datetime.now()
@@ -178,6 +181,9 @@ class LLRVerificator(models.Model):
         if self.alternative_estimator is None:
             self.alternative_estimator = UniversalBackgroundModel.objects.latest()
         super(LLRVerificator, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return u"%s %s %s" % (self.pk, self.null_estimator, self.alternative_estimator)
 
 class VerificationProcess(StateMachine):
     WAIT_FOR_DATA = 'waiting_for_data'

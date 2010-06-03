@@ -4,8 +4,8 @@
     codebase="{{ MEDIA_URL }}codebase"
     archive="JavaSonicsListenUp.jar,OggXiphSpeexJS.jar"
     name="ListenUpRecorder"
-    width="0"
-    height="0">
+    width="{{ applet_width|default:"300" }}"
+    height="{{ applet_height|default:"200" }}">
     {% for name, value in applet_params.iteritems %}
         <param name="{{ name }}" value="{{ value }}" />
     {% endfor %}

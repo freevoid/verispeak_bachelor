@@ -7,28 +7,32 @@ function StateMachine (transitionTable) {
         console.log("GOT EVENT:", event_, "STATE:", this.state);
         var actions = this.transitionTable[event_];
         if (typeof(actions) != "undefined") {
-            action = actions[this.state];
+            var action = actions[this.state];
             if (typeof(action) != "undefined") {
-                console.log("Calling action", action);
+                console.info("Calling action", action);
                 this[action].call(this, args);
             } else {
-                console.log("No transition:", event_, this.state);
+                console.warn("No transition:", event_, this.state);
             }
         } else {
-            console.log("Unrecognized event:", event_);
+            console.warn("Unrecognized event:", event_);
         }
     };
-};
+}
 
 function BaseVoiceBlock (selector, params, urls, defer_creation) {
-    if (typeof(selector) == "undefined") { return }
-
+    console.log("INIT");
+    if (typeof(selector) == "undefined") {
+        return;
+    }
+    
     // CONSTANTS
     
     this.UPLOAD_COMPLETED_GLOBAL_NAME = "BaseVoiceBlock_uploadCompleted";
     this.UPLOAD_FAILED_GLOBAL_NAME = "BaseVoiceBlock_uploadFailed";
+    
 
-    transitionTable = {
+    var transitionTable = {
         created: {undefined: "to_initial"},
         record: {
             initial: "to_recording",
@@ -36,6 +40,11 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
         },
         pause: {recording: "to_pausing"},
         paused: {pausing: "to_paused"},
+
+        stopped: {
+            recording: "to_stopped",
+            stopping: "to_stopped"
+        },
 
         ready_to_upload: {paused: "to_uploading"},
         too_short_to_upload: {paused: "to_insufficient_to_upload"},
@@ -46,7 +55,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
             insufficient_to_upload: "return_back",
             failed_to_upload: "return_back"
         }
-    }
+    };
     StateMachine.call(this, transitionTable);
 
     console.log("Init BaseVoiceBlock", selector, params, urls);
@@ -75,9 +84,9 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
         this_.event("applet_loaded");
     };
 
+    // handle applet state changing and call
+    // appropriate callback method, if defined
     this.recordStateChanged = function (from, to) {
-        // handle applet state changing and call
-        // appropriate callback method, if defined
         console.log("State changed:", from, "=>", to);
         var callback_name = "record_" + from + "_to_" + to;
         if (typeof(this_[callback_name]) != "undefined") {
@@ -85,18 +94,28 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
         }
     };
 
+    // playing/record time update
+    this.recordTimeChanged = function (current, max) {
+        var timing = this_.getTimingBlock();
+        if (timing) {
+            timing.text(current.toFixed(2) + '/' + max.toFixed(2));
+        }
+    };
+    
+    window[params.recordTimeChangedScriptName] = this.recordTimeChanged;
     window[params.appletReadyScriptName] = this.appletReadyScript;
     window[params.recordStateChangedScriptName] = this.recordStateChanged;
 
     this.RECORD_BUTTON_SELECTOR = params.recordButtonId || "#id_record_button";
     this.CANCEL_BUTTON_SELECTOR = params.cancelButtonId || "#id_cancel_button";
-    
+
     // ATTRIBUTES
 
     this.block = $(selector);
     this.urls = urls;
     this.uploadedCount = 0;
     this.uploadedTime = 0.0;
+    this.timingBlockClass = params.timingBlockClass || "timingBlock";
     this.minLengthToUpload = params.minLengthToUpload || 1.5;
     this.appletName = params.appletName || "ListenUpRecorder";
     this.monitorDelay = params.monitorDelay || 2000; // 2 sec polling
@@ -122,15 +141,38 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     // Main condition to check if we can send data
     this.canSendToVerification = function () {
         return this.applet.isPlayable() && this.applet.getMaxPlayableTime() > this.minLengthToUpload;
-    }
+    };
 
     this.record_recording_to_paused  = function () {
         this.event("paused");
     };
 
+    this.record_recording_to_stopped = function () {
+        this.event("stopped");
+    };
+
     // Helper functions
     this.return_back = function (args) {
         window.location = this.urls.fallbackURL;
+    };
+
+    this.getTimingBlock = function () {
+        var search_try = this.getContent().find('.' + this.timingBlockClass);
+        if (search_try.length) {
+            return search_try;
+        } else {
+            return null;
+        }
+    };
+
+    this.getOrCreateTimingBlock = function () {
+        var search_try = this.getTimingBlock();
+        if (search_try !== null) {
+            return search_try;
+        } else {
+            this.getContent().append('<span class="' + this.timingBlockClass +'"></span>');
+            return this.getTimingBlock();
+        }
     };
 
     this.setButtonEnabled = function(selector, is_enabled) {
@@ -163,10 +205,9 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     };
 
     this.setLoading = function(message) {
-        currentUploadingTime = this.applet.getMaxPlayableTime();
+        //var currentUploadingTime = this.applet.getMaxPlayableTime();
         this.getContent().html(
-            '<img src="/media/img/loading.gif" id="id_loading_img" /><span class="loadingMessage">' + message + '</span>'
-        );
+            '<img src="/media/img/loading.gif" id="id_loading_img" /><span class="loadingMessage">' + message + '</span><span class="' + this.timingBlockClass + '"></span>');
     };
 
     this.sessionContext = function() {
@@ -180,7 +221,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     if (!defer_creation) {
         this.event("created");
     }
-};
+}
 
 // Default state transitions
 BaseVoiceBlock.method('to_initial', function (args) {
@@ -223,6 +264,12 @@ BaseVoiceBlock.method('to_paused', function (args) {
                 {recorded_time: this.applet.getMaxPlayableTime()}
         );
     }
+});
+
+BaseVoiceBlock.method('to_stopped', function (args) {
+    // assuming that to_paused will emit ready_to_upload
+    // because if it don't then recorded message will be lost
+    this.to_paused(args);
 });
 
 BaseVoiceBlock.method('to_insufficient_to_upload', function (args) {

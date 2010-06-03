@@ -1,4 +1,5 @@
 function VerificationBlock (selector, params, urls) {
+    console.log("VerBlock INIT");
     BaseVoiceBlock.call(this, selector, params, urls, true);
 
     this.transitionTable["cancel"] = {
@@ -43,7 +44,7 @@ function VerificationBlock (selector, params, urls) {
                 if (code == 0) {
                     var state = data.message;
                     if (state == "verification_success") {
-                        console.log("Verificated!")
+                        console.log("Verificated!");
                         this_.event("verification_success");
                     } else if (state == "verification_failed") {
                         this_.event("verification_failed");

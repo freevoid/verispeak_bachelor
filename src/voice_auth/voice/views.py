@@ -22,16 +22,24 @@ DEFAULT_APPLET_PARAMS = {
         'showPauseButton': 'no',
         'showTransport': 'no',
         'showVUMeter': 'no',
+        'bevelSize': '0',
+        'background': 'EEEEEE', 
         'uploadFileName': 'voice.wav',
         'requestStateChanges': 'yes',
         'stateChangeCallback': 'recordStateChanged',
+        'requestTimeChanges': 'yes',
+        'timeChangeCallback': 'recordTimeChanged',
+        'timeChangeInterval': '100',
         'readyScript': 'recordAppletLoaded();',
         'packButtons': 'yes',
         'frameRate': 16000,
-        'trimEnable': 'no'
+        'trimEnable': 'yes',
+        'maxRecordTime': 60
         }
 
 APPLET_FILENAME = 'userfile'
+DEFAULT_APPLET_WIDTH = 1
+DEFAULT_APPLET_HEIGHT = 1
 
 @allowed_methods('POST')
 @cache_control(private=True)
@@ -104,10 +112,13 @@ def verification(request):
         applet_params = DEFAULT_APPLET_PARAMS.copy()
         applet_params['uploadURL'] = reverse('voice.views.upload_handler')
         applet_params['uploadFileName'] = session_id
+        applet_params['maxRecordTime'] = '5.0'
         return {'username': target_speaker.username,
                 'session_id': session_id,
                 'applet_params': applet_params,
                 'redirect_to': redirect_to,
+                'applet_width': DEFAULT_APPLET_WIDTH,
+                'applet_height': DEFAULT_APPLET_HEIGHT,
                 'login_url': settings.LOGIN_URL}
 
 @api_enabled()
@@ -183,6 +194,8 @@ def enrollment(request):
                 'session_id': session_id,
                 'applet_params': applet_params,
                 'redirect_to': redirect_to,
+                'applet_width': DEFAULT_APPLET_WIDTH,
+                'applet_height': DEFAULT_APPLET_HEIGHT,
                 'login_url': settings.LOGIN_URL}
 
 @api_enabled()
@@ -226,5 +239,7 @@ def upload(request):
     applet_params = DEFAULT_APPLET_PARAMS.copy()
     applet_params['uploadURL'] = reverse('voice.views.upload_handler')
     applet_params['uploadFileName'] = RecordSession.generate_session_id(request)
-    return {'applet_params': applet_params}
+    return {'applet_params': applet_params,
+                'applet_width': DEFAULT_APPLET_WIDTH,
+                'applet_height': DEFAULT_APPLET_HEIGHT,}
 
