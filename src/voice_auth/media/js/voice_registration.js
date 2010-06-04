@@ -1,6 +1,10 @@
 function RegistrationBlock (selector, params, urls) {
     BaseVoiceBlock.call(this, selector, params, urls, true);
 
+    // Attributes
+    this.minUploadedCount = params.minUploadedCount || 3;
+    this.minUploadedTime = params.minUploadedTime || 5.0;
+
     this_ = this;
     this.CONFIRM_BUTTON_SELECTOR = params.confirmButtonId || "#id_confirm_button";
     this.confirmButtonClicked = function () {
@@ -11,17 +15,19 @@ function RegistrationBlock (selector, params, urls) {
     this.transitionTable["cancel"] = {
         initial: "return_back",
         failed: "return_back",
-        error_in_verification: "return_back",
-        verification_failed: "return_back",
+        error_in_learning: "return_back",
+        learning: "interrupted",
+        interrupted: "return_back",
         failed_to_upload: "return_back",
         insufficient_to_upload: "cancel_registration",
-        insufficient_to_registrate: "cancel_registration"
+        insufficient_to_enroll: "cancel_registration"
     };
 
     this.transitionTable["record"] = {
         initial: "to_recording",
         insufficient_to_upload: "to_recording",
-        upload_completed: "record_another_one"
+        upload_completed: "record_another_one",
+        insufficient_to_enroll: "record_another_one"
     };
 
     this.transitionTable["confirm"] = {
@@ -33,15 +39,15 @@ function RegistrationBlock (selector, params, urls) {
     };
 
     this.transitionTable["error_in_learning"] = {
-        verificating: "to_error_in_learning"
+        learning: "to_error_in_learning"
     };
     
     this.transitionTable["learning_success"] = {
-        verificating: "to_learning_success"
+        learning: "to_learning_success"
     };
 
     this.transitionTable["insufficient_to_enroll"] = {
-        verificating: "to_insufficient_to_enroll"
+        learning: "to_insufficient_to_enroll"
     };
 
     this.maskButtons = function (record_mask, cancel_mask, confirm_mask) {
@@ -61,21 +67,38 @@ function RegistrationBlock (selector, params, urls) {
                 if (code == 0) {
                     var state = data.message;
                     if (state == "finished") {
-                        console.log("Learning phase completed!")
+                        console.log("Learning phase completed!");
                         this_.event("learning_success");
                     } else if (state == "waiting_for_data") {
                         this_.event("insufficient_to_enroll");
                     } else if (state == "failed") {
-                        this_.event("error_in_verification", {description: "В процессе аутентификации произошла ошибка"});
+                        this_.event("error_in_learning", {description: "В процессе обучения произошла ошибка"});
                     } else if (state == "interrupted") {
                         this_.event("cancel");
                     } else {
                         setTimeout(this_.monitorProgress, this_.monitorDelay);
                     }
                 } else {
-                    alert("Необработанный ответ:", data);
+                    alert("Необработанный ответ:", code, data.message);
+                    setTimeout(this_.monitorProgress, this_.monitorDelay);
                 }
             }, "json");
+    };
+
+    this.updateUploadedTiming = function () {
+        var target = this.getPreContent();
+        target.text("Загружено: " + this.uploadedCount +
+                "; Общая длительность: " + this.uploadedTime.toFixed(2) + "сек.");
+    };
+
+    this.readyToEnroll = function () {
+        return (this.uploadedCount > this.minUploadedCount)
+            && (this.uploadedTime > this.minUploadedTime);
+    };
+
+    this.getContent().before('<div class="pre_content"></div>');
+    this.getPreContent = function() {
+        return this.block.find(".pre_content");
     };
 
     this.event("created");
@@ -91,10 +114,10 @@ RegistrationBlock.method('to_upload_completed', function (args) {
 RegistrationBlock.method('cancel_registration', function (args) {
     console.log("Canceled");
     this_ = this;
-    $.post(this.cancelURL, this.sessionContext(),
+    $.post(this.urls.cancelURL, this.sessionContext(),
             function (data) {
                 if (data.result == 0) {
-                    window.location = this_.fallbackURL;
+                    window.location = this_.urls.fallbackURL;
                 } else {
                     alert(data);
                 }
@@ -103,43 +126,73 @@ RegistrationBlock.method('cancel_registration', function (args) {
 
 RegistrationBlock.method('to_confirmed', function (args) {
     this_ = this;
-    $.post(this.confirmURL, this.sessionContext(),
-        function (data) {
+    $.ajax({
+        type: 'POST',
+        url: this.urls.confirmURL,
+        data: this.sessionContext(),
+        success: function (data) {
             if (data.result == 0) {
                 this_.state = "confirmed";
                 this_.event("learning_started");
             } else {
                 alert(data);
             }
-        }, "json");
+        },
+        error: function (data) {
+            alert("Произошла ошибка при отправке запроса на сервер." +
+                "Попытайтесь снова или обратитесь в службу поддержки.");
+        },
+        dataType: "json"
+    });
 });
 
-RegistrationBlock.method('to_verificating', function (args) {
-    this.state = "verificating";
-    this.setLoading("Подождите, идёт процесс верификации..");
+RegistrationBlock.method('to_learning', function (args) {
+    this.state = "learning";
+    this.setLoading("Подождите, идёт процесс обучения модели..");
     this.maskButtons(false, false);
     this.monitorProgress();
 });
 
-RegistrationBlock.method('to_error_in_verification', function (args) {
-    this.state = "error_in_verification";
+RegistrationBlock.method('to_error_in_learning', function (args) {
+    this.state = "error_in_learning";
     this.pasteError(args.description +
             '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
     this.maskButtons(false, true);
 });
 
-RegistrationBlock.method('to_verification_failed', function (args) {
-    this.state = "verification_failed";
-    this.pasteError("Аутентификация завершилась неудачно. Попробуйте ещё раз или воспользуйтесь обычным способом, нажав кнопку &laquo;Возврат&raquo;.");
-    this.maskButtons(false, true);
+RegistrationBlock.method('to_insufficient_to_enroll', function (args) {
+    this.state = "insufficient_to_enroll";
+    this.pasteError("Обучение завершилось неудачно. Попробуйте ещё раз, загрузив больше голосовых данных.");
+    this.maskButtons(true, true);
 });
 
-RegistrationBlock.method('to_verification_success', function (args) {
-    window.location = this.urls.redirectURL;
+RegistrationBlock.method('to_learning_success', function (args) {
+    this.state = "learning_success";
+    this.getPreContent().remove();
+    this.pasteNote("Вы успешно зарегистрированы в системе голосовой аутентификации!" +
+        " Переход будет выполнен автоматически..");
+
+    var this_ = this;
+    setTimeout(function() { window.location = this_.urls.redirectURL }, 2000);
+    this.maskButtons(false, false);
 });
 
 RegistrationBlock.method('record_another_one', function (args) {
     this.applet.erase();
     this.uber("to_recording");
+});
+
+RegistrationBlock.method('to_upload_completed', function() {
+    this.uber('to_upload_completed');
+    if (this.readyToEnroll()) {
+        this.maskButtons(true, true, true); // enable "confirm" button
+    };
+    this.updateUploadedTiming();
+});
+
+RegistrationBlock.method('interrupted', function () {
+    this.state = 'interrupted';
+    this.pasteError("Процесс обучения был прерван на стороне сервера.");
+    this.maskButtons(false, true);
 });
 

@@ -4,6 +4,8 @@ from functools import wraps
 
 from misc import json
 
+from misc.snippets import log_exception
+
 SUCCESS_CODE = 0
 DEFAULT_ERROR_CODE = -1
 
@@ -38,6 +40,7 @@ def api_enabled(post_only=False):
                     raise ValueError("Expected dict-like or string, got '%s'" % type(retval))
 
             except BaseException, e:
+                log_exception()
                 return api_exception(e)
 
         if post_only:

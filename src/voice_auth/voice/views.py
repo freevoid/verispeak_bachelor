@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import cache_control
 from django.db import transaction
+from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
 
 from misc.snippets import allowed_methods, implicit_render, log_exception
@@ -70,6 +71,7 @@ def upload_handler(request):
         response = 'SUCCESS'
     return HttpResponse(response, mimetype='text/plain')
 
+@cache_control(private=True)
 @api_enabled()
 def verification_state(request):
     session_id = request.GET.get('session_id')
@@ -156,11 +158,12 @@ def verification_cancel(request):
     else:
         raise NotImplementedError
 
+@cache_control(private=True)
 @api_enabled()
 def enrollment_state(request):
     session_id = request.GET.get('session_id')
     try:
-        enrollment_process = LearningProcess.objects.get(target_session__session_id=session_id)
+        enrollment_process = LearningProcess.objects.get(sample_sessions__session_id=session_id)
     except LearningProcess.DoesNotExist:
         raise DoesNotExistError("Learning process", session_id)
     
@@ -209,13 +212,15 @@ def enrollment_confirm(request):
 
     if form.is_valid(): # raises valid exceptions on errors
         # All validation done, so we need to verificate a session
-        speaker_model = form.cleaned_data['speaker_model']
         enrollment_process = form.cleaned_data['enrollment_process']
-        assert enrollment_process.target_session.utterance_count > 0, "Need at least 1 utterance to authenticate"
+        utterance_count = enrollment_process\
+                .sample_sessions\
+                    .aggregate(count=Count('uploadedutterance')).get('count')
+        assert utterance_count > settings.MIN_UTTERANCE_COUNT_TO_ENROLL,\
+                    _("Need at least %(count)d utterance to enroll") % {'count': utterance_count}
         enrollment_process.transition(LearningProcess.STARTED)
         send_message("voice.enrollment",
-                enrollment_process_id=enrollment_process.id,
-                speaker_model_id=speaker_model.id)
+                enrollment_process_id=enrollment_process.id)
 
         return _("enrollment in progress")
     else:

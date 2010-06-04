@@ -205,7 +205,6 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     };
 
     this.setLoading = function(message) {
-        //var currentUploadingTime = this.applet.getMaxPlayableTime();
         this.getContent().html(
             '<img src="/media/img/loading.gif" id="id_loading_img" /><span class="loadingMessage">' + message + '</span><span class="' + this.timingBlockClass + '"></span>');
     };
@@ -245,6 +244,7 @@ BaseVoiceBlock.method('to_pausing', function (args) {
 
 BaseVoiceBlock.method('to_uploading', function (args) {
     this.state = "uploading";
+    this.currentUploadingTime = this.applet.getMaxPlayableTime();
     this.maskButtons(false, false);
     this.setLoading("Запись отправляется на сервер..");
     this.applet.stopAudio();

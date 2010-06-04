@@ -75,6 +75,6 @@ def verification(verification_process_id, speaker_model_id):
         verification_process.transition(verification_process.VERIFIED)
 
 @log_exceptions
-def learning(*args, **kwargs):
+def enrollment(*args, **kwargs):
     print "Learning", args, kwargs
 

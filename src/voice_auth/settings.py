@@ -27,7 +27,7 @@ DATABASES = {
         'NAME': 'voice_auth',#relative_path('main.db'),                      # Or path to database file if using sqlite3.
         'USER': 'voice_auth_user',                      # Not used with sqlite3.
         'PASSWORD': 'voice_auth_password',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -76,6 +76,7 @@ RECORDING_SESSION_DIR = 'recordings'
 RECORDING_SESSION_DIR = 'recordings_production'
 MAX_SESSION_TTL = 5 # in minutes
 GLOBAL_LLR_TRESHHOLD = 1000.00
+MIN_UTTERANCE_COUNT_TO_ENROLL = 3
 
 AMQP_HOST = 'localhost'
 AMQP_EXCHANGE_NAME = 'trns'

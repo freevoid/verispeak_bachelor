@@ -26,6 +26,15 @@
 
 .voice_auth_inputs {
     text-align: center;
+    position: absolute;
+    bottom: 10%;
+    right: 20px;
+}
+
+.voice_auth_wrapper .pre_content {
+    padding: 5px 2ex;
+    font-size: 0.8em;
+    color: #aaaaaa;
 }
 
 .voice_auth_content {
