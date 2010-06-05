@@ -21,7 +21,7 @@ class RecordSessionAdmin(admin.ModelAdmin):
         queryset.filter(uploadedutterance__isnull=True).delete()
 
 class SpeakerModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'speaker', 'learning_process', 'is_active')
+    list_display = ('id', 'speaker', 'learning_process', 'is_active', 'model_file')
     list_filter = ('speaker', 'is_active')
 
 class VerificationProcessAdmin(admin.ModelAdmin):

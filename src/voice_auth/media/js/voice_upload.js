@@ -1,201 +1,208 @@
-$(document).ready(function () {
-    console.log("Configuring upload..");
-    uploadedCount = 0;
-    uploadedTime = 0.0;
-    MIN_UTTERANCE_LENGTH = 1.5;
-});
-function canSendToVerification () {
-    // Checks all conditions that must be met to verificate utterance
-    // such as minimal length
-    console.log('Recorded (is sec.):', recorder.getMaxPlayableTime());
-    return (recorder.isPlayable() && recorder.getMaxPlayableTime() > MIN_UTTERANCE_LENGTH);
-}
+function UploadingBlock (selector, params, urls) {
+    BaseVoiceBlock.call(this, selector, params, urls, true);
 
-function recordStateChanged (from, to) {
-    console.log("State changed:", from, "=>", to);
-    if (from=='recording' && to=='paused') {
-        console.log("Recorded utterance, going to send..");
-        if (canSendToVerification()) {
-            recorder.stopAudio();
-            setLoading("Запись отправляется на сервер..");
-            recorder.sendRecordedMessage();
-        } else {
-            pasteNote(verificationBlock,
-                    sprintf('Записан слишком короткий образец (%.2f сек.). Повторите запись ещё раз.',
-                        recorder.getMaxPlayableTime()));
-            maskButtons(verificationBlock, true, true);
-        }
-    }
-}
+    // Attributes
+    this.minUploadedCount = params.minUploadedCount || 3;
+    this.minUploadedTime = params.minUploadedTime || 5.0;
 
-function getContent(verificationBlock) {
-    return verificationBlock.find(".voice_auth_content");
-}
+    this_ = this;
+    this.CONFIRM_BUTTON_SELECTOR = params.confirmButtonId || "#id_confirm_button";
+    this.confirmButtonClicked = function () {
+        this_.event("confirm");
+    };
+    $(this.CONFIRM_BUTTON_SELECTOR).click(this.confirmButtonClicked);
 
-function clearContent(verificationBlock) {
-    getContent(verificationBlock).html('');
-}
+    this.transitionTable["cancel"] = {
+        initial: "return_back",
+        failed: "return_back",
+        error_in_learning: "return_back",
+        learning: "interrupted",
+        interrupted: "return_back",
+        failed_to_upload: "return_back",
+        upload_completed: "cancel_registration",
+        insufficient_to_upload: "cancel_registration",
+        insufficient_to_enroll: "cancel_registration"
+    };
 
-function getSessionContext(verificationBlock) {
-    return verificationBlock.find("form").serializeArray();
-}
+    this.transitionTable["record"] = {
+        initial: "to_recording",
+        insufficient_to_upload: "to_recording",
+        upload_completed: "record_another_one",
+        insufficient_to_enroll: "record_another_one"
+    };
 
-function setLoading(message) {
-    currentUploadingTime = recorder.getMaxPlayableTime();
-    getContent(verificationBlock).html(
-        '<img src="/media/img/loading.gif" id="id_loading_img" /><span class="loadingMessage">' + message + '</span>'
-    );
-}
+    this.transitionTable["confirm"] = {
+        upload_completed: "to_confirmed"
+    };
 
-function unsetLoading() {
-    clearContent(verificationBlock);
-}
+    this.transitionTable["learning_started"] = {
+        confirmed: "to_learning"
+    };
 
-function uploadCompleted () {
-    console.log("Uploaded!");
-    window.uploadedCount += 1;
-    window.uploadedTime += window.currentUploadingTime;
-    unsetLoading();
-    confirmVerification(confirmURL, getSessionContext(verificationBlock));
-}
+    this.transitionTable["error_in_learning"] = {
+        learning: "to_error_in_learning"
+    };
+    
+    this.transitionTable["learning_success"] = {
+        learning: "to_learning_success"
+    };
 
-function uploadFailed () {
-    console.log("Upload failed:(");
-    unsetLoading();
-    failedState("Возникла ошибка при отправке записи на сервер");
-}
+    this.transitionTable["insufficient_to_enroll"] = {
+        learning: "to_insufficient_to_enroll"
+    };
 
-function toggleRecording (this_) {
-    console.log("Toggle recording..");
-    var recorder = document.ListenUpRecorder;
-    if (recorder.isRecording()) {
-        recorder.pauseAudio();
-        $(this_).val("Запись");
-    } else {
-        recorder.record();
-        $(this_).val("Стоп");
-        recordingState(verificationBlock);
-    }
-}
+    this.maskButtons = function (record_mask, cancel_mask, confirm_mask) {
+        this.setButtonEnabled(this.RECORD_BUTTON_SELECTOR, record_mask);
+        this.setButtonEnabled(this.CANCEL_BUTTON_SELECTOR, cancel_mask);
+        this.setButtonEnabled(this.CONFIRM_BUTTON_SELECTOR, confirm_mask);
+    };
 
-function confirmVerification (url, data) {
-    console.log("Proceeding to verification..");
-    $.post(url, data,
-            function (data) {
-                console.log("Got response:", data);
-                if (data.result == 0) { // all ok
-                    verificationState(verificationBlock);
-                    setTimeout(monitorProgress, 1500);
+    var this_ = this;
+    this.monitorProgress = function() {
+        console.log("Monitoring..");
+        $.ajax({
+            type: 'GET',
+            url: this_.urls.monitorURL,
+            data: this_.sessionContext(),
+            success: function (data) {
+                console.log("Monitor state:", data.result, data.message);
+
+                var code = data.result;
+                if (code == 0) {
+                    var state = data.message;
+                    if (state == "finished") {
+                        console.log("Learning phase completed!");
+                        this_.event("learning_success");
+                    } else if (state == "waiting_for_data") {
+                        this_.event("insufficient_to_enroll");
+                    } else if (state == "failed") {
+                        this_.event("error_in_learning", {description: "В процессе обучения произошла ошибка"});
+                    } else if (state == "interrupted") {
+                        this_.event("cancel");
+                    } else {
+                        setTimeout(this_.monitorProgress, this_.monitorDelay);
+                    }
                 } else {
-                    alert("Необработанная ошибка:", data);
-                    // XXX response parsing + client notifying
+                    alert("Необработанный ответ:", code, data.message);
+                    setTimeout(this_.monitorProgress, this_.monitorDelay);
+                }
+            },
+            error: function (data) {
+                console.error('Error in request:', data);
+                setTimeout(this_.monitorProgress, this_.monitorDelay);
+            },
+            dataType: "json"
+        });
+    };
+
+    this.updateUploadedTiming = function () {
+        var target = this.getPreContent();
+        target.text("Загружено: " + this.uploadedCount +
+                "; Общая длительность: " + this.uploadedTime.toFixed(2) + "сек.");
+    };
+
+    this.readyToEnroll = function () {
+        return (this.uploadedCount > this.minUploadedCount)
+            && (this.uploadedTime > this.minUploadedTime);
+    };
+
+    this.getContent().before('<div class="pre_content"></div>');
+    this.getPreContent = function() {
+        return this.block.find(".pre_content");
+    };
+
+    this.event("created");
+}
+
+UploadingBlock.inherits(BaseVoiceBlock);
+
+UploadingBlock.method('to_upload_completed', function (args) {
+    this.uber('to_upload_completed');
+    this.maskButtons(true, true, true);
+});
+
+UploadingBlock.method('cancel_registration', function (args) {
+    console.log("Canceling");
+    this_ = this;
+    $.post(this.urls.cancelURL, this.sessionContext(),
+            function (data) {
+                if (data.result == 0) {
+                    window.location = this_.urls.fallbackURL;
+                } else {
+                    alert(data.message);
                 }
             }, "json");
-}
+});
 
-function pasteNote(verificationBlock, note) {
-    getContent(verificationBlock).html('<span class="note">' + note + '</span>');
-}
-
-function pasteError(verificationBlock, note) {
-    getContent(verificationBlock).html('<span class="errornote">' + note + '</span>');
-}
-
-function waitForDataState(verificationBlock) {
-    state = "waiting_for_data";
-    pasteNote(verificationBlock,
-            'Голосовых данных недостаточно для аутентификации. Пожалуйста, запишите ещё один образец.');
-    maskButtons(verificationBlock, true, true);
-}
-
-function verificationState(verificationBlock) {
-    state = "verification";
-    setLoading("Подождите, идёт процесс верификации..");
-    maskButtons(verificationBlock, false, false);
-}
-
-function setButtonEnabled(verificationBlock, selector, is_enabled) {
-    if (is_enabled) {
-        verificationBlock.find(selector).removeAttr("disabled");
-    } else {
-        verificationBlock.find(selector).attr("disabled", "true");
-    }
-}
-
-function maskButtons(verificationBlock, record_mask, cancel_mask) {
-    setButtonEnabled(verificationBlock, "#id_record_button", record_mask);
-    setButtonEnabled(verificationBlock, "#id_cancel_button", cancel_mask);
-}
-
-function initialState(verificationBlock) {
-    state = "initial";
-    pasteNote(verificationBlock, "Нажмите кнопку ``Запись'', произнесите ключевую фразу, и нажмите на кнопку ``Стоп''.");
-    maskButtons(verificationBlock, true, true);
-}
-
-function failedState(verificationBlock, reason) {
-    state = "failed";
-    pasteError(verificationBlock, reason +
-            '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
-    maskButtons(verificationBlock, false, true);
-}
-
-function accessDeniedState(verificationBlock) {
-    state = "verification_failed";
-    console.log("Access denied!");
-    pasteError(verificationBlock, "Аутентификация завершилась неудачно. Попробуйте ещё раз или воспользуйтесь обычным способом, нажав кнопку ``Возврат''.");
-    maskButtons(verificationBlock, false, true);
-}
-
-function recordingState(verificationBlock) {
-    state = "recording";
-    pasteNote(verificationBlock, "Идёт запись..");
-    maskButtons(verificationBlock, true, false);
-}
-
-function monitorProgress() {
-    console.log("Monitoring..");
-    $.get(monitorURL, getSessionContext(verificationBlock),
-        function (data) {
-            console.log("Monitor state:", data.result, data.message);
-
-            var code = data.result;
-            if (code == 0) {
-                var state = data.message;
-                if (state == "verification_success") {
-                    console.log("Verificated!")
-                    window.location = redirectURL;
-                } else if (state == "verification_failed") {
-                    accessDeniedState(verificationBlock);
-                } else if (state == "waiting_for_data") {
-                    waitForDataState(verificationBlock);
-                } else if (state == "failed") {
-                    failedState(verificationBlock, "В процессе верификации возникла ошибка");
-                } else if (state == "canceled") {
-                    canceledState(verificationBlock);
-                } else {
-                    setTimeout(monitorProgress, 1500);
-                }
+UploadingBlock.method('to_confirmed', function (args) {
+    this_ = this;
+    $.ajax({
+        type: 'POST',
+        url: this.urls.confirmURL,
+        data: this.sessionContext(),
+        success: function (data) {
+            if (data.result == 0) {
+                this_.state = "confirmed";
+                this_.event("learning_started");
             } else {
-                alert("Unexpected error occured:", data);
+                alert(data.message);
             }
-        }, "json");
-}
+        },
+        error: function (data) {
+            alert("Произошла ошибка при отправке запроса на сервер." +
+                "Попытайтесь снова или обратитесь в службу поддержки.");
+        },
+        dataType: "json"
+    });
+});
 
-function cancelVerification() {
-    if (state == "waiting_for_data") {
-        $.post(cancelURL, getSessionContext(verificationBlock),
-                function (data) {
-                    if (data.result == 0) {
-                        window.location = fallbackURL;
-                    } else {
-                        alert(data);
-                    }
-                }, "json");
-    } else if (state == "failed") {
-        window.location = fallbackURL;
-    } else if (state == "initial") {
-        window.location = fallbackURL;
-    }
-}
+UploadingBlock.method('to_learning', function (args) {
+    this.state = "learning";
+    this.setLoading("Подождите, идёт процесс обучения модели..");
+    this.maskButtons(false, false);
+    this.monitorProgress();
+});
+
+UploadingBlock.method('to_error_in_learning', function (args) {
+    this.state = "error_in_learning";
+    this.pasteError(args.description +
+            '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
+    this.maskButtons(false, true);
+});
+
+UploadingBlock.method('to_insufficient_to_enroll', function (args) {
+    this.state = "insufficient_to_enroll";
+    this.pasteError("Обучение завершилось неудачно. Попробуйте ещё раз, загрузив больше голосовых данных.");
+    this.maskButtons(true, true);
+});
+
+UploadingBlock.method('to_learning_success', function (args) {
+    this.state = "learning_success";
+    this.getPreContent().remove();
+    this.pasteNote("Вы успешно зарегистрированы в системе голосовой аутентификации!" +
+        " Переход будет выполнен автоматически..");
+
+    var this_ = this;
+    setTimeout(function() { window.location = this_.urls.redirectURL }, 2000);
+    this.maskButtons(false, false);
+});
+
+UploadingBlock.method('record_another_one', function (args) {
+    this.applet.erase();
+    this.uber("to_recording");
+});
+
+UploadingBlock.method('to_upload_completed', function() {
+    this.uber('to_upload_completed');
+    if (this.readyToEnroll()) {
+        this.maskButtons(true, true, true); // enable "confirm" button
+    };
+    this.updateUploadedTiming();
+});
+
+UploadingBlock.method('interrupted', function () {
+    this.state = 'interrupted';
+    this.pasteError("Процесс обучения был прерван на стороне сервера.");
+    this.maskButtons(false, true);
+});
 

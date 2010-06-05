@@ -12,5 +12,8 @@ urlpatterns = patterns('',
     (r'^enrollment/cancel/$', 'voice.views.enrollment_cancel'),
 
     (r'^upload/$', 'voice.views.upload'),
+    (r'^upload/confirm/$', 'voice.views.upload_confirm'),
+    (r'^upload/cancel/$', 'voice.views.upload_cancel'),
+
     (r'^upload/handler/$', 'voice.views.upload_handler'),
 )

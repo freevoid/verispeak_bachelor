@@ -49,14 +49,14 @@ class TargetSpeakerDoesNotExistError(DoesNotExistError):
 class SpeakerModelDoesNotExistError(DoesNotExistError):
     code = 4
     def __init__(self, username):
-        super(TargetSpeakerDoesNotExistError, self).__init__(
+        super(SpeakerModelDoesNotExistError, self).__init__(
                 object_name=_('Speaker model'),
                 object_args=(username,))
 
 class SessionDoesNotExistError(DoesNotExistError):
     code = 5
     def __init__(self, session_id):
-        super(TargetSpeakerDoesNotExistError, self).__init__(
+        super(SessionDoesNotExistError, self).__init__(
                 object_name=_('Record session'),
                 object_args=(session_id,))
 

@@ -1,12 +1,14 @@
 from django.conf import settings
 
 import logging
+import datetime
 
 from misc.snippets import log_exceptions
-from models import VerificationProcess, SpeakerModel, UniversalBackgroundModel, LLRVerificator
+from models import VerificationProcess, Speaker, SpeakerModel,\
+        UniversalBackgroundModel, LLRVerificator, LearningProcess
 
 from exceptions import NeedMoreDataError
-from core import load_pickled_file, score
+from core import load_pickled_file, score, enroll
 
 def verificate(target_session, verificator):
     verificator.null_estimator.model_file.open('r')
@@ -65,16 +67,49 @@ def verification(verification_process_id, speaker_model_id):
         logging.error(u"Exception raised during scoring: %s", e)
         verification_process.transition(verification_process.FAILED)
     else:
-        logging.info("Verification finished! Result: %s", result)
+        logging.info("Verification finished! Result: %s, Score: %s", result, score)
         verification_process.verified_by = verificator
         verification_process.verification_score = score
         verification_process.verification_result = result
         # XXX defer save() to state transition?
-        verification_process.target_session.authentic = True
+        verification_process.target_session.authentic = result
         verification_process.target_session.save()
         verification_process.transition(verification_process.VERIFIED)
 
 @log_exceptions
-def enrollment(*args, **kwargs):
-    print "Learning", args, kwargs
+def enrollment(enrollment_process_id, target_speaker_id):
+    logging.info("Learning, id=%d", enrollment_process_id)
+    try:
+        enrollment_process = LearningProcess.objects.get(id=enrollment_process_id)
+    except LearningProcess.DoesNotExist:
+        logging.error("No such LearningProcess: %s", enrollment_process_id)
+        return
+
+    try:
+        target_speaker = Speaker.objects.get(id=target_speaker_id)
+    except Speaker.DoesNotExist:
+        logging.error("No such speaker in DB: %s", target_speaker_id)
+        return
+
+    sample_files = enrollment_process.sample_filepath_iterator()
+    try:
+        model = enroll(sample_files,
+                model_classname=settings.SPEAKER_MODEL_CLASSNAME,
+                model_parameters=settings.SPEAKER_MODEL_PARAMETERS)
+    except NeedMoreDataError:
+        logging.info("Need more data")
+        enrollment_process.transition(enrollment_process.WAIT_FOR_DATA)
+    except BaseException, e:
+        logging.error(u"Exception raised during enrollment: %s", e)
+        enrollment_process.transition(enrollment_process.FAILED)
+    else:
+        logging.info("Learning stage finished!")
+        logging.info(model)
+        speaker_model = SpeakerModel(speaker=target_speaker,
+                learning_process=enrollment_process)
+        speaker_model.save() # implies filepath generation
+        model.dump_to_file(speaker_model.model_file.path)
+
+        enrollment_process.finish_time = datetime.datetime.now()
+        enrollment_process.transition(enrollment_process.FINISHED)
 

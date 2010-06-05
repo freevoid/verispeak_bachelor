@@ -1,11 +1,12 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from models import RecordSession, Speaker, SpeakerModel,\
-        VerificationProcess, LearningProcess
+        VerificationProcess, LearningProcess, RecordSessionMeta
 import exceptions
 
 class RequestForm(forms.Form):
-    session_id = forms.CharField(required=False)
+    session_id = forms.CharField(required=False, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         self.remote_ip = kwargs.pop('remote_ip')
@@ -77,5 +78,35 @@ class EnrollmentRequestForm(RequestForm):
                     session_id)
 
         data['enrollment_process'] = enrollment_process
+        return data
+
+class UploadConfirmForm(forms.ModelForm):
+    class Meta:
+        model = RecordSessionMeta
+        exclude = ('record_session',)
+
+    session_id = forms.CharField(widget=forms.HiddenInput)
+    description = forms.CharField(label=_('Description'), required=False,
+            widget=forms.Textarea(attrs={'rows':3, 'cols': 20}))
+
+    def __init__(self, *args, **kwargs):
+        self.remote_ip = kwargs.pop('remote_ip')
+        super(UploadConfirmForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        data = self.cleaned_data
+
+        session_id = data['session_id']
+        try:
+            record_session = RecordSession.objects.get(
+                session_id=session_id,
+                remote_ip=self.remote_ip,
+                )
+        except RecordSession.DoesNotExist:
+            raise exceptions.SessionDoesNotExistError(session_id)
+
+        data['record_session'] = record_session
+        if self.instance:
+            self.instance.record_session_id = record_session.id
         return data
 

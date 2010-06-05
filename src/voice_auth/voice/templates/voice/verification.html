@@ -1,10 +1,9 @@
-{% extends "voice/base.html" %}
+{% extends "voice/auth_base.html" %}
 
 {% block title %}Аутентификация{% endblock %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/voice.css" type="text/css" />
-<script src="{{ MEDIA_URL }}js/voice_common.js" type="text/javascript"></script>
+{{ block.super }}
 <script src="{{ MEDIA_URL }}js/voice_verification.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function () {
@@ -30,21 +29,14 @@ $(document).ready(function () {
 </script>
 {% endblock %}
 
-{% block content %}
-<div class="voice_auth_wrapper">
-    <h2 class="voice_auth_header">Голосовая аутентификация</h2>
-    <div class="voice_auth_content"></div>
-    <div class="voice_auth_inputs">
-        <input type="button" value="Запись" id="id_record_button" />
-        <input type="button" value="Возврат" id="id_cancel_button" />
-    </div>
-    <div class="voice_auth_form">
-        <form action="" method="post" id="id_uploadConfirmation_form">
-            <input type="hidden" name="username" value="{{ username }}" />
-            <input type="hidden" name="session_id" value="{{ session_id }}" />
-        </form>
-        {% include "voice/applet.html" %}
-    </div>
-</div>
+{% block auth_header %}Голосовая аутентификация{% endblock %}
+{% block auth_inputs %}
+    <input type="button" value="Запись" id="id_record_button" />
+    <input type="button" value="Возврат" id="id_cancel_button" />
+{% endblock %}
+
+{% block auth_form %}
+    <input type="hidden" name="username" value="{{ username }}" />
+    <input type="hidden" name="session_id" value="{{ session_id }}" />
 {% endblock %}
 

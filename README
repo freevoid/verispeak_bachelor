@@ -1,4 +1,6 @@
 Requirements:
-    * Numpy 2.0
-    * libspatial
-    TODO: fill up
+    * NumPy >= 1.4.1;
+    * SciPy >= rev.6359;
+    * David Cournapeau's scikits: audiolab, samplerate (http://svn.scipy.org/svn/scikits/trunk/)
+    * part of scikits.learn: http://svn.scipy.org/svn/scikits/trunk/learn/scikits/learn/machine/em
+

@@ -9,7 +9,7 @@ def remove_zero_frames(framed_speech, treshhold=1e-5):
     return framed_speech
 
 class CommonStack(TemplatedFileToFeaturesStack):
-    raw_norm = (Wave.resample,)# gaussian_remover.remove_silence)
+    raw_norm = (Wave.resample, gaussian_remover.remove_silence)
     frame_norm = (remove_zero_frames,)
 
 class CommonMFCCStack(CommonStack):

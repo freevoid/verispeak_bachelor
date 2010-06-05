@@ -1,17 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Russian translation of voice verification package.
+# Copyright (C) 2010
+# This file is distributed under the same license as the voice_auth package.
+# Zakharov Nikolay <nikolay.desh@gmail.com>, 2010.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-24 22:43+0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2010-06-05 23:59+0400\n"
+"PO-Revision-Date: 2010-06-05 18:10+0400\n"
+"Last-Translator: Zakharov Nikolay <nikolay.desh@gmail.com>\n"
+"Language-Team: Zakharov Nikolay <nikolay.desh@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,38 +32,116 @@ msgstr "Сессия записи"
 msgid "Need more speech to verificate"
 msgstr "Необходимо больше данных для верификации"
 
-#: voice/models.py:58 voice/models.py:186
+#: voice/forms.py:89
+msgid "Description"
+msgstr "Описание"
+
+#: voice/models.py:62 voice/models.py:223
 msgid "Waiting for speech data"
 msgstr "Ожидание речевых данных"
 
-#: voice/models.py:59 voice/models.py:187
+#: voice/models.py:63 voice/models.py:224
 msgid "Processing.."
 msgstr "В процессе.."
 
-#: voice/models.py:60
+#: voice/models.py:64
 msgid "Learning failed"
 msgstr "Обучение завершилось неудачно"
 
-#: voice/models.py:61
+#: voice/models.py:65
 msgid "Learning canceled"
 msgstr "Обучение отменено"
 
-#: voice/models.py:62
+#: voice/models.py:66
 msgid "Learning finished"
 msgstr "Обучение завершено"
 
-#: voice/models.py:188
+#: voice/models.py:213
+msgid "Verification process"
+msgstr "Процесс аутентификации"
+
+#: voice/models.py:214
+msgid "Verification processes"
+msgstr "Процессы аутентификации"
+
+#: voice/models.py:225
 msgid "Verification has been canceled"
 msgstr "Аутентификация отменена"
 
-#: voice/models.py:189
+#: voice/models.py:226
 msgid "Verification finished"
 msgstr "Аутентификация завершена"
 
-#: voice/models.py:190
+#: voice/models.py:227
 msgid "Error occured during verification"
 msgstr "Ошибка при аутентификации"
 
-#: voice/views.py:129
+#: voice/models.py:230
+msgid "state"
+msgstr "состояние"
+
+#: voice/models.py:238
+msgid "start time"
+msgstr "время начала"
+
+#: voice/models.py:239
+msgid "target session"
+msgstr "сессия записи"
+
+#: voice/models.py:240
+msgid "finish time"
+msgstr "время завершения"
+
+#: voice/models.py:241
+msgid "verification result"
+msgstr "результат аутентификации"
+
+#: voice/models.py:242
+msgid "verification score"
+msgstr "мера правдоподобия"
+
+#: voice/models.py:243
+msgid "verificated by"
+msgstr "проверено"
+
+#: voice/models.py:248
+msgid "gender"
+msgstr "пол"
+
+#: voice/models.py:249
+msgid "Male"
+msgstr "Мужчина"
+
+#: voice/models.py:249
+msgid "Female"
+msgstr "Женщина"
+
+#: voice/models.py:251
+msgid "prompt"
+msgstr "фраза"
+
+#: voice/models.py:253
+msgid "description"
+msgstr "описание"
+
+#: voice/views.py:145
 msgid "Verification in progress"
 msgstr "Аутентификация в процессе.."
+
+#: voice/views.py:220
+#, python-format
+msgid "Need at least %(count)d utterance to enroll"
+msgstr "Для регистрации необходимо не менее %(count)d записанных фраз"
+
+#: voice/views.py:223
+msgid "More than one speaker tagged as target in sample sessions"
+msgstr "В обучаемых Более одного пользователя"
+
+#: voice/views.py:226
+msgid "Enrollment can be confirmed only by original person"
+msgstr ""
+"Подтверждение может быть получено только от лица, инициировавшего регистрацию"
+
+#: voice/views.py:232
+msgid "Enrollment in progress"
+msgstr "Обучение в процессе.."

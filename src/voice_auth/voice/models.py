@@ -4,12 +4,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_str
 from django.db import models
 
+import os.path
 import datetime
 import time
 
 from state_machine.models import StateMachine
 from misc.signature import sign_string
 from misc.ip import ip_wrapper_property
+from misc.flatten import flatiter
 
 class Speaker(User):
     """
@@ -80,6 +82,12 @@ class LearningProcess(StateMachine):
     def sample_sessions_count(self):
         return self.sample_sessions.count()
 
+    def sample_filepath_iterator(self):
+        media_root = settings.MEDIA_ROOT
+        return (os.path.join(media_root, filename) for filename in flatiter(s.uploadedutterance_set\
+                .filter(is_trash=False)\
+                .values_list('utterance_file') for s in self.sample_sessions.all()))
+
 class SpeakerModel(models.Model):
     model_file = models.FileField(upload_to='speaker_models')
     speaker = models.ForeignKey(Speaker)
@@ -114,10 +122,25 @@ class SpeakerModel(models.Model):
                 old_active.is_active = False
                 old_active.save()
         '''
+        if not self.model_file and not self.id:
+            self.model_file.name = '.'
+            super(SpeakerModel, self).save(*args, **kwargs)
+            assert self.id
+            self.model_file.name = self.generate_model_filename()
         super(SpeakerModel, self).save(*args, **kwargs)
+
+    def generate_model_filename(self):
+        name = ['%04d' % self.pk, '_s%04d' % self.speaker.id]
+        if self.learning_process:
+            name.append('_e%04d' % self.learning_process.id)
+        name.append('.gmm')
+        return ''.join(name)
 
     class Meta:
         get_latest_by = 'learning_process__finish_time'
+
+    def __unicode__(self):
+        return u'%s %s [%s]' % (self.speaker, self.is_active, self.model_file.name)
 
 class UniversalBackgroundModel(models.Model):
     model_file = models.FileField(upload_to='ubm')
@@ -186,6 +209,9 @@ class LLRVerificator(models.Model):
         return u"%s %s %s" % (self.pk, self.null_estimator, self.alternative_estimator)
 
 class VerificationProcess(StateMachine):
+    class Meta:
+        verbose_name = _("Verification process")
+        verbose_name_plural = _("Verification processes")
     WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
     CANCELED = 'canceled'
@@ -201,7 +227,7 @@ class VerificationProcess(StateMachine):
             (FAILED, _('Error occured during verification'))
             )
 
-    state_id = models.CharField(max_length=24, choices=states)
+    state_id = models.CharField(max_length=24, choices=states, verbose_name=_('state'))
     #STATE_DISPLAY = dict(states)
 
     transition_table = {
@@ -209,10 +235,20 @@ class VerificationProcess(StateMachine):
             STARTED: (VERIFIED, FAILED, WAIT_FOR_DATA, STARTED),
             }
 
-    start_time = models.DateTimeField(auto_now_add=True)
-    target_session = models.ForeignKey(RecordSession)
-    finish_time = models.DateTimeField(null=True)
-    verification_result = models.NullBooleanField(blank=True, null=True)
-    verification_score = models.FloatField(blank=True, null=True)
-    verificated_by = models.ForeignKey(LLRVerificator, blank=True, null=True)
+    start_time = models.DateTimeField(auto_now_add=True, verbose_name=_('start time'))
+    target_session = models.ForeignKey(RecordSession, verbose_name=_('target session'))
+    finish_time = models.DateTimeField(null=True, verbose_name=_('finish time'))
+    verification_result = models.NullBooleanField(blank=True, null=True, verbose_name=_('verification result'))
+    verification_score = models.FloatField(blank=True, null=True, verbose_name=_('verification score'))
+    verificated_by = models.ForeignKey(LLRVerificator, blank=True, null=True, verbose_name=_('verificated by'))
+
+class RecordSessionMeta(models.Model):
+    record_session = models.OneToOneField(RecordSession)
+    gender = models.CharField(max_length=1, default='M',
+            verbose_name=_('gender'),
+            choices=(('M', _('Male')), ('F', _('Female'))))
+    prompt = models.CharField(max_length=256,
+            verbose_name=_('prompt'), blank=True)
+    description = models.CharField(max_length=512, blank=True,
+            verbose_name=_('description'))
 

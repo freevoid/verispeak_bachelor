@@ -19,6 +19,7 @@ function RegistrationBlock (selector, params, urls) {
         learning: "interrupted",
         interrupted: "return_back",
         failed_to_upload: "return_back",
+        upload_completed: "cancel_registration",
         insufficient_to_upload: "cancel_registration",
         insufficient_to_enroll: "cancel_registration"
     };
@@ -59,8 +60,11 @@ function RegistrationBlock (selector, params, urls) {
     var this_ = this;
     this.monitorProgress = function() {
         console.log("Monitoring..");
-        $.get(this_.urls.monitorURL, this_.sessionContext(),
-            function (data) {
+        $.ajax({
+            type: 'GET',
+            url: this_.urls.monitorURL,
+            data: this_.sessionContext(),
+            success: function (data) {
                 console.log("Monitor state:", data.result, data.message);
 
                 var code = data.result;
@@ -82,7 +86,13 @@ function RegistrationBlock (selector, params, urls) {
                     alert("Необработанный ответ:", code, data.message);
                     setTimeout(this_.monitorProgress, this_.monitorDelay);
                 }
-            }, "json");
+            },
+            error: function (data) {
+                console.error('Error in request:', data);
+                setTimeout(this_.monitorProgress, this_.monitorDelay);
+            },
+            dataType: "json"
+        });
     };
 
     this.updateUploadedTiming = function () {
@@ -112,14 +122,14 @@ RegistrationBlock.method('to_upload_completed', function (args) {
 });
 
 RegistrationBlock.method('cancel_registration', function (args) {
-    console.log("Canceled");
+    console.log("Canceling");
     this_ = this;
     $.post(this.urls.cancelURL, this.sessionContext(),
             function (data) {
                 if (data.result == 0) {
                     window.location = this_.urls.fallbackURL;
                 } else {
-                    alert(data);
+                    alert(data.message);
                 }
             }, "json");
 });
@@ -135,7 +145,7 @@ RegistrationBlock.method('to_confirmed', function (args) {
                 this_.state = "confirmed";
                 this_.event("learning_started");
             } else {
-                alert(data);
+                alert(data.message);
             }
         },
         error: function (data) {

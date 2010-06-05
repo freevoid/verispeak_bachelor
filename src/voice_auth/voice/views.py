@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -14,9 +14,10 @@ from misc.amqp import register_queue, send_message
 
 from exceptions import DoesNotExistError
 from models import UploadedUtterance, RecordSession, Speaker,\
-        SpeakerModel, VerificationProcess, LearningProcess
+        SpeakerModel, VerificationProcess, LearningProcess,\
+        RecordSessionMeta
 from logic import api_enabled
-from forms import VerificationRequestForm, EnrollmentRequestForm
+from forms import VerificationRequestForm, EnrollmentRequestForm, UploadConfirmForm
 
 DEFAULT_APPLET_PARAMS = {
         'showLogo': 'no',
@@ -184,7 +185,7 @@ def enrollment(request):
                 session_id=session_id,
                 remote_ip=dotted_quad_to_num(remote_addr),
                 target_speaker=target_speaker
-            )
+        )
         assert created
 
         enrollment_process = LearningProcess.objects.create()
@@ -218,11 +219,18 @@ def enrollment_confirm(request):
                     .aggregate(count=Count('uploadedutterance')).get('count')
         assert utterance_count > settings.MIN_UTTERANCE_COUNT_TO_ENROLL,\
                     _("Need at least %(count)d utterance to enroll") % {'count': utterance_count}
+
+        target_speakers = enrollment_process.sample_sessions.values_list('target_speaker').distinct()
+        assert target_speakers.count() == 1, _("More than one speaker tagged as target in sample sessions")
+
+        target_speaker = target_speakers[0][0]
+        assert request.user.id == target_speaker, _("Enrollment can be confirmed only by original person")
         enrollment_process.transition(LearningProcess.STARTED)
         send_message("voice.enrollment",
-                enrollment_process_id=enrollment_process.id)
+                enrollment_process_id=enrollment_process.id,
+                target_speaker_id=target_speaker)
 
-        return _("enrollment in progress")
+        return _("Enrollment in progress")
     else:
         raise NotImplementedError
 
@@ -234,17 +242,42 @@ def enrollment_cancel(request):
     if form.is_valid():
         enrollment_process = form.cleaned_data['enrollment_process']
         enrollment_process.transition(enrollment_process.INTERRUPTED)
+        return 'canceled'
     else:
         raise NotImplementedError
 
 @allowed_methods('GET')
 @implicit_render
 def upload(request):
-    print "Upload", request.method, request.REQUEST
+    print "Upload", request.method, request.GET
+    session_id = RecordSession.generate_session_id(request)
+    confirm_form = UploadConfirmForm(remote_ip=None,
+            initial={'session_id': session_id})
     applet_params = DEFAULT_APPLET_PARAMS.copy()
+    applet_params['uploadFileName'] = session_id
     applet_params['uploadURL'] = reverse('voice.views.upload_handler')
-    applet_params['uploadFileName'] = RecordSession.generate_session_id(request)
     return {'applet_params': applet_params,
                 'applet_width': DEFAULT_APPLET_WIDTH,
-                'applet_height': DEFAULT_APPLET_HEIGHT,}
+                'applet_height': DEFAULT_APPLET_HEIGHT,
+                'session_id': session_id,
+                'confirm_form': confirm_form}
+
+@allowed_methods('POST')
+@transaction.autocommit
+def upload_confirm(request):
+    remote_addr = request.META['REMOTE_ADDR']
+    session_meta = RecordSessionMeta()
+    confirm_form = UploadConfirmForm(request.POST,
+            instance=session_meta,
+            remote_ip=dotted_quad_to_num(remote_addr))
+
+    if confirm_form.is_valid():
+        confirm_form.save()
+        return redirect(settings.LOGIN_URL)
+    raise TypeError
+
+@api_enabled()
+@allowed_methods('POST')
+def upload_cancel(request):
+    return ''
 

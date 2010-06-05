@@ -1,12 +1,10 @@
-$(document).ready(function () {
-    if (typeof(window.console) == "undefined") {
-        window.console = {};
-        window.console.log = function () {};
-        window.console.warn = function () {};
-        window.console.error = function () {};
-        window.console.info = function () {};
-    }
-});
+if (typeof(window.console) == "undefined") {
+    window.console = {};
+    window.console.log = function () {};
+    window.console.warn = function () {};
+    window.console.error = function () {};
+    window.console.info = function () {};
+};
 
 Function.prototype.method = function (name, func) {
     this.prototype[name] = func;

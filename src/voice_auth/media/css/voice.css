@@ -9,9 +9,13 @@
     margin-left:-150px;
 }
 
-.voice_auth_wrapper input[type=button] {
+.voice_auth_wrapper input[type=button], .voice_upload_confirm_form input[type=submit] {
     border:1px solid #000066;
     background:#CCCCFF;
+}
+
+.voice_auth_wrapper input[type=button]:hover, .voice_upload_confirm_form input[type=submit]:hover {
+    background:#DDFFFF;
 }
 
 .voice_auth_header {
@@ -58,5 +62,25 @@
     color:#000066;
     position: relative;
     float: right;
+}
+
+.voice_upload_confirm_wrapper {
+    border:1px solid gray;
+    width:300px;
+    background:#eeeeee;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin-left:-150px;
+    padding-bottom: 5px;
+}
+
+.voice_upload_confirm_form {
+    font-size:0.75em;
+    padding-left: 7%;
+}
+
+.voice_upload_confirm_form th {
+    text-align: left;
 }
 

@@ -115,6 +115,7 @@ VerificationBlock.method('to_verification_failed', function (args) {
     this.state = "verification_failed";
     this.pasteError("Аутентификация завершилась неудачно. Попробуйте ещё раз или воспользуйтесь обычным способом, нажав кнопку &laquo;Возврат&raquo;.");
     this.maskButtons(false, true);
+    this.block.find(".voice_auth_inputs").append('<input id="id_retry_button" type="button" onclick="window.location = \'\';" value="Повтор" />')
 });
 
 VerificationBlock.method('to_verification_success', function (args) {
