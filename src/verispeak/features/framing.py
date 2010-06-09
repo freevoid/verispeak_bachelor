@@ -2,7 +2,7 @@ from segmentaxis import segment_axis
 
 from scipy.signal import hamming, lfilter
 
-from ..base import Object
+from verispeak.base import Object
 
 def preemp(input, p):
     """Pre-emphasis filter."""
@@ -10,7 +10,8 @@ def preemp(input, p):
 
 def frame_signal(input, nwin=256, over=None):
     # MFCC parameters: taken from auditory toolbox
-    over = over if over is not None else nwin - 160
+    if over is None:
+        over = nwin - 160
     # Pre-emphasis factor (to take into account the -6dB/octave rolloff of the
     # radiation at the lips level)
     prefac = 0.97

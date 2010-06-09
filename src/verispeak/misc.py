@@ -1,15 +1,10 @@
-import itertools
 import numpy as np
-
-from features import mfcc
 
 WINDOW_LENGTH = 20 # in ms
 
 RESAMPLE_TYPE = 'sinc_best'
 
 SILENCE_TIME = 50 # ms
-
-cycle_colors = itertools.cycle(['red','green','blue','yellow','magenta','k','orange','lightgreen','cyan'])
 
 def get_timelength(array, sf):
     return 1000*len(array) / float(sf) # in ms

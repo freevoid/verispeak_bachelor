@@ -1,4 +1,4 @@
-from ..base import Object
+from verispeak.base import Object
 from mfcc import mfcc_framed
 import numpy as np
 

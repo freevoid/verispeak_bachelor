@@ -1,4 +1,5 @@
-from ..base import TimeSequence
+from verispeak.base import TimeSequence
+from verispeak.peak_picking import find_peaks
 from mfcc import mfcc
 import numpy as np
 
@@ -25,7 +26,6 @@ class PeakFeatures(TimeSequenceFeatures):
         super(PeakFeatures, self).__init__(wave)
         mfcc = MFCCFeaturesSlice(wave).__flatten__()
 
-        from ..peak_picking import find_peaks
         peaks = find_peaks(mfcc, int(mfcc.size*0.2))
         #print peaks
         self.peaks = peaks

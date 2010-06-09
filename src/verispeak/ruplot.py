@@ -1,6 +1,6 @@
 from matplotlib import rc, pyplot, font_manager
 
-FONT_FILENAME = '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf'
+FONT_FILENAME = '/usr/share/fonts/corefonts/times.ttf'
 
 rc('text', usetex=False)
 rc('text.latex',unicode=True)

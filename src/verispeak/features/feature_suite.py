@@ -1,7 +1,7 @@
-from ..scoring import DTWScore
-from ..misc import calc_treshhold
-from ..base import Object
-from ..wave import listdir
+from verispeak.scoring import DTWScore
+from verispeak.misc import calc_treshhold
+from verispeak.base import Object
+from verispeak.wave import listdir
 
 from itertools import ifilter
 
