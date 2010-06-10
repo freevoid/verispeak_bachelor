@@ -11,7 +11,7 @@ PRESENTATION_DIR=presentation
 REPORT_NAME=report
 TEXFILE=$(REPORT_NAME).tex
 
-PARTS=intro analytic construct technological conclusion appendix
+PARTS=intro abbreviations analytic construct technological bzhd economic conclusion appendix
 
 BIBLE_BASE=biblio
 BIBLE=$(REPORT_NAME).bbl
@@ -74,10 +74,10 @@ svg: ${SVGINCL:%=$(INCLUDEDIR)/%_svg.pdf}
 #dot: $(DOTINCL)
 
 $(BIBLE): $(BIBLE_BASE).bib
-	-test -f "$<" && latex -draftmode $(TEXFILE) && bibtex $(REPORT_NAME)
+	-test -f "$<" && pdflatex -draftmode $(TEXFILE) && bibtex $(REPORT_NAME)
 
 bib:
-	-test -f "$(BIBLE_BASE).bib" && latex -draftmode $(TEXFILE) && bibtex $(REPORT_NAME)
+	-test -f "$(BIBLE_BASE).bib" && pdflatex -draftmode $(TEXFILE) && bibtex $(REPORT_NAME)
 
 force:
 	$(LATEX) $(TEXFILE)
