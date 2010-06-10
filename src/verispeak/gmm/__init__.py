@@ -1,4 +1,4 @@
-implementations = ['reference', 'cournapeau_gmm', 'cournapeau2_gmm']
+implementations = ['reference', 'cournapeau_gmm']#, 'cournapeau2_gmm']
 from itertools import imap
 from importlib import import_module
 
