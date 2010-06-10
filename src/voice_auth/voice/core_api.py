@@ -8,7 +8,9 @@ from models import VerificationProcess, Speaker, SpeakerModel,\
         UniversalBackgroundModel, LLRVerificator, LearningProcess
 
 from exceptions import NeedMoreDataError
-from core import load_pickled_file, score, enroll
+
+from verispeak.util import load_pickled_file
+from verispeak.api import score, enroll
 
 def verificate(target_session, verificator):
     verificator.null_estimator.model_file.open('r')

@@ -24,6 +24,9 @@ def remove_silence(wave, empirical_silence_time=50, window_length_ms=10, w=0.5):
     wave._data = np.array([frame for frame in frames if is_voiced(frame)]).flatten(), fs
     return wave
 
+from functools import partial
+remove_silence_noisy_env = partial(remove_silence, w=0.3)
+
 if __name__=='__main__':
     from optparse import OptionParser
     op = OptionParser()

@@ -83,9 +83,10 @@ def verification_state(request):
     
     state = verification_process.state_id
     if state == verification_process.VERIFIED:
-        state = 'verification_success'\
-                if verification_process.verification_result\
-                    else 'verification_failed'
+        if verification_process.verification_result:
+            state = 'verification_success'
+        else:
+            state = 'verification_failed'
     return state
 
 @implicit_render

@@ -22,6 +22,8 @@ class CournapeauGMM(Codebook):
         if not isinstance(train_samples, np.ndarray):
             train_samples = np.array(list(train_samples))
 
+        print "Training GMM from %s feature vectors" % (train_samples.shape,)
+
         init = 'test' if no_init else 'kmean'
         gmm = em.GMM(self.gm, init=init)
         trainer = self.trainer_cls()
