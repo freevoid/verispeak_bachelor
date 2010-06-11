@@ -14,8 +14,9 @@
 Общая архитектура комплекса представлена на рисунке~\ref{fig:main_arch}.
 
 \begin{figure}
+    \center{\includegraphics[width=0.8\textwidth]{include/main_arch_dia.pdf}}
     \caption{Общая архитектура разрабатываемого программного комплекса}
-    \label{fig:}
+    \label{fig:main_arch}
 \end{figure}
 
 \section{Варианты использования}
@@ -60,6 +61,23 @@
     \label{fig:idef0_pre}
 \end{figure}
 
+\begin{figure}
+    \center{
+    \input{tex_include/seq_enrollment_embedded.tex}
+    }
+    \caption{Диаграмма последовательности: процесс регистрации в системе}
+    \label{fig:seq_enrollment}
+\end{figure}
+
+
+\begin{figure}
+    \center{
+    \input{tex_include/seq_verification_embedded.tex}
+    }
+    \caption{Диаграмма последовательности: процесс аутентификации}
+    \label{fig:seq_verification}
+\end{figure}
+
 \section{Подсистема хранения голосовых данных}
 
 На рисунке~\ref{fig:er_main} представлена диаграмма сущность-связь для разрабатываемой базы данных. Рассмотрим подробнее сущности, представленные на данной диаграмме:
@@ -76,9 +94,9 @@
 \end{itemize}
 
 \begin{figure}
-    \input{tikz/er_main_embedded.tex}
+    \input{tex_include/er_main_embedded.tex}
     %\center{\drawER{0.65}{1.0cm}}
-    \center{\includegraphics[width=\textwidth]{include/er_main_tikz.pdf}}
+    \center{\includegraphics[width=\textwidth]{include/er_main_tex.pdf}}
     \caption{Диаграмма сущность-связь подсистемы хранения голосовых данных}
     \label{fig:er_main}
 \end{figure}

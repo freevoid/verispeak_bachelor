@@ -1,0 +1,54 @@
+\begin{sequencediagram}
+    \newthread{usr}{:Интерфейс}
+    \newinst[2cm]{serverapi}{:Контроллер}
+    \newinst[2.1cm]{session}{:Сессия}
+    \newinst{fs}{:ФС}
+    \newthread[1.5cm]{core}{:Ядро системы}
+
+    % obtain session id
+    \begin{call}{usr}{register()}{serverapi}{session\_id}
+        \begin{call}{serverapi}{set\_state(created)}{session}{}
+        \end{call}
+    \end{call}
+ 
+    % upload utterance
+    \begin{sdloop}{Запись данных для обучения}
+    \begin{call}{usr}{*[5..10]upload(file)}{serverapi}{success}
+        \begin{call}{serverapi}{save\_upload\_wav(filename, file)}{fs}{}
+        \end{call}
+        \begin{call}{serverapi}{add\_wav(fname)}{session}{}
+        \end{call}
+    \end{call}
+    \end{sdloop}
+
+    % confirm enrollment
+    \begin{call}{usr}{confirm()}{serverapi}{started}
+        \begin{call}{serverapi}{set\_state(started)}{session}{}
+        \end{call}
+        \begin{call}{serverapi}{enroll(session\_id)}{core}{}
+        \end{call}
+    \end{call}
+
+    \prelevel
+    \begin{call}{core}{get\_session\_context(id)}{session}{context}
+    \end{call}
+
+    \begin{call}{core}{read\_wav(fnames)}{fs}{wavfiles}
+    \end{call}
+
+    \begin{callself}[2]{core}{train()}{}
+    \end{callself}
+
+    \begin{call}{core}{set\_state(finished)}{session}{}
+    \end{call}
+
+    \prelevel\prelevel
+    % monitor
+    \begin{sdloop}{Мониторинг процесса}
+        \begin{call}{usr}{*[state != finished]get\_state()}{serverapi}{state}
+            \begin{call}{serverapi}{get\_state()}{session}{state}
+            \end{call}
+        \end{call}
+    \end{sdloop}
+
+\end{sequencediagram}

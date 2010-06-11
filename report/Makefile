@@ -20,10 +20,11 @@ HEADER=header.tex
 
 INCLUDEDIR=include
 
-TIKZDIR=tikz
-TIKZINCL=er_main
+TEX_INCLUDEDIR=tex_include
+TEX_INCL=er_main
+TEX_NOPDF_INCL=seq_verification_nopdf
 
-DIAINCL= use_cases idef0_main idef0_pre learning_fsm_times#main_arch
+DIAINCL= use_cases idef0_main idef0_pre learning_fsm_times main_arch deployment
 DIAPS = $(DIAINCL)
 
 SVGINCL=gmm_pdf gmm_hist gmm_merged_full
@@ -31,6 +32,12 @@ SVGINCL=gmm_pdf gmm_hist gmm_merged_full
 FIXBB=./fixbb
 FONTHACK=./hackfont.sh 
 EPSINCL= waveform#foo bar
+
+#%.ps: %.dvi
+#	dvips $<
+
+#%.pdf: %.ps
+#	ps2pdf $<
 
 $(INCLUDEDIR)/%_svg.pdf: svg/%.svg
 	inkscape $< --export-pdf $@
@@ -47,16 +54,25 @@ $(INCLUDEDIR)/%_dot.pdf: dot/%.dot
 $(INCLUDEDIR)/%_eps.pdf: eps/%.eps
 	$(FIXBB) $< && $(FONTHACK) $< && epstopdf --outfile=$@ $<
 
-$(INCLUDEDIR)/%_tikz.pdf: tikz/%.tex
+$(INCLUDEDIR)/%_ptex.pdf: $(TEX_INCLUDEDIR)/%.tex
+	latex -output-directory $(INCLUDEDIR) $< &&\
+		echo "Echoing $*" &&\
+		dvips $(INCLUDEDIR)/$*.dvi -o $(INCLUDEDIR)/$*.ps &&\
+		$(FIXBB) $(INCLUDEDIR)/$*.ps &&\
+		ps2pdf $(INCLUDEDIR)/$*.ps $(INCLUDEDIR)/$*.pdf &&\
+		$(CROPPAGE) $(INCLUDEDIR)/$* $@ &&\
+		rm -vf $(INCLUDEDIR)/$*.*
+
+$(INCLUDEDIR)/%_tex.pdf: $(TEX_INCLUDEDIR)/%.tex
 	$(LATEX) -output-directory $(INCLUDEDIR) $< &&\
 		echo "Echoing $*" &&\
 		$(CROPPAGE) $(INCLUDEDIR)/$* $@ &&\
 		rm -vf $(INCLUDEDIR)/$*.*
 
-$(REPORT_NAME).pdf: $(TEXFILE) $(HEADER) ${PARTS:%=body/%.tex} eps tikz dia svg $(BIBLE)
+$(REPORT_NAME).pdf: $(TEXFILE) $(HEADER) ${PARTS:%=body/%.tex} eps tex_include dia svg $(BIBLE)
 	$(LATEX) $(TEXFILE)
 
-$(REPORT_NAME).ps: $(TEXFILE) $(HEADER) ${PARTS:%=%.tex} $(BIBLE) tikz diaps
+$(REPORT_NAME).ps: $(TEXFILE) $(HEADER) ${PARTS:%=%.tex} $(BIBLE) tex_include diaps
 	latex $(TEXFILE)
 	dvips $(REPORT_NAME).dvi
 
@@ -67,7 +83,7 @@ beamer:
 	cd $(PRESENTATION_DIR); make
 
 eps: ${EPSINCL:%=$(INCLUDEDIR)/%_eps.pdf}
-tikz: $(TIKZINCL:%=$(INCLUDEDIR)/%_tikz.pdf)
+tex_include: $(TEX_NOPDF_INCL:%=$(INCLUDEDIR)/%_ptex.pdf) $(TEX_INCL:%=$(INCLUDEDIR)/%_tex.pdf)
 dia: ${DIAINCL:%=$(INCLUDEDIR)/%_dia.pdf}
 diaps: ${DIAINCL:%=$(INCLUDEDIR)/%_dia.ps}
 svg: ${SVGINCL:%=$(INCLUDEDIR)/%_svg.pdf}
