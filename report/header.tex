@@ -74,10 +74,10 @@
   {\immediate\write18{#3}}\fi%
 }
 \newcommand{\includesvg}[1]{%
-  \executeiffilenewer{svg/#1.svg}{include/#1.pdf}%
+  \executeiffilenewer{svg/#1.svg}{#1.pdf}%
   {inkscape -z -D --file=svg/#1.svg %
-  --export-pdf=include/#1.pdf --export-latex}%
-  \input{include/#1.tex}%
+  --export-pdf=#1.pdf --export-latex}%
+  \input{#1.tex}%
 }
 
 %\oddsidemargin 0.5cm
