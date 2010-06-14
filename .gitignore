@@ -16,6 +16,7 @@
 *.blg
 *.bbl
 *.pdf
+!report/static_include/*.pdf
 *.wav
 *.mo
 */speaker_models/
