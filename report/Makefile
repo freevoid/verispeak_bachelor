@@ -22,7 +22,7 @@ INCLUDEDIR=include
 
 TEX_INCLUDEDIR=tex_include
 TEX_INCL=er_main
-TEX_NOPDF_INCL=seq_verification_nopdf
+TEX_NOPDF_INCL=
 
 DIAINCL= use_cases idef0_main idef0_pre enrollment_server_sd verification_server_sd enrollment_client_sd verification_client_sd main_arch deployment
 DIAPS = $(DIAINCL)
