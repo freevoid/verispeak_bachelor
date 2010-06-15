@@ -81,6 +81,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
         this_.applet.setUploadCompletionScript(this_.UPLOAD_COMPLETED_GLOBAL_NAME + '();');
         this_.applet.setUploadFailureScript(this_.UPLOAD_FAILED_GLOBAL_NAME + '();');
 
+        this_.applet.setAttribute("style", "width:1px;");
         this_.event("applet_loaded");
     };
 

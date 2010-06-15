@@ -1,11 +1,16 @@
 {% extends "voice/base.html" %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/voice.css" type="text/css" />
+{{ block.super }}
 <script src="{{ MEDIA_URL }}js/voice_common.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
+
+<div class="voice_auth_applet">
+    {% include "voice/applet.html" %}
+</div>
+
 <div class="voice_auth_wrapper">
     <h2 class="voice_auth_header">{% block auth_header %}{% endblock %}</h2>
     <div class="voice_auth_content"></div>
@@ -16,7 +21,6 @@
         <form action="" method="post" id="id_uploadConfirmation_form">
             {% block auth_form %}{% endblock %}
         </form>
-        {% include "voice/applet.html" %}
     </div>
 </div>
 

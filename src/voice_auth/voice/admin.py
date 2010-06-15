@@ -34,7 +34,12 @@ class LearningProcessAdmin(admin.ModelAdmin):
     list_filter = ('state_id',)
     date_hierarchy = 'start_time'
 
+class RecordSessionMetaAdmin(admin.ModelAdmin):
+    list_filter = ('gender',)
+    list_display = ('id', 'record_session', 'gender', 'prompt')
+
 admin.site.register(UploadedUtterance, UploadedUtteranceAdmin)
+admin.site.register(RecordSessionMeta, RecordSessionMetaAdmin)
 admin.site.register(RecordSession, RecordSessionAdmin)
 admin.site.register(VerificationProcess, VerificationProcessAdmin)
 admin.site.register(UniversalBackgroundModel)

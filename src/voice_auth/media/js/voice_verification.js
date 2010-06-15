@@ -32,6 +32,8 @@ function VerificationBlock (selector, params, urls) {
         verificating: "to_insufficient_to_verify"
     };
 
+    this.transitionTable["record"]["insufficient_to_verify"] = "to_recording";
+
 
     var this_ = this;
     this.monitorProgress = function() {
@@ -103,6 +105,13 @@ VerificationBlock.method('to_verificating', function (args) {
     this.maskButtons(false, false);
     this.monitorProgress();
 });
+
+VerificationBlock.method('to_insufficient_to_verify', function (args) {
+    this.state = "insufficient_to_verify";
+    this.pasteNote('Недостаточно данных для прохождения аутентификации. Пожалуйста, запишите фразу ещё раз.');
+    this.maskButtons(true, true);
+});
+
 
 VerificationBlock.method('to_error_in_verification', function (args) {
     this.state = "error_in_verification";

@@ -1,0 +1,23 @@
+{% extends "voice/base.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="mainContent">
+    <div class="voice_auth_header">
+        <h2>Вас приветствует система голосовой аутентификации пользователя!</h2>
+    </div>
+    <div class="voice_auth_content">
+        <p>Добро пожаловать на страницу системы голосовой аутентификации! В данный момент доступны следующие ресурсы:</p>
+
+        <ul>
+            <li><a href="{% url voice.views.verification %}">Вход в систему по голосу</a>;</li>
+            <li><a href="{% url voice.enrollment.initial %}">Регистрация в системе</a>;</li>
+            <li><a href="{% url voice.views.upload %}">Анонимная загрузка голосовых данных</a>.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

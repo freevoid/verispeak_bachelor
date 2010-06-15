@@ -1,7 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-
-# Uncomment the next two lines to enable the admin:
+from django.views.generic.simple import redirect_to
 from django.contrib import admin
 admin.autodiscover()
 
@@ -10,14 +9,33 @@ amqp.autodiscover()
 amqp.setup_queues()
 
 urlpatterns = patterns('',
-    #(r'^upload_sound/', 'voice_auth.amf.gateway.upload_gateway'),
+    (r'^$', redirect_to, {'url': '/voice/'}),
     (r'^voice/', include('voice.urls')),
 
-    # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 )
 
 if settings.DEBUG:
     urlpatterns += patterns('', url(r'^media/(?P<path>.*)$', 'django.views.static.serve', 
                                     {'document_root': settings.MEDIA_ROOT}),)
+
+urlpatterns += patterns('django.contrib.auth.views',
+        url(r'^accounts/login/', 'login', name='login'),
+        url(r'^accounts/logout/', 'logout', name='logout'))
+
+from django.views.generic.create_update import create_object
+from django.contrib.auth.forms import UserCreationForm
+urlpatterns += patterns('',
+        (r'^registration/', create_object,
+            {'form_class': UserCreationForm, 'template_name': 'registration/registration.html'},
+            'registration')
+        )
+
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+urlpatterns += patterns('',
+    (r'^users/', include('voice_stats.urls')),
+    (r'^accounts/profile/$', login_required(lambda request: redirect('voice_stats.user_profile', slug=request.user.username))),
+    )
 

@@ -1,0 +1,8 @@
+<li><a href="{% url voice.index %}">Главная страница</a></li>
+{% if not user.is_authenticated %}
+<li><a href="{% url login %}">Вход</a></li>
+<li><a href="{% url registration %}">Регистрация</a></li>
+{% else %}
+<li><a href="{% url logout %}">Выход</a></li>
+{% endif %}
+

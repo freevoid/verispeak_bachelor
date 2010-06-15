@@ -75,8 +75,11 @@ SECRET_KEY = '891h=_51$c*xry+*)rvbn)q^2+9^-5oohr*2zp9!(k*3a0+yva'
 RECORDING_SESSION_DIR = 'recordings'
 RECORDING_SESSION_DIR = 'recordings_production'
 MAX_SESSION_TTL = 5 # in minutes
-GLOBAL_LLR_TRESHHOLD = 1000.00
-MIN_UTTERANCE_COUNT_TO_ENROLL = 3
+GLOBAL_LLR_TRESHHOLD = 700.00
+MIN_UTTERANCE_COUNT_TO_ENROLL = 5
+
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
+        'voice.backends.VoiceBackend')
 
 SPEAKER_MODEL_CLASSNAME = 'CournapeauGMM'
 SPEAKER_MODEL_PARAMETERS = {'K': 16}
@@ -101,6 +104,12 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'HIDE_DJANGO_SQL': False,
+}
+
+
 INTERNAL_IPS = ('127.0.0.1',)
 
 ROOT_URLCONF = 'urls'
@@ -118,6 +127,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    relative_path("templates")
 )
 
 INSTALLED_APPS = (
@@ -131,5 +141,6 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
 
-    'voice'
+    'voice',
+    'voice_stats'
 )

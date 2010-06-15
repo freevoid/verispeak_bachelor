@@ -9,6 +9,17 @@
     margin-left:-150px;
 }
 
+.voice_auth_applet span {
+    position: absolute;
+    top: 40px;
+    left: 30px;
+}
+.voice_auth_applet applet {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .voice_auth_wrapper input[type=button], .voice_upload_confirm_form input[type=submit] {
     border:1px solid #000066;
     background:#CCCCFF;

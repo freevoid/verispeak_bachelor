@@ -52,8 +52,13 @@ def render_to(template):
     return renderer
 
 def implicit_render(func):
-    app_name = func.__module__.split('.', 1)[0]
+    splitted = func.__module__.rsplit('.', 2)
+    if len(splitted) <= 2:
+        app_name = splitted[0]
+    elif len(splitted) > 2:
+        app_name = splitted[1]
     template_name = '%s/%s.html' % (app_name, func.__name__)
+    print template_name
     return render_to(template_name)(func)
 
 def allowed_methods(*methods):

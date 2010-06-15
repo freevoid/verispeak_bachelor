@@ -7,10 +7,13 @@ from django.views.decorators.cache import cache_control
 from django.db import transaction
 from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
+from django.contrib.auth import authenticate, login
 
 from misc.snippets import allowed_methods, implicit_render, log_exception
 from misc.ip import dotted_quad_to_num
 from misc.amqp import register_queue, send_message
+
+import logging
 
 from exceptions import DoesNotExistError
 from models import UploadedUtterance, RecordSession, Speaker,\
@@ -40,8 +43,8 @@ DEFAULT_APPLET_PARAMS = {
         }
 
 APPLET_FILENAME = 'userfile'
-DEFAULT_APPLET_WIDTH = 1
-DEFAULT_APPLET_HEIGHT = 1
+DEFAULT_APPLET_WIDTH = 100
+DEFAULT_APPLET_HEIGHT = 50
 
 @allowed_methods('POST')
 @cache_control(private=True)
@@ -85,6 +88,11 @@ def verification_state(request):
     if state == verification_process.VERIFIED:
         if verification_process.verification_result:
             state = 'verification_success'
+            user = authenticate(username=request.GET.get('username'),
+                    session_id=session_id, verification_process=verification_process)
+            if user is not None and user.is_active:
+                logging.info("Logging user `%s` in.." % user.username)
+                login(request, user)
         else:
             state = 'verification_failed'
     return state
@@ -274,7 +282,7 @@ def upload_confirm(request):
 
     if confirm_form.is_valid():
         confirm_form.save()
-        return redirect(settings.LOGIN_URL)
+        return redirect('voice.index')
     raise TypeError
 
 @api_enabled()
