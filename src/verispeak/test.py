@@ -2,51 +2,34 @@
 import wave
 import features as features_module
 import processors as speech_processors
+from util import load_pickled_file
 import gmm as gmm_module, feature_suite
 
-def print_score((pos, (score, o, i))):
-    print u"%3d). %30s <-> %30s: %10.4f" % (pos, o.wave.filename, i.wave.filename, score)
-
-def test(soundfiles, features_class='MFCCFeaturesSlice', scoring_class='DTWScore'):
-    import scoring
-    waves = map(wave.Wave, soundfiles)
-    features = map(getattr(features_module, features_class), waves)
-    scorings = map(getattr(scoring, scoring_class), features)
-    for i, original in enumerate(scorings[:-1]):
-        for j in xrange(i+1, len(features)):
-            impostor = features[j]
-            original.score(impostor)
-            yield(original.score(impostor), original.original, impostor)
-
-def printout_test(soundfiles, features_class='MFCCFeaturesSlice',
-        scoring_class='DTWScore'):
-    map(print_score, enumerate(sorted(test(soundfiles,
-        features_class=features_class, scoring_class=scoring_class))))
-
-def timeseries(features_class, scoring_class, **kwargs):
-    printout_test(wave.listdir('sounds'),
-            features_class=features_class,
-            scoring_class=scoring_class)
-
-def gmm(features_class, gmm_class, phrase, model_order=8, **kwargs):
+def gmm(gmm_class, phrase, features_class='CommonMFCCStack', model_order=8, retries=5, train_args={}, **kwargs):
     features_class = getattr(speech_processors, features_class)
     gmm_class = getattr(gmm_module, gmm_class)
     fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')
     print 'Got %d samples' % len(fs1.samples)
     m = gmm_class(K=model_order)
-    try:
-        print m.train(fs1.flat)
-    except KeyboardInterrupt:
-        pass
+    retry = 0
+    while retry < retries:
+        try:
+            print m.train(fs1.flat, **train_args)
+        except KeyboardInterrupt:
+            break
+        except:
+            print "Error occured, retrying.."
+            retry += 1
+        else:
+            break
     filename = phrase + '.gmm'
     m.dump_to_file(filename)
     print "GMM Codebook saved to file: '%s'" % filename
 
-def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
+def gmmcmp(gmm_file, features_class='CommonMFCCStack', **kwargs):
     features_class = getattr(speech_processors, features_class)
-    gmm_class = getattr(gmm_module, gmm_class)
-    gmm = gmm_class.load(gmm_file)
+    gmm = load_pickled_file(open(gmm_file))
     print "Got gmm:", gmm
     assert(hasattr(gmm, 'loglikelihood'))
     
@@ -60,20 +43,19 @@ def gmmcmp(features_class, gmm_file, gmm_class, **kwargs):
         filename = d[target_score]
         print "%15.5f %s" % (target_score, filename)
 
-def gmm_retrain(features_class, gmm_file, gmm_class, phrase=None, **kwargs):
+def gmm_retrain(gmm_file, features_class='CommonMFCCStack', phrase=None, train_args={}, **kwargs):
     if phrase is None:
         import os
         phrase = os.path.basename(gmm_file).rsplit('.', 1)[0]
     features_class = getattr(speech_processors, features_class)
-    gmm_class = getattr(gmm_module, gmm_class)
-    gmm = gmm_class.load(gmm_file)
+    gmm = load_pickled_file(open(gmm_file))
 
     fs1 = feature_suite.FeaturesSuite(phrase, speech_processor=features_class())
     fs1.read_dir('sounds')
 
     print 'Got %d samples' % len(fs1.samples)
     try:
-        print gmm.train(fs1.flat, no_init=True)
+        print gmm.train(fs1.flat, no_init=True, **train_args)
     except KeyboardInterrupt:
         pass
     gmm.dump_to_file(gmm_file)

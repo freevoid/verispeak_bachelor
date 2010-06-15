@@ -2,6 +2,16 @@
 
 {% block extrahead %}
 {{ block.super }}
+<script language="javascript">
+function toVerification(url) { 
+    var username = $("#id_login_input").val();
+    if (username) {
+        window.location = url + '?username=' + username;
+    } else {
+        alert("Введите имя учетной записи в соответствующее поле для продолжения.");
+    }
+};
+</script>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +23,7 @@
         <p>Добро пожаловать на страницу системы голосовой аутентификации! В данный момент доступны следующие ресурсы:</p>
 
         <ul>
-            <li><a href="{% url voice.views.verification %}">Вход в систему по голосу</a>;</li>
+            <li><a href="javascript:toVerification('{% url voice.views.verification %}');">Вход в систему по голосу</a> (имя учетной записи: <input type=text id=id_login_input />);</li>
             <li><a href="{% url voice.enrollment.initial %}">Регистрация в системе</a>;</li>
             <li><a href="{% url voice.views.upload %}">Анонимная загрузка голосовых данных</a>.</li>
         </ul>

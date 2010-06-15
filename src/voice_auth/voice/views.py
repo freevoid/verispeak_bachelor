@@ -38,12 +38,12 @@ DEFAULT_APPLET_PARAMS = {
         'readyScript': 'recordAppletLoaded();',
         'packButtons': 'yes',
         'frameRate': 16000,
-        'trimEnable': 'yes',
+        'trimEnable': 'no',
         'maxRecordTime': 60
         }
 
 APPLET_FILENAME = 'userfile'
-DEFAULT_APPLET_WIDTH = 100
+DEFAULT_APPLET_WIDTH = 200
 DEFAULT_APPLET_HEIGHT = 50
 
 @allowed_methods('POST')

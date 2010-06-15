@@ -76,6 +76,8 @@ def verification(verification_process_id, speaker_model_id):
         # XXX defer save() to state transition?
         verification_process.target_session.authentic = result
         verification_process.target_session.save()
+
+        verification_process.finish_time = datetime.datetime.now()
         verification_process.transition(verification_process.VERIFIED)
 
 @log_exceptions
@@ -111,6 +113,7 @@ def enrollment(enrollment_process_id, target_speaker_id):
                 learning_process=enrollment_process)
         speaker_model.save() # implies filepath generation
         model.dump_to_file(speaker_model.model_file.path)
+        #speaker_model.active_prop = True
 
         enrollment_process.finish_time = datetime.datetime.now()
         enrollment_process.transition(enrollment_process.FINISHED)

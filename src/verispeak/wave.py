@@ -1,8 +1,8 @@
 import os.path
 
-import misc
-import utils
-from base import Object
+from verispeak import misc
+from verispeak import util
+from verispeak.base import Object
 
 WAV_EXT = '.wav'
 SUPPORTED_FORMATS = (WAV_EXT,)
@@ -74,7 +74,7 @@ class Wave(Object):
 
         if isinstance(other, Wave):
             return zip(*misc.coerce(self._data, other._data))[0]
-        elif utils.isiterable(other):
+        elif util.isiterable(other):
             if len(other) == 2:
                 return zip(*misc.coerce(self._data, other))[0]
             else:

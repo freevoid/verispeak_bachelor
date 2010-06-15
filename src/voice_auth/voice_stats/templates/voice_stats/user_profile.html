@@ -3,5 +3,22 @@
 {% block content %}
 
 <h2>Добро пожаловать, {{ user.username }}!</h2>
+
+<div id="lastSessionInfo">
+<h2>Данные о последней сессии аутентификации</h2>
+    {% with last_verification_process as last_session %}
+        <p>№{{ last_session.id }}</p>
+        <p>Дата начала: {{ last_session.start_time }}</p>
+        <p>Дата завершения: {{ last_session.finish_time|default:"Недоступно" }}</p>
+        <p>Результат: {% if last_session.verification_result %}Принято{% else %}Отклонено{% endif %}</p>
+        <p>LLR: {{ last_session.verification_score }}</p>
+    {% endwith %}
+</div>
+
+<h2>Навигация</h2>
+<ul>
+{% include "voice/navigation.html" %}
+</ul>
+
 {% endblock %}
 

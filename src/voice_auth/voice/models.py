@@ -24,6 +24,9 @@ class Speaker(User):
                 is_active=True)
 
 class RecordSession(models.Model):
+    class Meta:
+        get_latest_by = 'created_time'
+
     session_id = models.CharField(max_length=32, unique=True)
     created_time = models.DateTimeField(auto_now_add=True)
     target_speaker = models.ForeignKey(Speaker, null=True)
@@ -50,6 +53,9 @@ class RecordSession(models.Model):
                 self.utterance_count)
 
 class LearningProcess(StateMachine):
+
+    class Meta:
+        get_latest_by = 'start_time'
 
     WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
@@ -89,7 +95,9 @@ class LearningProcess(StateMachine):
                 .values_list('utterance_file') for s in self.sample_sessions.all()))
 
 class SpeakerModel(models.Model):
-    model_file = models.FileField(upload_to='speaker_models')
+    MODELS_PATH = 'speaker_models'
+
+    model_file = models.FileField(upload_to=MODELS_PATH)
     speaker = models.ForeignKey(Speaker)
     learning_process = models.OneToOneField(LearningProcess, blank=True, null=True)
     is_active = models.BooleanField(default=False)
@@ -130,7 +138,7 @@ class SpeakerModel(models.Model):
         super(SpeakerModel, self).save(*args, **kwargs)
 
     def generate_model_filename(self):
-        name = ['%04d' % self.pk, '_s%04d' % self.speaker.id]
+        name = [self.MODELS_PATH, '/', '%04d' % self.pk, '_s%04d' % self.speaker.id]
         if self.learning_process:
             name.append('_e%04d' % self.learning_process.id)
         name.append('.gmm')
@@ -212,6 +220,8 @@ class VerificationProcess(StateMachine):
     class Meta:
         verbose_name = _("Verification process")
         verbose_name_plural = _("Verification processes")
+        get_latest_by = 'start_time'
+
     WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
     CANCELED = 'canceled'

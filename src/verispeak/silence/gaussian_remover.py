@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy as np
 
 from verispeak.features.segmentaxis import segment_axis
@@ -12,12 +13,10 @@ def remove_silence(wave, empirical_silence_time=50, window_length_ms=10, w=0.5):
     triple_sigma = 3*np.sqrt(np.square(slice - mu).sum() / n)
     print mu, triple_sigma
 
-    def is_voiced_sample(sample):
-        return abs(sample - mu) > triple_sigma
     def is_voiced(window):
         #return abs(window.mean() - mu) > triple_sigma
-        wlen = len(window)
-        voiced_len = sum(int(is_voiced_sample(sample)) for sample in window)
+        wlen = window.size
+        voiced_len = np.where(np.abs(window - mu) > triple_sigma)[0].size
         return voiced_len > w*wlen
 
     frames = segment_axis(wave.waveform, window)
@@ -38,7 +37,7 @@ if __name__=='__main__':
     window_length_ms = 10
 
     print "Unsilencing `%s`" % options.infile
-    from core.wave import Wave
+    from verispeak.wave import Wave
     w = Wave(options.infile)
     w = remove_silence(w, int(options.empirical_silence_time), window_length_ms, w=float(options.weight))
     w.write_file(options.outfile)

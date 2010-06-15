@@ -14,7 +14,7 @@ class GMMTrainingProcedure(TrainingProcedure):
     pass
 
 class EM(GMMTrainingProcedure):
-    MAX_ITERATION = 150
+    MAX_ITERATION = 30
 
     GLOBAL_COV_ABS_MIN = np.float64(10.0)
 
@@ -70,8 +70,11 @@ class EM(GMMTrainingProcedure):
         new_likelihood = gmm.loglikelihood(samples)
         #print "new likelihood: %s." % new_likelihood,
         print new_likelihood > current_likelihood, new_likelihood - current_likelihood
+        return current_likelihood, new_likelihood
 
-    def train(self, gmm, samples, no_init=False, max_iteration=MAX_ITERATION, **extra_args):
+    def train(self, gmm, samples,
+            no_init=False, maxiter=MAX_ITERATION, thresh=1e-5,
+            **extra_args):
         if hasattr(samples, 'next'):
             samples = list(samples)
         samples = np.array(samples)
@@ -80,17 +83,19 @@ class EM(GMMTrainingProcedure):
         if not no_init:
             gmm.initialize(samples)
 
-        def is_enough():
-            return iter_count > max_iteration
+        def is_enough(current_likelihood, new_likelihood):
+            avg = 0.5 * (current_likelihood + new_likelihood)
+            delta = (new_likelihood - current_likelihood)
+            return np.abs(delta / avg) < thresh
 
         nT = len(samples)
-        iter_count = 0
 
         try:
-            while not is_enough():
-                iter_count += 1
+            for iter_count in range(maxiter):
                 T = self.expectation(gmm, nT, samples)
-                self.maximization(gmm, nT, T, samples, **extra_args)
+                current_likelihood, new_likelihood = self.maximization(gmm, nT, T, samples, **extra_args)
+                if is_enough(current_likelihood, new_likelihood):
+                    break
         except KeyboardInterrupt:
             return iter_count
 

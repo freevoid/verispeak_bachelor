@@ -1,5 +1,3 @@
-from verispeak.scoring import DTWScore
-from verispeak.misc import calc_treshhold
 from verispeak.base import Object
 from verispeak.wave import listdir
 
@@ -31,7 +29,4 @@ class FeaturesSuite(Object):
         basename = os.path.basename(path)
         prefix = basename.rsplit('_', 1)[0]
         return prefix == self.phrase_prefix
-
-    def calc_treshhold(self, score_class=DTWScore, other=[]):
-        calc_treshhold(score_class, self.samples, other)
 
