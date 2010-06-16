@@ -33,6 +33,8 @@ class CournapeauGMM(Codebook):
         return self.gm.pdf(samples)
 
     def loglikelihood(self, samples):
+        #if not isinstance(samples, np.ndarray):
+        #    samples = np.fromiter(samples, dtype=float)
         gmm = em.GMM(self.gm)
         gmm.isinit = True
         return gmm.likelihood(samples)

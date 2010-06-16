@@ -32,48 +32,28 @@ if action == 'gmm':
         gmm_class = DEFAULT_GMM_CLASS
         features_class = DEFAULT_EXTRACTOR
 
-elif action == 'timeseries':
-    features_class = sys.argv[2]
-    try:
-        scoring_class = sys.argv[3]
-    except:
-        scoring_class = 'DTWScore'
 elif action == 'gmmcmp':
     try:
         gmm_file = sys.argv[2]
-
         try:
-            gmm_class = sys.argv[3]
-            try:
-                features_class = sys.argv[4]
-            except:
-                features_class = DEFAULT_EXTRACTOR
+            features_class = sys.argv[3]
         except:
             features_class = DEFAULT_EXTRACTOR
-            gmm_class = DEFAULT_GMM_CLASS
     except:
-        gmm_class = DEFAULT_GMM_CLASS
         gmm_file = 'инсценировать.gmm'
         features_class = DEFAULT_EXTRACTOR
 elif action == 'gmm_retrain':
     try:
         gmm_file = sys.argv[2]
         try:
-            gmm_class = sys.argv[3]
-            try:
-                features_class = sys.argv[4]
-            except:
-                features_class = DEFAULT_EXTRACTOR
+            features_class = sys.argv[3]
         except:
             features_class = DEFAULT_EXTRACTOR
-            gmm_class = DEFAULT_GMM_CLASS
     except:
         gmm_file = 'инсценировать.gmm'
-        gmm_class = DEFAULT_GMM_CLASS
         features_class = DEFAULT_EXTRACTOR
 else:
-    features_class = 'MFCCFeaturesSlice'
-    action = 'timeseries'
+    action = 'gmmcmp'
 
 from verispeak import test
 f=getattr(test, action)

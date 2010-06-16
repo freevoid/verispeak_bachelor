@@ -25,7 +25,12 @@ def delta_mfcc(feature_vectors):
 
 common_normalization = (mean_normalization, delta_mfcc)
 
-class MFCCFeatureVectors(Object):
+class FeatureVectors(Object):
+    def __iter__(self):
+        return iter(self.features)
+
+
+class MFCCFeatureVectors(FeatureVectors):
     def __init__(self, framed_speech, nceps=13):
         super(MFCCFeatureVectors, self).__init__()
 
@@ -34,9 +39,9 @@ class MFCCFeatureVectors(Object):
         #NOTE delete first coefficient from feature set
         self.features = self.features[:, 1:]
 
-    def __iter__(self):
-        return iter(self.features)
-
     def __unicode__(self):
         return u"%s, %d feature frames" % (self.frames, len(self.features),)
+
+def concatenate_vectors(feature_vectors_list):
+    return np.concatenate([f.features for f in feature_vectors_list])
 
