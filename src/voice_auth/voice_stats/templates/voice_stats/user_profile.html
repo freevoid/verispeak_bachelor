@@ -2,8 +2,12 @@
 
 {% block content %}
 
+<div class="mainContent">
+<div class="voice_site_header">
 <h2>Добро пожаловать, {{ user.username }}!</h2>
+</div>
 
+<div class="voice_site_content">
 <div id="lastSessionInfo">
 <h2>Данные о последней сессии аутентификации</h2>
     {% with last_verification_process as last_session %}
@@ -20,5 +24,7 @@
 {% include "voice/navigation.html" %}
 </ul>
 
+</div>
+</div>
 {% endblock %}
 
