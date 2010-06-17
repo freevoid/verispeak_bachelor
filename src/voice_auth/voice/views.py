@@ -37,7 +37,7 @@ DEFAULT_APPLET_PARAMS = {
         'timeChangeInterval': '100',
         'readyScript': 'recordAppletLoaded();',
         'packButtons': 'yes',
-        'frameRate': 16000,
+        'frameRate': 22000,
         'trimEnable': 'no',
         'maxRecordTime': 60
         }

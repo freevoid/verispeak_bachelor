@@ -95,3 +95,25 @@
     text-align: left;
 }
 
+.mainContent {
+    position: absolute;
+    width: 800px;
+    margin-left: -400px;
+    left: 50%;
+}
+
+.voice_site_header {
+    border:1px solid black;
+    font-family:serif;
+    font-size:1.3ex;
+    margin:-1px -1px 5px;
+    padding-left:1ex;
+    text-align:center;
+    background:#dddddd;
+}
+
+.voice_site_content {
+    border:1px solid black;
+    padding: 5px 2ex;
+    font-size:0.9em;
+}

@@ -38,6 +38,6 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns += patterns('',
     (r'^users/', include('voice_stats.urls')),
-    (r'^accounts/profile/$', login_required(lambda request: redirect('voice_stats.user_profile', slug=request.user.username))),
+    (r'^accounts/profile/$', login_required(lambda request: redirect('voice_stats.views.user_profile', username=request.user.username))),
     )
 
