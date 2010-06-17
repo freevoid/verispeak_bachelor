@@ -1,4 +1,4 @@
-from django.contrib.admin.models import User
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_str
@@ -52,54 +52,11 @@ class RecordSession(models.Model):
                 self.target_speaker,
                 self.utterance_count)
 
-class LearningProcess(StateMachine):
-
-    class Meta:
-        get_latest_by = 'start_time'
-
-    WAIT_FOR_DATA = 'waiting_for_data'
-    STARTED = 'started'
-    FAILED = 'failed'
-    INTERRUPTED = 'interrupted'
-    FINISHED = 'finished'
-
-    initial_state = WAIT_FOR_DATA
-
-    states = ((WAIT_FOR_DATA, _('Waiting for speech data')),
-            (STARTED, _('Processing..')),
-            (FAILED, _('Learning failed')),
-            (INTERRUPTED, _('Learning canceled')),
-            (FINISHED, _('Learning finished')),
-            )
-
-    state_id = models.CharField(max_length=24, choices=states)
-    #STATE_DISPLAY = dict(states)
-
-    transition_table = {
-            WAIT_FOR_DATA: (STARTED, INTERRUPTED, WAIT_FOR_DATA),
-            STARTED: (FAILED, FINISHED, WAIT_FOR_DATA, INTERRUPTED),
-            }
-
-    start_time = models.DateTimeField(auto_now_add=True)
-    finish_time = models.DateTimeField(blank=True, null=True)
-
-    sample_sessions = models.ManyToManyField(RecordSession)
-
-    def sample_sessions_count(self):
-        return self.sample_sessions.count()
-
-    def sample_filepath_iterator(self):
-        media_root = settings.MEDIA_ROOT
-        return (os.path.join(media_root, filename) for filename in flatiter(s.uploadedutterance_set\
-                .filter(is_trash=False)\
-                .values_list('utterance_file') for s in self.sample_sessions.all()))
-
 class SpeakerModel(models.Model):
     MODELS_PATH = 'speaker_models'
 
     model_file = models.FileField(upload_to=MODELS_PATH)
     speaker = models.ForeignKey(Speaker)
-    learning_process = models.OneToOneField(LearningProcess, blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
     def _set_active(self, active):
@@ -149,6 +106,52 @@ class SpeakerModel(models.Model):
 
     def __unicode__(self):
         return u'%s %s [%s]' % (self.speaker, self.is_active, self.model_file.name)
+
+
+class LearningProcess(StateMachine):
+
+    class Meta:
+        get_latest_by = 'start_time'
+
+    WAIT_FOR_DATA = 'waiting_for_data'
+    STARTED = 'started'
+    FAILED = 'failed'
+    INTERRUPTED = 'interrupted'
+    FINISHED = 'finished'
+
+    initial_state = WAIT_FOR_DATA
+
+    states = ((WAIT_FOR_DATA, _('Waiting for speech data')),
+            (STARTED, _('Processing..')),
+            (FAILED, _('Learning failed')),
+            (INTERRUPTED, _('Learning canceled')),
+            (FINISHED, _('Learning finished')),
+            )
+
+    state_id = models.CharField(max_length=24, choices=states)
+    #STATE_DISPLAY = dict(states)
+
+    transition_table = {
+            WAIT_FOR_DATA: (STARTED, INTERRUPTED, WAIT_FOR_DATA),
+            STARTED: (FAILED, FINISHED, WAIT_FOR_DATA, INTERRUPTED),
+            }
+
+    start_time = models.DateTimeField(auto_now_add=True)
+    finish_time = models.DateTimeField(blank=True, null=True)
+
+    sample_sessions = models.ManyToManyField(RecordSession)
+
+    retrain_model = models.ForeignKey(SpeakerModel, blank=True, null=True)
+    result_model = models.OneToOneField(SpeakerModel, related_name='learning_process', blank=True, null=True)
+
+    def sample_sessions_count(self):
+        return self.sample_sessions.count()
+
+    def sample_filepath_iterator(self):
+        media_root = settings.MEDIA_ROOT
+        return (os.path.join(media_root, filename) for filename in flatiter(s.uploadedutterance_set\
+                .filter(is_trash=False)\
+                .values_list('utterance_file') for s in self.sample_sessions.all()))
 
 class UniversalBackgroundModel(models.Model):
     model_file = models.FileField(upload_to='ubm')
