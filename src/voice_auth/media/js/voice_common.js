@@ -33,7 +33,14 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     
 
     var transitionTable = {
-        created: {undefined: "to_initial"},
+        created: {
+            undefined: "to_created",
+            applet_loaded: "to_initial"
+        },
+        applet_loaded: {
+            undefined: "to_applet_loaded",
+            created: "to_initial"
+        },
         record: {
             initial: "to_recording",
             insufficient_to_upload: "to_recording"
@@ -224,6 +231,18 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
 }
 
 // Default state transitions
+BaseVoiceBlock.method('to_created', function (args) {
+    this.state = "created";
+    this.setLoading("Ожидается загрузка апплета..");
+    this.maskButtons(false, true);
+});
+
+BaseVoiceBlock.method('to_applet_loaded', function (args) {
+    this.state = "applet_loaded";
+    this.setLoading("Апплет загружен, завершение инициализации..");
+    this.maskButtons(false, true);
+});
+
 BaseVoiceBlock.method('to_initial', function (args) {
     this.state = "initial";
     this.pasteNote("Нажмите кнопку &laquo;Запись&raquo;, произнесите ключевую фразу, и нажмите на кнопку &laquo;Стоп&raquo;.");
