@@ -18,6 +18,8 @@ class Speaker(User):
     """
     class Meta:
         proxy = True
+        verbose_name = _("Speaker")
+        verbose_name_plural = _("Speakers")
 
     def get_active_model(self):
         return SpeakerModel.objects.get(speaker=self,
@@ -26,6 +28,9 @@ class Speaker(User):
 class RecordSession(models.Model):
     class Meta:
         get_latest_by = 'created_time'
+        verbose_name = _("Record session")
+        verbose_name_plural = _("Record sessions")
+
 
     session_id = models.CharField(max_length=32, unique=True)
     created_time = models.DateTimeField(auto_now_add=True)
@@ -53,6 +58,11 @@ class RecordSession(models.Model):
                 self.utterance_count)
 
 class SpeakerModel(models.Model):
+    class Meta:
+        get_latest_by = 'learning_process__finish_time'
+        verbose_name = _('Speaker model')
+        verbose_name_plural = _('Speaker models')
+
     MODELS_PATH = 'speaker_models'
 
     model_file = models.FileField(upload_to=MODELS_PATH)
@@ -101,17 +111,15 @@ class SpeakerModel(models.Model):
         name.append('.gmm')
         return ''.join(name)
 
-    class Meta:
-        get_latest_by = 'learning_process__finish_time'
-
     def __unicode__(self):
         return u'%s %s [%s]' % (self.speaker, self.is_active, self.model_file.name)
-
 
 class LearningProcess(StateMachine):
 
     class Meta:
         get_latest_by = 'start_time'
+        verbose_name = _('Learning process')
+        verbose_name_plural = _('Learning processes')
 
     WAIT_FOR_DATA = 'waiting_for_data'
     STARTED = 'started'
@@ -159,11 +167,18 @@ class UniversalBackgroundModel(models.Model):
 
     class Meta:
         get_latest_by = 'created_time'
+        verbose_name = _('Universal background model')
+        verbose_name_plural = _('Universal background models')
 
     def __unicode__(self):
         return u"[%s %s]" % (self.pk, self.model_file.name)
 
 class UploadedUtterance(models.Model):
+    class Meta:
+        get_latest_by = 'uploaded_date'
+        verbose_name = _('Uploaded utterance')
+        verbose_name_plural = _('Uploaded utterances')
+
     def get_filename(instance, filename=None):
         now = datetime.datetime.now()
         stamp = now.strftime("%H%M%S%f")
@@ -256,6 +271,10 @@ class VerificationProcess(StateMachine):
     verificated_by = models.ForeignKey(LLRVerificator, blank=True, null=True, verbose_name=_('verificated by'))
 
 class RecordSessionMeta(models.Model):
+    class Meta:
+        verbose_name = _("Record session meta data")
+        verbose_name_plural = _("Record sessions meta data")
+
     record_session = models.OneToOneField(RecordSession)
     gender = models.CharField(max_length=1, default='M',
             verbose_name=_('gender'),
