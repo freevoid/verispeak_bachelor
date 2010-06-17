@@ -41,3 +41,8 @@ urlpatterns += patterns('',
     (r'^accounts/profile/$', login_required(lambda request: redirect('voice_stats.views.user_profile', username=request.user.username))),
     )
 
+
+urlpatterns += patterns('',
+    (r'^favicon\.ico$', redirect_to, {'url': '/media/img/favicon.ico'}),
+    )
+
