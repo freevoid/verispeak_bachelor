@@ -1,5 +1,5 @@
 function VerificationBlock (selector, params, urls) {
-    console.log("VerBlock INIT");
+
     BaseVoiceBlock.call(this, selector, params, urls, true);
 
     this.transitionTable["cancel"] = {
@@ -37,16 +37,16 @@ function VerificationBlock (selector, params, urls) {
 
     var this_ = this;
     this.monitorProgress = function() {
-        console.log("Monitoring..");
+
         $.get(this_.urls.monitorURL, this_.sessionContext(),
             function (data) {
-                console.log("Monitor state:", data.result, data.message);
+
 
                 var code = data.result;
                 if (code == 0) {
                     var state = data.message;
                     if (state == "verification_success") {
-                        console.log("Verificated!");
+
                         this_.event("verification_success");
                     } else if (state == "verification_failed") {
                         this_.event("verification_failed");
@@ -72,13 +72,13 @@ VerificationBlock.inherits(BaseVoiceBlock);
 
 VerificationBlock.method('to_upload_completed', function (args) {
     this.uber('to_upload_completed');
-    console.log("Proceeding to verification..");
+
     var this_ = this;
     $.post(this.urls.confirmURL, this.sessionContext(),
             function (data) {
-                console.log("Got response:", data, data.result);
+
                 if (data.result == 0) { // all ok
-                    console.log("starting verificating phase");
+
                     this_.event("verification_started");
                 } else {
                     alert("Необработанная ошибка:", data);
@@ -88,7 +88,7 @@ VerificationBlock.method('to_upload_completed', function (args) {
 });
 
 VerificationBlock.method('cancel_verification', function (args) {
-    console.log("Canceled");
+
     $.post(cancelURL, getSessionContext(verificationBlock),
             function (data) {
                 if (data.result == 0) {

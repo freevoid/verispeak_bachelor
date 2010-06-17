@@ -59,19 +59,19 @@ function UploadingBlock (selector, params, urls) {
 
     var this_ = this;
     this.monitorProgress = function() {
-        console.log("Monitoring..");
+
         $.ajax({
             type: 'GET',
             url: this_.urls.monitorURL,
             data: this_.sessionContext(),
             success: function (data) {
-                console.log("Monitor state:", data.result, data.message);
+
 
                 var code = data.result;
                 if (code == 0) {
                     var state = data.message;
                     if (state == "finished") {
-                        console.log("Learning phase completed!");
+
                         this_.event("learning_success");
                     } else if (state == "waiting_for_data") {
                         this_.event("insufficient_to_enroll");
@@ -88,7 +88,7 @@ function UploadingBlock (selector, params, urls) {
                 }
             },
             error: function (data) {
-                console.error('Error in request:', data);
+
                 setTimeout(this_.monitorProgress, this_.monitorDelay);
             },
             dataType: "json"
@@ -122,7 +122,7 @@ UploadingBlock.method('to_upload_completed', function (args) {
 });
 
 UploadingBlock.method('cancel_registration', function (args) {
-    console.log("Canceling");
+
     this_ = this;
     $.post(this.urls.cancelURL, this.sessionContext(),
             function (data) {

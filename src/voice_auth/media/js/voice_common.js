@@ -4,24 +4,24 @@ function StateMachine (transitionTable) {
     // Main FSM function: search for action in transitionTable depending
     // on current state
     this.event = function (event_, args) {
-        console.log("GOT EVENT:", event_, "STATE:", this.state);
+
         var actions = this.transitionTable[event_];
         if (typeof(actions) != "undefined") {
             var action = actions[this.state];
             if (typeof(action) != "undefined") {
-                console.info("Calling action", action);
+
                 this[action].call(this, args);
             } else {
-                console.warn("No transition:", event_, this.state);
+
             }
         } else {
-            console.warn("Unrecognized event:", event_);
+
         }
     };
 }
 
 function BaseVoiceBlock (selector, params, urls, defer_creation) {
-    console.log("INIT");
+
     if (typeof(selector) == "undefined") {
         return;
     }
@@ -58,23 +58,23 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     };
     StateMachine.call(this, transitionTable);
 
-    console.log("Init BaseVoiceBlock", selector, params, urls);
+
     
     // PUT GLOBAL CALLBACKS
 
     this.uploadCompleted = function () {
-        console.log("Uploaded!");
+
         this_.event("upload_completed");
     };
 
     this.uploadFailed = function () {
-        console.log("Upload failed:(");
+
         this_.event("upload_failed");
     };
 
     var this_ = this;
     this.appletReadyScript = function () {
-        console.log("Applet loaded", this_);
+
         this_.applet = document[params.appletName];
         window[this_.UPLOAD_COMPLETED_GLOBAL_NAME] = this_.uploadCompleted;
         window[this_.UPLOAD_FAILED_GLOBAL_NAME] = this_.uploadFailed;
@@ -88,7 +88,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     // handle applet state changing and call
     // appropriate callback method, if defined
     this.recordStateChanged = function (from, to) {
-        console.log("State changed:", from, "=>", to);
+
         var callback_name = "record_" + from + "_to_" + to;
         if (typeof(this_[callback_name]) != "undefined") {
             this_[callback_name].call(this_);
@@ -121,7 +121,7 @@ function BaseVoiceBlock (selector, params, urls, defer_creation) {
     this.appletName = params.appletName || "ListenUpRecorder";
     this.monitorDelay = params.monitorDelay || 2000; // 2 sec polling
 
-    console.log('Applet name:', this.appletName);
+
 
     // BUTTONS CALLBACKS
     this.recordButtonClicked = function () {
@@ -257,7 +257,7 @@ BaseVoiceBlock.method('to_uploading', function (args) {
 BaseVoiceBlock.method('to_paused', function (args) {
     this.state = "paused";
     this.block.find(this.RECORD_BUTTON_SELECTOR).val("Запись");
-    console.log("Recorded utterance, going to send..");
+
     if (this.canSendToVerification()) {
         this.event("ready_to_upload");
     } else {
