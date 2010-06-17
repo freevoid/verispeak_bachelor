@@ -60,6 +60,7 @@ def verification(verification_process_id, speaker_model_id):
     # for now we have verificator and link to all uploaded utterances,
     # so we can verificate them
     try:
+        logging.info("Trying to verificate record session %s.." % verification_process.target_session.pk)
         result, score = verificate(verification_process.target_session,
                 verificator)
     except NeedMoreDataError:
@@ -117,4 +118,5 @@ def enrollment(enrollment_process_id, target_speaker_id):
 
         enrollment_process.finish_time = datetime.datetime.now()
         enrollment_process.transition(enrollment_process.FINISHED)
+        speaker_model.active_prop = True
 
