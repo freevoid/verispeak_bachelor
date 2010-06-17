@@ -14,6 +14,7 @@ class Migration(SchemaMigration):
             ('session_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=32)),
             ('created_time', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('target_speaker', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True)),
+            ('authentic', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
             ('remote_ip', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('voice', ['RecordSession'])
@@ -45,14 +46,32 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('voice', ['SpeakerModel'])
 
+        # Adding model 'UniversalBackgroundModel'
+        db.create_table('voice_universalbackgroundmodel', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('model_file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
+            ('created_time', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal('voice', ['UniversalBackgroundModel'])
+
         # Adding model 'UploadedUtterance'
         db.create_table('voice_uploadedutterance', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('utterance_file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('uploaded_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('is_trash', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
             ('session', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.RecordSession'])),
         ))
         db.send_create_signal('voice', ['UploadedUtterance'])
+
+        # Adding model 'LLRVerificator'
+        db.create_table('voice_llrverificator', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('treshhold', self.gf('django.db.models.fields.FloatField')()),
+            ('null_estimator', self.gf('django.db.models.fields.related.OneToOneField')(related_name='llr_verificator', unique=True, to=orm['voice.SpeakerModel'])),
+            ('alternative_estimator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.UniversalBackgroundModel'], blank=True)),
+        ))
+        db.send_create_signal('voice', ['LLRVerificator'])
 
         # Adding model 'VerificationProcess'
         db.create_table('voice_verificationprocess', (
@@ -62,9 +81,20 @@ class Migration(SchemaMigration):
             ('target_session', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.RecordSession'])),
             ('finish_time', self.gf('django.db.models.fields.DateTimeField')(null=True)),
             ('verification_result', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
-            ('verificated_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.SpeakerModel'], null=True, blank=True)),
+            ('verification_score', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('verificated_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.LLRVerificator'], null=True, blank=True)),
         ))
         db.send_create_signal('voice', ['VerificationProcess'])
+
+        # Adding model 'RecordSessionMeta'
+        db.create_table('voice_recordsessionmeta', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('record_session', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['voice.RecordSession'], unique=True)),
+            ('gender', self.gf('django.db.models.fields.CharField')(default='M', max_length=1)),
+            ('prompt', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
+        ))
+        db.send_create_signal('voice', ['RecordSessionMeta'])
 
 
     def backwards(self, orm):
@@ -81,11 +111,20 @@ class Migration(SchemaMigration):
         # Deleting model 'SpeakerModel'
         db.delete_table('voice_speakermodel')
 
+        # Deleting model 'UniversalBackgroundModel'
+        db.delete_table('voice_universalbackgroundmodel')
+
         # Deleting model 'UploadedUtterance'
         db.delete_table('voice_uploadedutterance')
 
+        # Deleting model 'LLRVerificator'
+        db.delete_table('voice_llrverificator')
+
         # Deleting model 'VerificationProcess'
         db.delete_table('voice_verificationprocess')
+
+        # Deleting model 'RecordSessionMeta'
+        db.delete_table('voice_recordsessionmeta')
 
 
     models = {
@@ -133,13 +172,29 @@ class Migration(SchemaMigration):
             'start_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'state_id': ('django.db.models.fields.CharField', [], {'max_length': '24'})
         },
+        'voice.llrverificator': {
+            'Meta': {'object_name': 'LLRVerificator'},
+            'alternative_estimator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.UniversalBackgroundModel']", 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'null_estimator': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'llr_verificator'", 'unique': 'True', 'to': "orm['voice.SpeakerModel']"}),
+            'treshhold': ('django.db.models.fields.FloatField', [], {})
+        },
         'voice.recordsession': {
             'Meta': {'object_name': 'RecordSession'},
+            'authentic': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'created_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'remote_ip': ('django.db.models.fields.IntegerField', [], {}),
             'session_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '32'}),
             'target_speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
+        },
+        'voice.recordsessionmeta': {
+            'Meta': {'object_name': 'RecordSessionMeta'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'prompt': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
+            'record_session': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['voice.RecordSession']", 'unique': 'True'})
         },
         'voice.speaker': {
             'Meta': {'object_name': 'Speaker', 'db_table': "'auth_user'", '_ormbases': ['auth.User']}
@@ -152,9 +207,16 @@ class Migration(SchemaMigration):
             'model_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
+        'voice.universalbackgroundmodel': {
+            'Meta': {'object_name': 'UniversalBackgroundModel'},
+            'created_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
+        },
         'voice.uploadedutterance': {
             'Meta': {'object_name': 'UploadedUtterance'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_trash': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.RecordSession']"}),
             'uploaded_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'utterance_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
@@ -166,8 +228,9 @@ class Migration(SchemaMigration):
             'start_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'state_id': ('django.db.models.fields.CharField', [], {'max_length': '24'}),
             'target_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.RecordSession']"}),
-            'verificated_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.SpeakerModel']", 'null': 'True', 'blank': 'True'}),
-            'verification_result': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'})
+            'verificated_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.LLRVerificator']", 'null': 'True', 'blank': 'True'}),
+            'verification_result': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'verification_score': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         }
     }
 

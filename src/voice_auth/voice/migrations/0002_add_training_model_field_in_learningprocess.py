@@ -5,26 +5,31 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
-    
+
     def forwards(self, orm):
         
-        # Adding model 'RecordSessionMeta'
-        db.create_table('voice_recordsessionmeta', (
-            ('record_session', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['voice.RecordSession'], unique=True)),
-            ('gender', self.gf('django.db.models.fields.CharField')(default='M', max_length=1)),
-            ('prompt', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-        ))
-        db.send_create_signal('voice', ['RecordSessionMeta'])
-    
-    
+        # Adding field 'LearningProcess.retrain_model'
+        db.add_column('voice_learningprocess', 'retrain_model', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.SpeakerModel'], null=True, blank=True), keep_default=False)
+
+        # Adding field 'LearningProcess.result_model'
+        db.add_column('voice_learningprocess', 'result_model', self.gf('django.db.models.fields.related.OneToOneField')(blank=True, related_name='learning_process', unique=True, null=True, to=orm['voice.SpeakerModel']), keep_default=False)
+
+        # Deleting field 'SpeakerModel.learning_process'
+        db.delete_column('voice_speakermodel', 'learning_process_id')
+
+
     def backwards(self, orm):
         
-        # Deleting model 'RecordSessionMeta'
-        db.delete_table('voice_recordsessionmeta')
-    
-    
+        # Deleting field 'LearningProcess.retrain_model'
+        db.delete_column('voice_learningprocess', 'retrain_model_id')
+
+        # Deleting field 'LearningProcess.result_model'
+        db.delete_column('voice_learningprocess', 'result_model_id')
+
+        # Adding field 'SpeakerModel.learning_process'
+        db.add_column('voice_speakermodel', 'learning_process', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['voice.LearningProcess'], unique=True, null=True, blank=True), keep_default=False)
+
+
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -39,6 +44,22 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
+        'auth.user': {
+            'Meta': {'object_name': 'User'},
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
+            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
+            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
+        },
         'contenttypes.contenttype': {
             'Meta': {'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -50,6 +71,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'LearningProcess'},
             'finish_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'result_model': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'learning_process'", 'unique': 'True', 'null': 'True', 'to': "orm['voice.SpeakerModel']"}),
+            'retrain_model': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.SpeakerModel']", 'null': 'True', 'blank': 'True'}),
             'sample_sessions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['voice.RecordSession']", 'symmetrical': 'False'}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'state_id': ('django.db.models.fields.CharField', [], {'max_length': '24'})
@@ -85,7 +108,6 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'SpeakerModel'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'learning_process': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['voice.LearningProcess']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'model_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
@@ -115,5 +137,5 @@ class Migration(SchemaMigration):
             'verification_score': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         }
     }
-    
+
     complete_apps = ['voice']
