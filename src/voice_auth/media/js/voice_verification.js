@@ -118,6 +118,7 @@ VerificationBlock.method('to_error_in_verification', function (args) {
     this.pasteError(args.description +
             '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
     this.maskButtons(false, true);
+    this.block.find(".voice_auth_inputs").append('<input id="id_retry_button" type="button" onclick="window.location = \'\';" value="Повтор" />')
 });
 
 VerificationBlock.method('to_verification_failed', function (args) {
