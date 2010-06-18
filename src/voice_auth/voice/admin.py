@@ -21,7 +21,7 @@ class RecordSessionAdmin(admin.ModelAdmin):
         queryset.filter(uploadedutterance__isnull=True).delete()
 
 class SpeakerModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'speaker', 'learning_process', 'is_active', 'model_file')
+    list_display = ('id', 'speaker', 'is_active', 'model_file')
     list_filter = ('speaker', 'is_active')
 
 class VerificationProcessAdmin(admin.ModelAdmin):
@@ -30,7 +30,7 @@ class VerificationProcessAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_time'
 
 class LearningProcessAdmin(admin.ModelAdmin):
-    list_display = ('id', 'state_id',  'start_time', 'finish_time', 'sample_sessions_count')
+    list_display = ('id', 'state_id',  'start_time', 'finish_time', 'sample_sessions_count', 'result_model')
     list_filter = ('state_id',)
     date_hierarchy = 'start_time'
 
@@ -38,12 +38,16 @@ class RecordSessionMetaAdmin(admin.ModelAdmin):
     list_filter = ('gender',)
     list_display = ('id', 'record_session', 'gender', 'prompt')
 
+class LLRVerificatorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'treshhold', 'null_estimator', 'alternative_estimator')
+    list_filter = ('alternative_estimator',)
+
 admin.site.register(UploadedUtterance, UploadedUtteranceAdmin)
 admin.site.register(RecordSessionMeta, RecordSessionMetaAdmin)
 admin.site.register(RecordSession, RecordSessionAdmin)
 admin.site.register(VerificationProcess, VerificationProcessAdmin)
 admin.site.register(UniversalBackgroundModel)
 admin.site.register(LearningProcess, LearningProcessAdmin)
-admin.site.register(LLRVerificator)
+admin.site.register(LLRVerificator, LLRVerificatorAdmin)
 admin.site.register(SpeakerModel, SpeakerModelAdmin)
 
