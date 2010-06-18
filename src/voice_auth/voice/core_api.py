@@ -10,7 +10,7 @@ from models import VerificationProcess, Speaker, SpeakerModel,\
 from exceptions import NeedMoreDataError
 
 from verispeak.util import load_pickled_file
-from verispeak.api import score, enroll
+from verispeak.api import score, enroll, retrain
 
 def verificate(target_session, verificator):
     verificator.null_estimator.model_file.open('r')
@@ -26,6 +26,12 @@ def verificate(target_session, verificator):
     scr = score(null_model, alternative_model, utterance_files)
     result = scr > verificator.treshhold
     return result, scr
+
+def retrain_model(sample_files, speaker_model):
+    speaker_model.model_file.open('r')
+    model = load_pickled_file(speaker_model.model_file)
+    retrained_model = retrain(model, sample_files)
+    return retrained_model
 
 @log_exceptions
 def verification(verification_process_id, speaker_model_id):
@@ -98,9 +104,12 @@ def enrollment(enrollment_process_id, target_speaker_id):
 
     sample_files = enrollment_process.sample_filepath_iterator()
     try:
-        model = enroll(sample_files,
+        if enrollment_process.retrain_model is None:
+            model = enroll(sample_files,
                 model_classname=settings.SPEAKER_MODEL_CLASSNAME,
                 model_parameters=settings.SPEAKER_MODEL_PARAMETERS)
+        else:
+            model = retrain_model(sample_files, enrollment_process.retrain_model)
     except NeedMoreDataError:
         logging.info("Need more data")
         enrollment_process.transition(enrollment_process.WAIT_FOR_DATA)
