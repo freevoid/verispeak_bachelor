@@ -3,10 +3,13 @@ import logging
 import numpy
 
 from verispeak.processors import CommonMFCCStack
+from verispeak.features import concatenate_vectors
 import verispeak.gmm
 processor = CommonMFCCStack()
 
 __all__ = ['score', 'enroll']
+
+class EnrollmentError(Exception): pass
 
 def filenames_to_features(filenames, processor=processor):
     '''
@@ -19,10 +22,7 @@ def filenames_to_features(filenames, processor=processor):
         as an argument and returns verispeak.features.feature_vectors.FeatureVectors instance
     @retval: numpy.ndarray instance representing all the features
     '''
-    features_list = list(f.features for f in imap(processor.process, filenames))
-    ## XXX rude code. Eliminate numpy from here, put concatenation
-    ## logic in FeaturesSuite alike class
-    return numpy.concatenate(features_list)
+    return concatenate_vectors(imap(processor.process, filenames))
 
 def score(null_model, alternative_model, filenames):
     '''
@@ -49,14 +49,15 @@ def _enroll(sample_features, model, retries=5, train_parameters={}):
         try:
             model.train(sample_features, **train_parameters)
         except KeyboardInterrupt:
-            break
+            # if manually interrupted -- just return model as is at current moment
+            return model
         except:
             logging.info("Error occured while training GMM, retrying..")
             retry += 1
         else:
-            break
+            return model
 
-    return model
+    raise EnrollmentError("Failing after %d unsuccessfull retries to train a model." % retry)
 
 def _model_factory(model_classname, model_parameters={}):
     model_cls = getattr(verispeak.gmm, model_classname)

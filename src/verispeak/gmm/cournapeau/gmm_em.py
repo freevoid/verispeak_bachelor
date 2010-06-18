@@ -492,7 +492,10 @@ def has_em_converged(like, plike, thresh):
     of the slope of the likehood with thresh"""
     diff    = N.abs(like - plike)
     avg     = 0.5 * (N.abs(like) + N.abs(plike))
+    
     print like > plike, like - plike
+    if like - plike is N.nan:
+        raise ValueError("Error in maximization step (bad training data)")
     if diff / avg < thresh:
         return True
     else:

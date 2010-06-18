@@ -61,5 +61,5 @@ class MFCCFeatureVectors(FeatureVectors):
         return u"%s, %d feature frames" % (self.frames, len(self.features),)
 
 def concatenate_vectors(feature_vectors_list):
-    return np.concatenate([f.features for f in feature_vectors_list])
+    return np.concatenate([f.features for f in feature_vectors_list if len(f.features) > 0])
 

@@ -8,7 +8,7 @@ __all__ = ['CournapeauGMM', 'CournapeauDiagonalGMM']
 
 import cournapeau as em
 class CournapeauGMM(Codebook):
-    MAXITER = 30
+    MAXITER = 50
     trainer_cls = em.EM
     model_cls = em.GM
     mode = 'full'
@@ -27,6 +27,7 @@ class CournapeauGMM(Codebook):
         init = 'test' if no_init else 'kmean'
         gmm = em.GMM(self.gm, init=init)
         trainer = self.trainer_cls()
+        maxiter=kwargs.pop('maxiter', self.MAXITER)
         return trainer.train(train_samples, gmm, maxiter=self.MAXITER, log=True, **kwargs)
 
     def likelihood(self, samples):
