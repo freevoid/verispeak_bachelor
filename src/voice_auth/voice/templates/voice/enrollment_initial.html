@@ -1,15 +1,14 @@
-{% extends "voice/base.html" %}
+{% extends "voice/pages_base.html" %}
 
 {% block extrahead %}
 {{ block.super }}
 {% endblock %}
 
-{% block content %}
-<div class="mainContent">
-    <div class="voice_site_header">
-        <h2>Регистрация в системе голосовой аутентификации</h2>
-    </div>
-    <div class="voice_site_content">
+{% block voice_header %}
+<h2>Регистрация в системе голосовой аутентификации</h2>
+{% endblock %}
+
+{% block voice_content %}
         <p>Чтобы иметь возможность производить аутентификацию по голосу, Вам необходимо пройти регистрацию в системе. Для этого необходимо иметь:</p>
         <ul class="prerequisites">
             <li>Интернет-обозреватель, поддерживающий Java-апплеты (на официальном сайте Sun Microsystems можно <a href="http://www.java.com/en/download/help/testvm.xml" target="_blank">проверить</a>, поддерживаются ли апплеты в Вашем обозревателе);</li>
@@ -22,10 +21,5 @@
 
         <p>Если все вышеперечисленные требования удовлетворены, Вы можете продолжить, перейдя на страницу отправки данных для создания персональной голосовой модели: <a href="{% url voice.views.enrollment %}">Перейти к созданию персональной голосовой модели</a>.</p>
 
-        <ul class="voice_site_navigation">
-            {% include "voice/navigation.html" %}
-        </ul>
-    </div>
-</div>
 {% endblock %}
 

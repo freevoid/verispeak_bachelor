@@ -12,6 +12,22 @@ class StateMachine(models.Model):
 
     initial_state = 'created'
 
+    def weak_transition(self, to_state,
+            state_history_attr=None, **state_transition_kwargs):
+        from_state = self.state_id
+
+        if self.transition_is_allowed(from_state, to_state):
+            self.state_id = to_state
+            self.save()
+
+            if state_history_attr is not None:
+                getattr(self, state_history_attr).create(from_state_id=from_state,
+                    to_state_id=to_state, **state_transition_kwargs)
+
+            logging.info('%s "%s" about to switch to state "%s"' % (self.__class__.__name__, self.id, to_state))
+        else:
+            raise IllegalStateError(self.__class__.__name__, self.id, self.state_id)
+
     @transaction.commit_manually
     def transition(self, to_state, state_history_attr=None,
             **state_transition_kwargs):

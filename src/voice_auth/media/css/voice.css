@@ -117,3 +117,13 @@
     padding: 5px 2ex;
     font-size:0.9em;
 }
+
+.notice_block {
+    border: 1px solid #001000;
+}
+
+.notice_block .note_notice {
+    text-align: center;
+    color: #0b0;
+}
+

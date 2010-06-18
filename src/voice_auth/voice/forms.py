@@ -110,3 +110,30 @@ class UploadConfirmForm(forms.ModelForm):
             self.instance.record_session_id = record_session.id
         return data
 
+from django.db.models import Q
+class RetrainRequestForm(forms.Form):
+    def __init__(self, speaker, *args, **kwargs):
+        super(forms.Form, self).__init__(*args, **kwargs)
+
+        self.fields['speaker_model'] = forms.ModelChoiceField(
+                label=_('Speaker models'),
+                queryset=speaker.speakermodel_set)
+
+        self.fields['record_sessions'] = forms.ModelMultipleChoiceField(
+                label=_('Record sessions'),
+                queryset=RecordSession.objects.filter(
+                    Q(target_speaker__isnull=True) | Q(target_speaker__id=speaker.id)))
+
+    def clean(self):
+        data = self.cleaned_data
+        speaker_model = data['speaker_model']
+        record_sessions = data['record_sessions']
+
+        enrollment_process = LearningProcess.objects.create(
+                    retrain_model=speaker_model)
+
+        enrollment_process.sample_sessions.add(*record_sessions)
+
+        data['enrollment_process'] = enrollment_process
+        return data
+

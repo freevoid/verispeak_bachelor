@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 
 from misc.snippets import allowed_methods, implicit_render, log_exception
 from misc.ip import dotted_quad_to_num
@@ -20,7 +21,8 @@ from models import UploadedUtterance, RecordSession, Speaker,\
         SpeakerModel, VerificationProcess, LearningProcess,\
         RecordSessionMeta
 from logic import api_enabled
-from forms import VerificationRequestForm, EnrollmentRequestForm, UploadConfirmForm
+from forms import VerificationRequestForm, EnrollmentRequestForm,\
+        UploadConfirmForm, RetrainRequestForm
 
 DEFAULT_APPLET_PARAMS = {
         'showLogo': 'no',
@@ -125,6 +127,7 @@ def verification(request):
         applet_params['uploadURL'] = reverse('voice.views.upload_handler')
         applet_params['uploadFileName'] = session_id
         applet_params['maxRecordTime'] = '5.0'
+        #applet_params['trimEnable'] = 'yes'
         return {'username': target_speaker.username,
                 'session_id': session_id,
                 'applet_params': applet_params,
@@ -289,4 +292,27 @@ def upload_confirm(request):
 @allowed_methods('POST')
 def upload_cancel(request):
     return ''
+
+@login_required
+@transaction.autocommit
+@implicit_render
+def retrain(request):
+    speaker = get_object_or_404(Speaker, id=request.user.id)
+    if request.method == 'POST':
+        form = RetrainRequestForm(speaker, request.POST)
+        if form.is_valid():
+            enrollment_process = form.cleaned_data['enrollment_process']
+            print "enrollment_process:", enrollment_process, enrollment_process.id
+            enrollment_process.save()
+            enrollment_process.transition(enrollment_process.STARTED)
+            speaker.message_set.create(message=_('Selected model has been successfully putted in queue for retraining'))
+            send_message('voice.enrollment',
+                    enrollment_process_id=enrollment_process.id,
+                    target_speaker_id=speaker.id)
+            return redirect('voice.index')
+        else:
+            return {'form': form}
+    else:
+        form = RetrainRequestForm(speaker)
+        return {'form': form}
 

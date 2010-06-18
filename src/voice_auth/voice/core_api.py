@@ -3,7 +3,7 @@ from django.conf import settings
 import logging
 import datetime
 
-from misc.snippets import log_exceptions
+from misc.snippets import log_exceptions, log_exception
 from models import VerificationProcess, Speaker, SpeakerModel,\
         UniversalBackgroundModel, LLRVerificator, LearningProcess
 
@@ -114,18 +114,22 @@ def enrollment(enrollment_process_id, target_speaker_id):
         logging.info("Need more data")
         enrollment_process.transition(enrollment_process.WAIT_FOR_DATA)
     except BaseException, e:
-        logging.error(u"Exception raised during enrollment: %s", e)
+        log_exception(msg="Exception raised during enrollment:")
         enrollment_process.transition(enrollment_process.FAILED)
     else:
         logging.info("Learning stage finished!")
         logging.info(model)
-        speaker_model = SpeakerModel(speaker=target_speaker,
-                learning_process=enrollment_process)
-        speaker_model.save() # implies filepath generation
+
+        speaker_model = SpeakerModel(speaker=target_speaker)
+        speaker_model.learning_process = enrollment_process
+        #speaker_model.model_file.name = speaker_model.generate_model_filename()
+        speaker_model.save()
+
+        enrollment_process.result_model = speaker_model
         model.dump_to_file(speaker_model.model_file.path)
-        #speaker_model.active_prop = True
 
         enrollment_process.finish_time = datetime.datetime.now()
         enrollment_process.transition(enrollment_process.FINISHED)
+ 
         speaker_model.active_prop = True
 

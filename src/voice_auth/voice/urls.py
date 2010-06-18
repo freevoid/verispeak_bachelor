@@ -7,6 +7,9 @@ urlpatterns = patterns('voice.views',
     (r'^$', direct_to_template, {'template': 'voice/index.html'}, "voice.index"),
     (r'^success/$', direct_to_template, {'template': 'voice/success.html'}, "voice.success"),
     (r'^fail/$', direct_to_template, {'template': 'voice/fail.html'}, "voice.fail"),
+
+    (r'^retrain/$', 'retrain'),
+
     (r'^verification/$', 'verification'),
     (r'^verification/confirm/$', 'verification_confirm'),
     (r'^verification/state/$', 'verification_state'),

@@ -1,0 +1,30 @@
+{% extends "voice/pages_base.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script language="javascript">
+function toVerification(url) { 
+    var username = $("#id_login_input").val();
+    if (username) {
+        window.location = url + '?username=' + username;
+    } else {
+        alert("Введите имя учетной записи в соответствующее поле для продолжения.");
+    }
+};
+</script>
+{% endblock %}
+
+{% block voice_header %}
+<h2>Дополнительное обучение голосовой модели</h2>
+{% endblock %}
+
+{% block voice_content %}
+    <p>Дообучение акустической модели, созданной для Вас на этапе регистрации, позволит улучшить качество распознавания Вашего голоса для будущих попыток аутентификации.</p>
+    <form action="" method="post">
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Подтвердить" />
+    </form>
+{% endblock %}
+

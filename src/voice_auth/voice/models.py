@@ -106,8 +106,11 @@ class SpeakerModel(models.Model):
 
     def generate_model_filename(self):
         name = [self.MODELS_PATH, '/', '%04d' % self.pk, '_s%04d' % self.speaker.id]
-        if self.learning_process:
-            name.append('_e%04d' % self.learning_process.id)
+        try:
+            if self.learning_process:
+                name.append('_e%04d' % self.learning_process.id)
+        except LearningProcess.DoesNotExist:
+            pass
         name.append('.gmm')
         return ''.join(name)
 

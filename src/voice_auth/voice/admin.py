@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from django.utils.translation import ugettext_lazy as _
+
 from models import *
 
 class UtteranceInline(admin.StackedInline):
@@ -24,6 +26,16 @@ class SpeakerModelAdmin(admin.ModelAdmin):
     list_display = ('id', 'speaker', 'is_active', 'model_file')
     list_filter = ('speaker', 'is_active')
 
+    actions = ['set_active']
+    def set_active(self, request, queryset):
+        try:
+            model = queryset.get()
+        except:
+            pass
+        else:
+            model.active_prop = True
+    set_active.description = _('Set selected model active')
+
 class VerificationProcessAdmin(admin.ModelAdmin):
     list_display = ('id', 'state_id', 'verification_result', 'verification_score', 'target_session')
     list_filter = ('state_id', 'verification_result')
@@ -33,6 +45,17 @@ class LearningProcessAdmin(admin.ModelAdmin):
     list_display = ('id', 'state_id',  'start_time', 'finish_time', 'sample_sessions_count', 'result_model')
     list_filter = ('state_id',)
     date_hierarchy = 'start_time'
+
+    actions = ['set_active']
+    def set_active(self, request, queryset):
+        try:
+            process = queryset.get()
+        except:
+            pass
+        else:
+            if process.result_model is not None:
+                process.result_model.active_prop = True
+    set_active.short_description = _('Set active state to model created by selected process')
 
 class RecordSessionMetaAdmin(admin.ModelAdmin):
     list_filter = ('gender',)
