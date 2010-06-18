@@ -1,6 +1,9 @@
-from verispeak.base import Object
+from verispeak.base import SerializableObject
 from mfcc import mfcc_framed
 import numpy as np
+
+__all__ = ['FeatureVectors', 'MFCCFeatureVectors',
+        'concatenate_vectors', 'common_normalization']
 
 def mean_normalization(feature_vectors):
     vectors = feature_vectors.features
@@ -25,14 +28,29 @@ def delta_mfcc(feature_vectors):
 
 common_normalization = (mean_normalization, delta_mfcc)
 
-class FeatureVectors(Object):
+class FeatureVectors(SerializableObject):
     def __iter__(self):
         return iter(self.features)
 
+    def serialize(self):
+        frames = self.frames
+        self.frames = None
+        import cPickle
+        dump = cPickle.dumps(self, -1)
+        self.frames = frames
+        return dump
 
 class MFCCFeatureVectors(FeatureVectors):
-    def __init__(self, framed_speech, nceps=13):
+    frames = None
+    features = None
+
+    def __init__(self, framed_speech=None, nceps=13):
         super(MFCCFeatureVectors, self).__init__()
+
+        # in cases where we want to manually construct object
+        # we wan't to be able to create `empty` instances
+        if framed_speech is None:
+            return
 
         self.frames = framed_speech
         self.features = mfcc_framed(framed_speech.frames, fs=framed_speech.wave.samplerate, nceps=nceps)[0]

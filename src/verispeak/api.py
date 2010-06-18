@@ -43,11 +43,11 @@ def score(null_model, alternative_model, filenames):
 
     return null_likelihood - alt_likelihood
 
-def _enroll(sample_features, model, retries=5):
+def _enroll(sample_features, model, retries=5, train_parameters={}):
     retry = 0
     while retry < retries:
         try:
-            model.train(sample_features)
+            model.train(sample_features, **train_parameters)
         except KeyboardInterrupt:
             break
         except:
@@ -75,9 +75,12 @@ def enroll(sample_files, model_classname='CournapeauGMM', model_parameters={}, r
         (initialization of initial model parameters involves random picking).
     @retval: verispeak.gmm.base.Codebook instance, trained from provided sample
         files
-
     '''
     gmm = _model_factory(model_classname, model_parameters)
     enroll_samples = filenames_to_features(sample_files)
     return _enroll(enroll_samples, gmm, retries=retries)
+
+def retrain(model, sample_files, retries=5):
+    retrain_samples = filenames_to_features(sample_files)
+    return _enroll(retrain_samples, model, retries=retries, train_parameters={'no_init': True})
 

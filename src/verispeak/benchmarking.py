@@ -4,7 +4,7 @@ OMEGA_MIN, OMEGA_MAX = -500.0, 1200.0
 OMEGA_STEP = 50.0
 
 from itertools import imap
-from verispeak.api import _model_factory, _enroll
+from verispeak.api import _model_factory, _enroll, processor
 
 def calc_rates(omega, scores_bag):
     def calc_rate(scores):
