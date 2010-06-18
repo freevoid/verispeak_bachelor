@@ -1,6 +1,6 @@
 import numpy
 
-OMEGA_MIN, OMEGA_MAX = -500.0, 1200.0
+OMEGA_MIN, OMEGA_MAX = -1500.0, 1500.0
 OMEGA_STEP = 50.0
 
 from itertools import imap

@@ -2,18 +2,10 @@
 import os
 from itertools import imap, islice
 import logging
-
 logging.basicConfig(level=logging.DEBUG)
 
 import verispeak
 from micromake import walk_on_files, need_rebuild, dir_is_older
-
-BASE_DIR = os.path.dirname(__file__)
-WAV_DIR = os.path.join(BASE_DIR, 'wav')
-MODELS_DIR = os.path.join(BASE_DIR, 'models')
-FEATURES_DIR = os.path.join(BASE_DIR, 'features')
-
-SEARCH_PRIORITY = ()
 
 def _wav_to_features(dirpath, processor):
     for subdir in os.listdir(dirpath):
@@ -59,11 +51,16 @@ def features_to_models(features_dir, models_dir, model_factory,
 
 
 if __name__=='__main__':
-    m16 = lambda: verispeak.gmm.CournapeauGMM(K=16)
-    m32 = lambda: verispeak.gmm.CournapeauGMM(K=32)
-    
-    wav_to_features(WAV_DIR, FEATURES_DIR)
-    features_to_models(FEATURES_DIR, MODELS_DIR, m16)
+    import sys
+    assert len(sys.argv) == 2
+    config_dotted_name = sys.argv[1]
+
+    from config import Config
+    cfg = Config.read_config(config_dotted_name)
+
+    wav_to_features(cfg.WAV_DIR, cfg.FEATURES_DIR)
+    features_to_models(cfg.FEATURES_DIR, cfg.MODELS_DIR,
+            cfg.MODEL_FACTORY, cfg.ENROLL_COUNT)
 
     logging.info("Everything is up to date.")
 
