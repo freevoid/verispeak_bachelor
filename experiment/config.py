@@ -9,10 +9,11 @@ class Config(object):
             FEATURES_DIR='./data/features',
             DETS_DIR='./data/dets',
             PLOT_DIR='./data/plots',
-            MODEL_FACTORY=lambda: verispeak.gmm.CournapeauGMM(K=16),
+            MODEL_FACTORY = lambda: verispeak.gmm.CournapeauGMM(K=16),
             ENROLL_COUNT=10,
             UBM_PATH='./data/ubm/ubm16.gmm',
-            LOGGING_LEVEL=logging.WARNING,
+            PLOT_FORMAT='pdf',
+            LOGGING_LEVEL=logging.DEBUG,
             **unhandled):
         del unhandled # forget about not supported options
         self.__dict__ = locals()

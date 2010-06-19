@@ -49,9 +49,9 @@ def configured_calc_and_write_dets(cfg):
     return calc_and_write_dets(cfg.MODELS_DIR, cfg.FEATURES_DIR,
             cfg.UBM_PATH, cfg.DETS_DIR, cfg.ENROLL_COUNT)
 
-if __name__=='__main__':
-    logging.basicConfig(level=logging.DEBUG)
+main = configured_calc_and_write_dets
 
+if __name__=='__main__':
     import sys
     assert len(sys.argv) == 2
     config_dotted_name = sys.argv[1]

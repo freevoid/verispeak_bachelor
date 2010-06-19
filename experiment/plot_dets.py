@@ -10,6 +10,19 @@ from verispeak.ruplot import pyplot
 
 DEFAULT_FORMAT = 'pdf'
 
+def plot_overall(det_list, outdir, format=DEFAULT_FORMAT):
+    outfile = os.path.join(outdir, '.'.join(['overall', format]))
+
+    logging.info("Plotting aggregated info..")
+    pyplot.figure()
+    for det in det_list:
+        omega, target_y, impostor_y = det
+        target_y = 1 - target_y
+        pyplot.plot(omega, target_y, color='green')
+        pyplot.plot(omega, impostor_y, color='red')
+    logging.info("Saving aggregated info in '%s'", outfile)
+    pyplot.savefig(outfile)
+
 def plot_det(det, outfile):
     #ext = os.path.splitext(outfile)[1]
     omega, target_y, impostor_y = det
@@ -28,6 +41,7 @@ def plot_dets_from_txt(idfiles, out_dir, format=DEFAULT_FORMAT):
         det = numpy.loadtxt(filename, unpack=True)
         outfile = os.path.join(out_dir, '.'.join([id, format]))
         plot_det(det, outfile)
+        yield det
 
 def plot_dets_configured(cfg):
     def walk_on_dets():
@@ -35,11 +49,14 @@ def plot_dets_configured(cfg):
             id = os.path.basename(os.path.splitext(filename)[0])
             filename = os.path.join(cfg.DETS_DIR, id + '.txt')
             yield id, filename
-    return plot_dets_from_txt(walk_on_dets(), cfg.PLOT_DIR)
+    dets = list(plot_dets_from_txt(walk_on_dets(), cfg.PLOT_DIR,
+            format=cfg.PLOT_FORMAT))
+
+    plot_overall(dets, cfg.PLOT_DIR, format=cfg.PLOT_FORMAT)
+
+main = plot_dets_configured
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.DEBUG)
-
     import sys
     assert len(sys.argv) == 2
     config_dotted_name = sys.argv[1]

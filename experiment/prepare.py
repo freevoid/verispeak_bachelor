@@ -2,7 +2,6 @@
 import os
 from itertools import imap, islice
 import logging
-logging.basicConfig(level=logging.DEBUG)
 
 import verispeak
 from micromake import walk_on_files, need_rebuild, dir_is_older
@@ -49,6 +48,14 @@ def features_to_models(features_dir, models_dir, model_factory,
             model.dump_to_file(outfile)
     logging.info("Everything is up to date!")
 
+def main(cfg):
+    wav_to_features(cfg.WAV_DIR, cfg.FEATURES_DIR)
+    ubm = verispeak.util.load_pickled_file(cfg.UBM_PATH)
+    features_to_models(cfg.FEATURES_DIR, cfg.MODELS_DIR,
+            cfg.MODEL_FACTORY, cfg.ENROLL_COUNT, train_parameters={'ubm': ubm})
+
+    logging.info("Everything is up to date.")
+    return 0
 
 if __name__=='__main__':
     import sys
@@ -57,10 +64,5 @@ if __name__=='__main__':
 
     from config import Config
     cfg = Config.read_config(config_dotted_name)
-
-    wav_to_features(cfg.WAV_DIR, cfg.FEATURES_DIR)
-    features_to_models(cfg.FEATURES_DIR, cfg.MODELS_DIR,
-            cfg.MODEL_FACTORY, cfg.ENROLL_COUNT)
-
-    logging.info("Everything is up to date.")
+    sys.exit(main(cfg))
 
