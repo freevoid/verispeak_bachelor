@@ -145,3 +145,82 @@ class DiagonalCovarianceEM(EM):
         #print "new likelihood: %s." % new_likelihood,
         print new_likelihood > current_likelihood, new_likelihood - current_likelihood
 
+class MAPAdaptation(GMMTrainingProcedure):
+    @staticmethod
+    def train(model, train_data, ubm, r=16, **kwargs):
+        '''
+        Overview
+        --------
+
+        Implementation of Max A Posteriori adapdation (aka Bayesian learning).
+        Based on an article by Douglas Reynolds [1].
+        
+        Parameters
+        ----------
+
+        model : verispeak.gmm.base.GMMBase instance
+            Model instance to train.
+        train_data : array_like
+            2D array of feature vectors.
+        ubm : verispeak.gmm.base.GMMBase instance
+            Model to train from.
+
+        References
+        ----------
+        
+        [1] Douglas A. Reynolds, Thomas F. Quatieri, Robert B. Dunn "Speaker
+        Verification Using Adapted Gaussian Mixture Models", Digital Signal
+        Processing 10, 19-41 (2000).
+        '''
+        def column_of_ones(n):
+            return np.mat(np.repeat(1, n)).reshape(n, 1)
+
+        from verispeak.gmm.cournapeau import densities
+        w, mu, cov = ubm.get_params()
+        k = w.size
+        n, d = train_data.shape
+
+        print "Adapting UBM to train data.."
+        print ubm
+        print "K=%d; D=%d; N=%d" % (k, d, n)
+
+        pdfs = densities.multiple_gauss_den(train_data, mu, cov)
+        assert pdfs.shape == (n, k)
+
+        weighted_pdfs = w*pdfs
+        assert weighted_pdfs.shape == (n, k)
+
+        wpdf_denominators = np.array(
+                weighted_pdfs # (n, k)
+                    *column_of_ones(k) # (k, 1) [[1],[1],...,[1]]
+                ).flatten()
+        assert wpdf_denominators.shape == (n,)
+
+        Pr = weighted_pdfs.transpose() / wpdf_denominators
+        assert Pr.shape == (k, n)
+
+        col_of_n_ones = column_of_ones(n)
+        assert col_of_n_ones.shape == (n, 1)
+
+        n_ = np.array(Pr*col_of_n_ones).flatten() # (1, k)
+        assert n_.shape == (k,)
+
+        #return locals()
+        E = np.array([(np.mat(Pr[i,:])*train_data) / n_[i] for i in range(k)]).reshape((k, d))
+        #E = np.array((Pr*train_data)*col_of_n_ones).flatten() / n_
+        assert E.shape == (k,d)
+
+        alpha_w = (n_ / (n_ + r))
+        alpha_mu = alpha_w.reshape((k,1))
+        assert alpha_mu.shape == (k,1)
+
+        # Tuning parameters..
+        adapted_w = alpha_w*n_/n + (1 - alpha_w)*w
+        adapted_w /= adapted_w.sum() # normalizing
+        #assert almost_eq(adapted_w.sum(), 1.0)
+        
+        adapted_mu = alpha_mu*E + (1 - alpha_mu)*mu
+
+        model.set_params(adapted_w, adapted_mu, cov)
+        return 1
+

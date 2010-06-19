@@ -6,12 +6,12 @@ import numpy as np
 import math
 from itertools import imap
 
-from base import Codebook
+from base import GMMBase
 from verispeak.training import EM, DiagonalCovarianceEM
 from verispeak.stats import mvn
 
 __all__ = ['GMM', 'DiagonalGMM']
-class GMM(Codebook):
+class GMM(GMMBase):
     training_procedure = EM()
     mvn_dist = mvn.MultiVariateNormalDistribution
     mode = 'full'
@@ -110,6 +110,10 @@ class GMM(Codebook):
         va = np.array([c.covariance.diagonal() for c in self._components]).reshape((self.k, self.d))
         return self.weights, mu, va
 
+    def set_params(self, w, mu, va):
+        self.weights = w
+        self.reload_components(mu, va.reshape(self._d, self._d, self._k))
+
     def __unicode__(self):
         return u"k=%d d=%d iterations=%d" % (self.k, self.d, self.iterations)
 
@@ -127,4 +131,8 @@ class DiagonalGMM(GMM):
         mu = np.array([c.mu for c in self._components])
         va = np.array([c.covariance for c in self._components])
         return self.weights, mu, va
+
+    def set_params(self, w, mu, va):
+        self.weights = w
+        self.reload_components(mu, va)
 

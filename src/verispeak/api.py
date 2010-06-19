@@ -9,7 +9,8 @@ processor = CommonMFCCStack()
 
 __all__ = ['score', 'enroll']
 
-class EnrollmentError(Exception): pass
+from verispeak.exceptions import VerispeakException
+class EnrollmentError(VerispeakException): pass
 
 def filenames_to_features(filenames, processor=processor):
     '''
@@ -52,7 +53,7 @@ def _enroll(sample_features, model, retries=5, train_parameters={}):
             # if manually interrupted -- just return model as is at current moment
             return model
         except:
-            logging.info("Error occured while training GMM, retrying..")
+            logging.error("Error occured while training GMM, retrying..", exc_info=1)
             retry += 1
         else:
             return model

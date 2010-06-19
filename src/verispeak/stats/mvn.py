@@ -1,7 +1,8 @@
 import numpy as np
 import math
 
-class SingularCovarianceMatrixError(Exception):
+from verispeak.exceptions import VerispeakException
+class SingularCovarianceMatrixError(VerispeakException):
     pass
 
 class MultiVariateNormalDistribution(object):
