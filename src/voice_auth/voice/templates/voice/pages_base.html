@@ -24,6 +24,11 @@
 
         <div class="logo" style="float:right; position: relative;">
             <img src="{{ MEDIA_URL }}img/logo.png" width=128 height=128 />
+            {% if user.is_authenticated %}
+            <p class="authenticated">Вошли как {{ user.username }}</p>
+            {% else %}
+            <p class="not_authenticated">Не авторизованы</p>
+            {% endif %}
         </div>
 
         {% block voice_content %}

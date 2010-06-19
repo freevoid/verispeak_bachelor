@@ -41,7 +41,7 @@ DEFAULT_APPLET_PARAMS = {
         'packButtons': 'yes',
         'frameRate': 22000,
         'trimEnable': 'no',
-        'maxRecordTime': 60
+        'maxRecordTime': 5
         }
 
 APPLET_FILENAME = 'userfile'
@@ -126,7 +126,7 @@ def verification(request):
         applet_params = DEFAULT_APPLET_PARAMS.copy()
         applet_params['uploadURL'] = reverse('voice.views.upload_handler')
         applet_params['uploadFileName'] = session_id
-        applet_params['maxRecordTime'] = '5.0'
+        applet_params['maxRecordTime'] = '3.0'
         #applet_params['trimEnable'] = 'yes'
         return {'username': target_speaker.username,
                 'session_id': session_id,

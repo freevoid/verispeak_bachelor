@@ -23,6 +23,8 @@ def verificate(target_session, verificator):
             .uploadedutterance_set.filter(is_trash=False)
 
     utterance_files = (u.utterance_file.path for u in target_utterances)
+
+    logging.info("Calculating LLR with models: NULL: %s; ALTERNATIVE: %s", null_model, alternative_model)
     scr = score(null_model, alternative_model, utterance_files)
     result = scr > verificator.treshhold
     return result, scr

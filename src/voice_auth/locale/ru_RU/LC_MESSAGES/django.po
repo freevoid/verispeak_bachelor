@@ -23,7 +23,7 @@ msgstr "Подтвердить"
 
 #: voice/admin.py:35
 msgid "Set selected model active"
-msgstr "Сделать выбраннуб модель активной"
+msgstr "Сделать выбранную модель активной"
 
 #: voice/admin.py:56
 msgid "Set active state to model created by selected process"

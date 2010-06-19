@@ -127,3 +127,16 @@
     color: #0b0;
 }
 
+.logo p {
+    text-align: center;
+    margin-top: 0px;
+}
+
+p.authenticated {
+    color: #148800;
+}
+
+p.not_authenticated {
+    color: #BB0000;
+}
+

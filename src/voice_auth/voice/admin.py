@@ -34,7 +34,7 @@ class SpeakerModelAdmin(admin.ModelAdmin):
             pass
         else:
             model.active_prop = True
-    set_active.description = _('Set selected model active')
+    set_active.short_description = _('Set selected model active')
 
 class VerificationProcessAdmin(admin.ModelAdmin):
     list_display = ('id', 'state_id', 'verification_result', 'verification_score', 'target_session')

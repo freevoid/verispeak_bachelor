@@ -9,7 +9,8 @@ LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 
 logging.basicConfig(
     level = logging.DEBUG,
-    format = LOG_FORMAT
+    format = LOG_FORMAT,
+    #filename = 'main.log'
     )
 
 DEBUG = True

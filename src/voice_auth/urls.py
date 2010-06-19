@@ -21,7 +21,7 @@ if settings.DEBUG:
 
 urlpatterns += patterns('django.contrib.auth.views',
         url(r'^accounts/login/', 'login', name='login'),
-        url(r'^accounts/logout/', 'logout', name='logout'),
+        url(r'^accounts/logout/', 'logout', {'template_name': 'voice/logout.html'}, name='logout'),
         (r'^accounts/$', redirect_to, {'url': '/accounts/login/'})
         )
 
