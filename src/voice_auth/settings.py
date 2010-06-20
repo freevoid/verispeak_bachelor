@@ -85,6 +85,8 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
 SPEAKER_MODEL_CLASSNAME = 'CournapeauGMM'
 SPEAKER_MODEL_PARAMETERS = {'K': 16}
 
+REGISTRATION_OPENED = True
+
 AMQP_HOST = 'localhost'
 AMQP_EXCHANGE_NAME = 'trns'
 AMQP_PASSWORD = ''

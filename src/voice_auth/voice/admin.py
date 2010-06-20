@@ -59,7 +59,7 @@ class LearningProcessAdmin(admin.ModelAdmin):
 
 class RecordSessionMetaAdmin(admin.ModelAdmin):
     list_filter = ('gender',)
-    list_display = ('id', 'record_session', 'gender', 'prompt')
+    list_display = ('id', 'record_session', 'gender', 'prompt', 'description')
 
 class LLRVerificatorAdmin(admin.ModelAdmin):
     list_display = ('id', 'treshhold', 'null_estimator', 'alternative_estimator')

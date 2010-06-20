@@ -1,5 +1,6 @@
 from django.db import models
 from django.db import transaction
+from django.conf import settings
 import logging
 
 from misc.db import set_isolation_level
@@ -11,6 +12,8 @@ class StateMachine(models.Model):
         abstract = True
 
     initial_state = 'created'
+
+    dbms_support_serializible = not settings.DATABASE_ENGINE.endswith('sqlite3') 
 
     def weak_transition(self, to_state,
             state_history_attr=None, **state_transition_kwargs):
@@ -31,8 +34,9 @@ class StateMachine(models.Model):
     @transaction.commit_manually
     def transition(self, to_state, state_history_attr=None,
             **state_transition_kwargs):
-        try:        
-            set_isolation_level('SERIALIZABLE')
+        try:
+            if self.dbms_support_serializible:
+                set_isolation_level('SERIALIZABLE')
             locked_self = self.__class__.objects.get(id=self.id) # current locked instance
             from_state = locked_self.state_id
 

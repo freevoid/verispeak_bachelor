@@ -14,7 +14,7 @@
             <li>Интернет-обозреватель, поддерживающий Java-апплеты (на официальном сайте Sun Microsystems можно <a href="http://www.java.com/en/download/help/testvm.xml" target="_blank">проверить</a>, поддерживаются ли апплеты в Вашем обозревателе);</li>
             <li>Существующую учетную запись на сайте
                 {% if user.is_authenticated %} (Вы зашли как {{ user.username }});
-                {% else %}(<a href="{% url registration %}" target="_blank">Регистрация</a>);
+                {% else %}{% if registration_opened %}(<a href="{% url registration %}" target="_blank">Регистрация</a>);{% else %}(В данный момент свободная регистрация недоступна);{%endif%}
                 {% endif%}</li>
             <li>Работающий микрофон, подключенный к Вашему ПК.</li>
         </ul>

@@ -75,7 +75,7 @@ def verification(verification_process_id, speaker_model_id):
         logging.info("Need more data")
         verification_process.transition(verification_process.WAIT_FOR_DATA)
     except BaseException, e:
-        logging.error(u"Exception raised during scoring: %s", e)
+        logging.error(u"Exception raised during scoring:", exc_info=1)
         verification_process.transition(verification_process.FAILED)
     else:
         logging.info("Verification finished! Result: %s, Score: %s", result, score)
