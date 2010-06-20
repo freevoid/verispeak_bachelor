@@ -13,8 +13,8 @@
  
     % upload utterance
     \begin{sdloop}{Запись данных для обучения}
-    \begin{call}{usr}{*[5..10]upload(file)}{serverapi}{success}
-        \begin{call}{serverapi}{save\_upload\_wav(filename, file)}{fs}{}
+    \begin{call}{usr}{*[10..15]upload(data)}{serverapi}{success}
+        \begin{call}{serverapi}{save\_upload\_wav(filename, data)}{fs}{}
         \end{call}
         \begin{call}{serverapi}{add\_wav(fname)}{session}{}
         \end{call}
@@ -36,7 +36,7 @@
     \begin{call}{core}{read\_wav(fnames)}{fs}{wavfiles}
     \end{call}
 
-    \begin{callself}[2]{core}{train()}{}
+    \begin{callself}[2]{core}{enroll()}{}
     \end{callself}
 
     \begin{call}{core}{set\_state(finished)}{session}{}

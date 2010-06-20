@@ -12,8 +12,8 @@
     \end{call}
  
     % upload utterance
-    \begin{call}{usr}{upload(file)}{serverapi}{started}
-        \begin{call}{serverapi}{save\_upload\_wav(filename, file)}{fs}{}
+    \begin{call}{usr}{upload(data)}{serverapi}{started}
+        \begin{call}{serverapi}{save\_upload\_wav(filename, data)}{fs}{}
         \end{call}
         \begin{call}{serverapi}{add\_wav(fname)}{session}{}
         \end{call}
