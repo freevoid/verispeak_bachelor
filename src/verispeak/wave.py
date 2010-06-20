@@ -1,4 +1,5 @@
 import os.path
+from scikits import audiolab
 
 from verispeak import misc
 from verispeak import util
@@ -15,7 +16,6 @@ def listdir(dirpath):
             (os.path.join(os.path.abspath(dirpath), filename) for filename in os.listdir(dirpath)))
 
 def read_file(filename):
-    from scikits import audiolab
     from os import path
     ext = path.splitext(filename)[1].lower()
     if ext == WAV_EXT:
@@ -25,7 +25,6 @@ def read_file(filename):
     return amplitudes_array, sample_frequency
 
 def write_file(wave, filename):
-    from scikits import audiolab
     from os import path
     ext = path.splitext(filename)[1].lower()
     if ext == WAV_EXT:
@@ -81,6 +80,13 @@ class Wave(Object):
                 return misc.coerce_no_sf(self.waveform, other)
         else:
             return NotImplemented
+
+    def play(self, speed_scale=None):
+        if speed_scale is not None:
+            fs = self.samplerate*speed_scale
+        else:
+            fs = self.samplerate
+        audiolab.play(self.waveform, fs)
 
     def __len__(self):
         return len(self.waveform)

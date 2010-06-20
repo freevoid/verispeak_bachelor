@@ -31,6 +31,9 @@ common_normalization = (mean_normalization, delta_mfcc)
 class FeatureVectors(SerializableObject):
     def __iter__(self):
         return iter(self.features)
+    
+    def __len__(self):
+        return len(self.features)
 
     def serialize(self):
         frames = self.frames

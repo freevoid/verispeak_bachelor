@@ -78,10 +78,13 @@ class FileToFeaturesStack(Object):
         Function represents all actions neccessary to obrain
         feature vectors from a filename of an audio file
         """
+        import logging
         arg = filename
         for type_, fun in self.stack:
             #print fun.fun.__name__, arg.__class__
+            logging.debug("Performing speech transformation of type %s.", type_)
             arg = fun(arg)
+            logging.debug("Type after transformation: %s, length: %s", type(arg), len(arg))
         return arg
 
     __call__ = process

@@ -29,3 +29,6 @@ class FramedSpeech(Object):
         self.frames = frame_signal(wave.waveform, nwin=nwin, over=overlap)
         self.wave = wave
 
+    def __len__(self):
+        return len(self.frames)
+
