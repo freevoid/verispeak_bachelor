@@ -11,7 +11,7 @@ PRESENTATION_DIR=presentation
 REPORT_NAME=report
 TEXFILE=$(REPORT_NAME).tex
 
-PARTS=intro abbreviations analytic construct technological bzhd economic conclusion appendix
+PARTS=intro abbreviations analytic construct technological research bzhd economic conclusion appendix
 
 BIBLE_BASE=biblio
 BIBLE=$(REPORT_NAME).bbl

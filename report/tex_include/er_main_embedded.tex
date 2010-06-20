@@ -15,11 +15,11 @@
     \node [relationship] (beenrecorded) [below left=of speaker, xshift=-10ex]  {Участвовал} edge (speaker);
 
     \node [entity]      (recordsession) [below left=of beenrecorded] {Сессия записи} edge (beenrecorded);
-    \node [attribute]   (rsid)          [above=of recordsession]        {\key{ID Сессии}} edge (recordsession);
-    \node [attribute]   (rscreated)     [above left=of recordsession]        {Дата создания} edge (recordsession);
+    \node [attribute]   (rsid)          [left=of recordsession]        {\key{ID Сессии}} edge (recordsession);
+    \node [attribute]   (rscreated)     [above=of recordsession, xshift=-4ex]        {Дата создания} edge (recordsession);
     \node [attribute]   (rscreated)     [right=of recordsession]        {IP-адрес инициатора} edge (recordsession);
 
-    \node [ident relationship] (sessionutterance) [below left=of recordsession] {Содержит}   edge (recordsession);
+    \node [ident relationship] (sessionutterance) [below left=of recordsession, yshift=-10ex, xshift=-1ex] {Содержит}   edge (recordsession);
 
     \node [weak entity]      (uploadedutterance) [below=of sessionutterance] {Записанная речь} edge [total] (sessionutterance);
     \node [attribute]   (uufilename)    [below=of uploadedutterance, yshift=-3em]        {Путь к файлу} edge (uploadedutterance);
@@ -40,14 +40,26 @@
     \node [attribute]   (lstart)        [below right=of learning, xshift=-10ex]        {Дата начала} edge (learning);
     \node [attribute]   (lfinish)       [below left=of learning, xshift=10ex]        {Дата конца} edge (learning);
 
-    \node [relationship]  (model-learning) [below left=of speakermodel, text width=15ex, text centered] {Получена в результате} edge (learning);
+    \node [relationship]  (model-learning) [right=of learning, xshift=-1ex, text width=15ex, text centered] {Получена в результате} edge (learning);
     \draw [link] (model-learning) -- (speakermodel);
 
-    \node [relationship] (model-verification) [below=of speakermodel] {Использована в} edge (speakermodel);
+    \node [ident relationship] (model-verificator) [below=of speakermodel] {Использована в} edge (speakermodel);
 
-    \node [weak entity]      (verification)  [below=of learning, yshift=-20ex] {Процесс верификации} edge (model-verification);
-    \node [attribute]   (vstate)        [above=of verification, yshift=-3ex]        {Состояние} edge (verification);
-    \node [attribute]   (vresult)       [right=of verification]        {Результат} edge (verification);
+    \node [weak entity] (verificator) [below=of model-verificator] {Верификатор} edge [total] (model-verificator);
+    \node [attribute] (vfid) [above left=of verificator, xshift=3ex, yshift=-4ex] {\key{ID}} edge (verificator);
+    \node [attribute] (vftreshhold) [left=of verificator] {Порог вхождения} edge (verificator);
+
+    \node [ident relationship] (verificator-ubm) [below=of verificator] {Использует} edge [total] (verificator);
+    
+    \node [entity] (ubm) [below=of verificator-ubm] {Универсальная фоновая модель} edge (verificator-ubm);
+    \node [attribute] (ubmid) [above left=of ubm, xshift=5ex, yshift=-3ex] {\key{ID}} edge (ubm);
+    \node [attribute] (ubmpath) [left=of ubm] {Путь к файлу} edge (ubm);
+
+    \node [relationship] (verificator-verification) [below left=of verificator] {Использован в} edge (verificator);
+
+    \node [weak entity]      (verification)  [below=of learning, yshift=-25ex, xshift=-5ex] {Процесс верификации} edge (verificator-verification);
+    \node [attribute]   (vstate)        [above=of verification, yshift=-0ex]        {Состояние} edge (verification);
+    \node [attribute]   (vresult)       [above right=of verification, xshift=-3ex]        {Результат} edge (verification);
     \node [attribute]   (vstart)        [below right=of verification, xshift=-10ex]        {Дата начала} edge (verification);
     \node [attribute]   (vfinish)       [below left=of verification, xshift=10ex]        {Дата конца} edge (verification);
     \node [attribute]   (vid)           [left=of verification]        {\key{ID}} edge (verification);

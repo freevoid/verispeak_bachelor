@@ -25,3 +25,5 @@
 */ubm/
 *.gmm
 *.mfcc
+*~
+*.autosave

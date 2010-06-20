@@ -1,13 +1,14 @@
-\documentclass[utf8,usehyperref,14pt]{G7-32}
+%\documentclass[utf8,usehyperref,14pt]
+\documentclass[utf8,usehyperref]{G7-32}
 %[a4paper,titlepage,oneside,12pt]{gost/G7-32}
 
 %\usepackage[pagebackref, bookmarks=true, bookmarksopen=false, pdfpagemode=UseOutlines, colorlinks=true, linkcolor=black, anchorcolor=black, citecolor=black, filecolor=black, menucolor=black, pagecolor=black, urlcolor=UrlColor]{hyperref}
 
 \usepackage{float}
 
-\TableInChaper % таблицы будут нумероваться в пределах раздела
-\PicInChaper   % рисунки будут нумероваться в пределах раздела
-\EqInChaper
+\TableInChapter % таблицы будут нумероваться в пределах раздела
+\PicInChapter   % рисунки будут нумероваться в пределах раздела
+\EqInChapter
 \setlength\GostItemGap{2mm}% для красоты можно менять от 0мм
 
 \newcommand{\Intro}{
@@ -52,17 +53,17 @@
 \newcommand{\Code}[1]{\texttt{#1}}
 \newcommand{\Link}[1]{\mbox{\emph{#1}}}
 \newcommand{\Soft}[1]{\mbox{\textbf{#1}}}
-\usepackage{moreverb}
+%\usepackage{moreverb}
 
 % Свои дополнения
-\input{api.tex}
-\usepackage{indentfirst}
+%\input{api.tex}
+%\usepackage{indentfirst}
 \usepackage{dot2texi}
 \usepackage{gnuplottex}
 \usepackage{pdflscape}
 \usepackage{rotating}
-\usepackage{amssymb}
-\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{amsmath}
 \usepackage{pdfpages}
 \usepackage{multirow}
 %\usepackage{fix-cm}
