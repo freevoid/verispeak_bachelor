@@ -7,5 +7,5 @@ FEATURES_DIR = relpath('data/features_male')
 MODELS_DIR = relpath('data/models/male')
 DETS_DIR = relpath('data/dets/male')
 PLOT_DIR = relpath('data/plots/male')
-
+ENROLL_COUNT = 15
 
