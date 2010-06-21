@@ -19,7 +19,7 @@ import logging
 from exceptions import DoesNotExistError
 from models import UploadedUtterance, RecordSession, Speaker,\
         SpeakerModel, VerificationProcess, LearningProcess,\
-        RecordSessionMeta
+        RecordSessionMeta, Settings
 from logic import api_enabled
 from forms import VerificationRequestForm, EnrollmentRequestForm,\
         UploadConfirmForm, RetrainRequestForm
@@ -221,11 +221,12 @@ def enrollment_confirm(request):
 
     if form.is_valid(): # raises valid exceptions on errors
         # All validation done, so we need to verificate a session
+        dyn_settings = Settings.get_instance()
         enrollment_process = form.cleaned_data['enrollment_process']
         utterance_count = enrollment_process\
                 .sample_sessions\
                     .aggregate(count=Count('uploadedutterance')).get('count')
-        assert utterance_count > settings.MIN_UTTERANCE_COUNT_TO_ENROLL,\
+        assert utterance_count > dyn_settings.min_utterance_count_to_enroll,\
                     _("Need at least %(count)d utterance to enroll") % {'count': utterance_count}
 
         target_speakers = enrollment_process.sample_sessions.values_list('target_speaker').distinct()

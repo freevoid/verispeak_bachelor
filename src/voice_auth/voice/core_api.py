@@ -5,7 +5,8 @@ import datetime
 
 from misc.snippets import log_exceptions, log_exception
 from models import VerificationProcess, Speaker, SpeakerModel,\
-        UniversalBackgroundModel, LLRVerificator, LearningProcess
+        UniversalBackgroundModel, LLRVerificator, LearningProcess,\
+        Settings
 
 from exceptions import NeedMoreDataError
 
@@ -61,9 +62,10 @@ def verification(verification_process_id, speaker_model_id):
             verification_process.transition(verification_process.FAILED)
             return
         else:
+            dyn_settings = Settings.get_instance()
             verificator = LLRVerificator.objects.create(null_estimator=speaker_model,
                     alternative_estimator=ubm,
-                    treshhold=settings.GLOBAL_LLR_TRESHHOLD)
+                    treshhold=dyn_settings.global_llr_threshold)
 
     # for now we have verificator and link to all uploaded utterances,
     # so we can verificate them
@@ -107,9 +109,10 @@ def enrollment(enrollment_process_id, target_speaker_id):
     sample_files = enrollment_process.sample_filepath_iterator()
     try:
         if enrollment_process.retrain_model is None:
+            dyn_settings = Settings.get_instance()
             model = enroll(sample_files,
                 model_classname=settings.SPEAKER_MODEL_CLASSNAME,
-                model_parameters=settings.SPEAKER_MODEL_PARAMETERS)
+                model_parameters=dyn_settings.speaker_model_parameters_dict)
         else:
             model = retrain_model(sample_files, enrollment_process.retrain_model)
     except NeedMoreDataError:

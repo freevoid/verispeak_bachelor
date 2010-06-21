@@ -78,14 +78,10 @@ SECRET_KEY = '891h=_51$c*xry+*)rvbn)q^2+9^-5oohr*2zp9!(k*3a0+yva'
 RECORDING_SESSION_DIR = 'recordings'
 RECORDING_SESSION_DIR = 'recordings_production'
 MAX_SESSION_TTL = 5 # in minutes
-GLOBAL_LLR_TRESHHOLD = 700.00
-MIN_UTTERANCE_COUNT_TO_ENROLL = 10
+SPEAKER_MODEL_CLASSNAME = 'CournapeauGMM'
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
         'voice.backends.VoiceBackend')
-
-SPEAKER_MODEL_CLASSNAME = 'CournapeauGMM'
-SPEAKER_MODEL_PARAMETERS = {'K': 16}
 
 REGISTRATION_OPENED = True
 
