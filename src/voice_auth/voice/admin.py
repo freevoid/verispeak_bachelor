@@ -60,11 +60,13 @@ class LearningProcessAdmin(admin.ModelAdmin):
 class RecordSessionMetaAdmin(admin.ModelAdmin):
     list_filter = ('gender',)
     list_display = ('id', 'record_session', 'gender', 'prompt', 'description')
+    exclude = ('record_session',)
 
 class LLRVerificatorAdmin(admin.ModelAdmin):
     list_display = ('id', 'treshhold', 'null_estimator', 'alternative_estimator')
     list_filter = ('alternative_estimator',)
 
+admin.site.register(Settings)
 admin.site.register(UploadedUtterance, UploadedUtteranceAdmin)
 admin.site.register(RecordSessionMeta, RecordSessionMetaAdmin)
 admin.site.register(RecordSession, RecordSessionAdmin)

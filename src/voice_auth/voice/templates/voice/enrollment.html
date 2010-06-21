@@ -20,7 +20,7 @@ $(document).ready(function () {
             confirmURL: "{% url voice.views.enrollment_confirm %}",
             cancelURL: "{% url voice.views.enrollment_cancel %}",
             redirectURL: "{{ redirect_to }}",
-            fallbackURL: "{{ login_url }}"
+            fallbackURL: "{% url voice.index %}"
             }
         );
 

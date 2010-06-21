@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_str
 from django.db import models
+from django.core import exceptions
 
 import logging
 import os.path
@@ -13,6 +14,7 @@ from state_machine.models import StateMachine
 from misc.signature import sign_string
 from misc.ip import ip_wrapper_property
 from misc.flatten import flatiter
+from misc import json
 
 class Speaker(User):
     """
@@ -226,9 +228,12 @@ class UploadedUtterance(models.Model):
                 self.utterance_file.name)
 
 class LLRVerificator(models.Model):
-    treshhold = models.FloatField()
-    null_estimator = models.OneToOneField(SpeakerModel, related_name='llr_verificator')
-    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, blank=True)
+    class Meta:
+        verbose_name = _("Verificator")
+        verbose_name_plural = _("Verificators")
+    treshhold = models.FloatField(verbose_name=_("entry threshold"))
+    null_estimator = models.OneToOneField(SpeakerModel, verbose_name=_("null estimator"), related_name='llr_verificator')
+    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, verbose_name=_("alternative estimator"), blank=True)
     
     def save(self, *args, **kwargs):
         # if alternative estimator was not set, trying to set most recent one
@@ -288,4 +293,58 @@ class RecordSessionMeta(models.Model):
             verbose_name=_('prompt'), blank=True)
     description = models.CharField(max_length=512, blank=True,
             verbose_name=_('description'))
+
+class SingletonError(Exception):
+    def __str__(self):
+        return "Somehow there are more than one instance of singleton object in DB"
+class SingletonConstraint(Exception):
+    def __str__(self):
+        return "Can't create more than one instance of singleton object"
+
+class SingletonManager(models.Manager):
+    def get(self, *args, **kwargs):
+        return super(SingletonManager, self).get()
+
+    def create(self, *args, **kwargs):   
+        self.ensure_can_create()
+        return super(SingletonManager, self).create(*args, **kwargs)
+
+    def ensure_can_create(self):
+        try:
+            self.get()
+        except exceptions.ObjectDoesNotExist:
+            pass
+        except exceptions.MultipleObjectsReturned:
+            raise SingletonError
+        else:
+            raise SingletonConstraint
+
+class SingletonModel(models.Model):
+    class Meta:
+        abstract = True
+
+    objects = SingletonManager()
+    
+    @classmethod
+    def get_instance(cls):
+        return cls.objects.get()
+
+    def save(self, *args, **kwargs):
+        if self.id is None:
+            self.__class__.objects.ensure_can_create()
+        return super(SingletonModel, self).save(*args, **kwargs)
+
+class Settings(SingletonModel):
+    class Meta:
+        verbose_name = _("Settings")
+        verbose_name_plural = verbose_name
+
+    global_llr_threshold = models.FloatField(verbose_name=_("global entry threshold"))
+    min_utterance_count_to_enroll = models.PositiveSmallIntegerField(verbose_name=_("minimal count of utterances needed to enroll"))
+    speaker_model_parameters = models.CharField(max_length=256,
+            verbose_name=_("parameters of speaker model instance"), default="{}")
+    speaker_model_parameters_dict = json.json_converter("speaker_model_parameters")
+
+    def __unicode__(self):
+        return u"%s" % _("Settings")
 

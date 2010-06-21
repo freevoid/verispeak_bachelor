@@ -18,6 +18,10 @@ urlpatterns = patterns('',
 if settings.DEBUG:
     urlpatterns += patterns('', url(r'^media/(?P<path>.*)$', 'django.views.static.serve', 
                                     {'document_root': settings.MEDIA_ROOT}),)
+    if hasattr(settings, 'ADMIN_MEDIA_ROOT'):
+        urlpatterns += patterns('', url(r'^%s/(?P<path>.*)$' % settings.ADMIN_MEDIA_PREFIX.strip('/'),
+            'django.views.static.serve', 
+            {'document_root': settings.ADMIN_MEDIA_ROOT}),)
 
 urlpatterns += patterns('django.contrib.auth.views',
         url(r'^accounts/login/', 'login', name='login'),

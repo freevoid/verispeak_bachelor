@@ -1,0 +1,11 @@
+[
+    {
+        "pk": 1, 
+        "model": "voice.settings", 
+        "fields": {
+            "speaker_model_parameters": "{\"K\":16}", 
+            "min_utterance_count_to_enroll": 10, 
+            "global_llr_threshold": 700.0
+        }
+    }
+]
