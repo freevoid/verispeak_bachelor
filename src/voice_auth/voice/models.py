@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_str
 from django.db import models
 
+import logging
 import os.path
 import datetime
 import time
@@ -205,7 +206,8 @@ class UploadedUtterance(models.Model):
             f.close()
 
         ip_dotted_quad = request.META['REMOTE_ADDR']
-        print "Saving new utterance from %s: name='%s', size=%s" % (ip_dotted_quad, uploaded_file.name, uploaded_file.size)
+        logging.info("Saving new utterance from %s: name='%s', size=%s",
+                ip_dotted_quad, uploaded_file.name, uploaded_file.size)
         utterance = UploadedUtterance()
         utterance.session=record_session
 

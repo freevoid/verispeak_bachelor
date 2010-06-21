@@ -68,11 +68,9 @@ def upload_handler(request):
                 session
             )
 
-        print "Uploaded utterance, sid:", session_id
     except BaseException, e:
         log_exception()
         response = u'ERROR ' + unicode(e)
-        print e.__class__, e
     else:
         response = 'SUCCESS'
     return HttpResponse(response, mimetype='text/plain')
@@ -102,7 +100,7 @@ def verification_state(request):
 @implicit_render
 @allowed_methods('GET')
 def verification(request):
-    print "Verification", request.method, request.REQUEST
+    #print "Verification", request.method, request.REQUEST
     remote_addr = request.META['REMOTE_ADDR']
 
     if request.method == 'GET':
@@ -143,7 +141,6 @@ def verification_confirm(request):
     remote_addr = request.META['REMOTE_ADDR']
     form = VerificationRequestForm(request.REQUEST,
             remote_ip=dotted_quad_to_num(remote_addr))
-    print request.POST
 
     if form.is_valid(): # raises valid exceptions on errors
         # All validation done, so we need to verificate a session
@@ -186,7 +183,7 @@ def enrollment_state(request):
 @implicit_render
 @allowed_methods('GET')
 def enrollment(request):
-    print "enrollment", request.method, request.REQUEST
+    #print "enrollment", request.method, request.REQUEST
     remote_addr = request.META['REMOTE_ADDR']
 
     if request.method == 'GET':
@@ -221,7 +218,6 @@ def enrollment_confirm(request):
     remote_addr = request.META['REMOTE_ADDR']
     form = EnrollmentRequestForm(request.REQUEST,
             remote_ip=dotted_quad_to_num(remote_addr))
-    print request.POST
 
     if form.is_valid(): # raises valid exceptions on errors
         # All validation done, so we need to verificate a session
@@ -261,7 +257,7 @@ def enrollment_cancel(request):
 @allowed_methods('GET')
 @implicit_render
 def upload(request):
-    print "Upload", request.method, request.GET
+    logging.info("Upload initialized")
     session_id = RecordSession.generate_session_id(request)
     confirm_form = UploadConfirmForm(remote_ip=None,
             initial={'session_id': session_id})
@@ -302,13 +298,13 @@ def retrain(request):
         form = RetrainRequestForm(speaker, request.POST)
         if form.is_valid():
             enrollment_process = form.cleaned_data['enrollment_process']
-            print "enrollment_process:", enrollment_process, enrollment_process.id
+            logging.info("Starting retrain process. Enrollment process: %s", enrollment_process.id)
             enrollment_process.save()
             enrollment_process.transition(enrollment_process.STARTED)
-            speaker.message_set.create(message=_('Selected model has been successfully putted in queue for retraining'))
             send_message('voice.enrollment',
                     enrollment_process_id=enrollment_process.id,
                     target_speaker_id=speaker.id)
+            speaker.message_set.create(message=_('Selected model has been successfully putted in queue for retraining'))
             return redirect('voice.index')
         else:
             return {'form': form}

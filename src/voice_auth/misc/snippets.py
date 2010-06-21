@@ -58,7 +58,7 @@ def implicit_render(func):
     elif len(splitted) > 2:
         app_name = splitted[1]
     template_name = '%s/%s.html' % (app_name, func.__name__)
-    print template_name
+    logging.debug("Setting implicit render to '%s' for function %s", template_name, func.__name__)
     return render_to(template_name)(func)
 
 def allowed_methods(*methods):
