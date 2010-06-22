@@ -81,7 +81,7 @@ MAX_SESSION_TTL = 5 # in minutes
 SPEAKER_MODEL_CLASSNAME = 'CournapeauGMM'
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
-        'voice.backends.VoiceBackend')
+        'django_verispeak.backends.VoiceBackend')
 
 REGISTRATION_OPENED = True
 
@@ -142,6 +142,6 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
 
-    'voice',
+    'django_verispeak',
     'voice_stats'
 )

@@ -1,4 +1,4 @@
-{% extends "voice/auth_base.html" %}
+{% extends "django_verispeak/auth_base.html" %}
 
 {% block title %}Регистрация в системе голосовой аутентификации{% endblock %}
 
@@ -16,11 +16,11 @@ $(document).ready(function () {
             appletName: "ListenUpRecorder"
         },
         {
-            monitorURL: "{% url voice.views.enrollment_state %}",
-            confirmURL: "{% url voice.views.enrollment_confirm %}",
-            cancelURL: "{% url voice.views.enrollment_cancel %}",
+            monitorURL: "{% url django_verispeak.views.enrollment_state %}",
+            confirmURL: "{% url django_verispeak.views.enrollment_confirm %}",
+            cancelURL: "{% url django_verispeak.views.enrollment_cancel %}",
             redirectURL: "{{ redirect_to }}",
-            fallbackURL: "{% url voice.index %}"
+            fallbackURL: "{% url django_verispeak.index %}"
             }
         );
 

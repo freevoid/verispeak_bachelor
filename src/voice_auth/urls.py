@@ -10,7 +10,7 @@ amqp.setup_queues()
 
 urlpatterns = patterns('',
     (r'^$', redirect_to, {'url': '/voice/'}),
-    (r'^voice/', include('voice.urls')),
+    (r'^voice/', include('django_verispeak.urls')),
 
     (r'^admin/', include(admin.site.urls)),
 )
@@ -25,7 +25,7 @@ if settings.DEBUG:
 
 urlpatterns += patterns('django.contrib.auth.views',
         url(r'^accounts/login/', 'login', name='login'),
-        url(r'^accounts/logout/', 'logout', {'template_name': 'voice/logout.html'}, name='logout'),
+        url(r'^accounts/logout/', 'logout', {'template_name': 'django_verispeak/logout.html'}, name='logout'),
         (r'^accounts/$', redirect_to, {'url': '/accounts/login/'})
         )
 

@@ -3,7 +3,7 @@ from django.conf import settings
 
 from datetime import datetime, timedelta
 
-from voice.models import RecordSession, VerificationProcess
+from django_verispeak.models import RecordSession, VerificationProcess
 
 class Command(BaseCommand):
     help = ('Delete relatively old (which is tuned with settings.MAX_SESSION_TTL) record sessions without uploaded utterances.')

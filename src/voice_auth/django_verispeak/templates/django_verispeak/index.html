@@ -1,4 +1,4 @@
-{% extends "voice/pages_base.html" %}
+{% extends "django_verispeak/pages_base.html" %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -22,7 +22,7 @@ function toVerification(url) {
     <p>Добро пожаловать на страницу системы голосовой аутентификации!</p>
 
     <ul>
-        <li><a href="javascript:toVerification('{% url voice.views.verification %}');">Вход в систему по голосу</a> (имя учетной записи: <input type=text id=id_login_input />)</li>
+        <li><a href="javascript:toVerification('{% url django_verispeak.views.verification %}');">Вход в систему по голосу</a> (имя учетной записи: <input type=text id=id_login_input />)</li>
     </ul>
 {% endblock %}
 

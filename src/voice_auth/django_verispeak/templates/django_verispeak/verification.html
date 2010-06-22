@@ -1,4 +1,4 @@
-{% extends "voice/auth_base.html" %}
+{% extends "django_verispeak/auth_base.html" %}
 
 {% block title %}Аутентификация{% endblock %}
 
@@ -16,9 +16,9 @@ $(document).ready(function () {
             appletName: "ListenUpRecorder"
         },
         {
-            monitorURL: "{% url voice.views.verification_state %}",
-            confirmURL: "{% url voice.views.verification_confirm %}",
-            cancelURL: "{% url voice.views.verification_cancel %}",
+            monitorURL: "{% url django_verispeak.views.verification_state %}",
+            confirmURL: "{% url django_verispeak.views.verification_confirm %}",
+            cancelURL: "{% url django_verispeak.views.verification_cancel %}",
             redirectURL: "{{ redirect_to }}",
             fallbackURL: "{{ login_url }}"
             }

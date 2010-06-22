@@ -1,4 +1,4 @@
-{% extends "voice/auth_base.html" %}
+{% extends "django_verispeak/auth_base.html" %}
 
 {% block title %}Загрузка голосовых данных{% endblock %}
 
@@ -17,8 +17,8 @@ $(document).ready(function () {
             confirmFormSelector: ".voice_upload_confirm_form"
         },
         {
-            confirmURL: "{% url voice.views.upload_confirm %}",
-            cancelURL: "{% url voice.views.upload_cancel %}",
+            confirmURL: "{% url django_verispeak.views.upload_confirm %}",
+            cancelURL: "{% url django_verispeak.views.upload_cancel %}",
             redirectURL: "{{ redirect_to }}",
             fallbackURL: "{{ login_url }}"
             }
@@ -45,7 +45,7 @@ $(document).ready(function () {
 <div class="voice_upload_confirm_wrapper">
     <h2 class="voice_auth_header">Подтверждение</h2>
     <div class="voice_upload_confirm_form">
-    <form action="{% url voice.views.upload_confirm %}" method="post">
+    <form action="{% url django_verispeak.views.upload_confirm %}" method="post">
         <table>
             {{ confirm_form.as_table }}
             <tr><td></td>

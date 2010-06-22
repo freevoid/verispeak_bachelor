@@ -2,10 +2,10 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.conf import settings
 
-urlpatterns = patterns('voice.views',
-    (r'^$', direct_to_template, {'template': 'voice/index.html'}, "voice.index"),
-    (r'^success/$', direct_to_template, {'template': 'voice/success.html'}, "voice.success"),
-    (r'^fail/$', direct_to_template, {'template': 'voice/fail.html'}, "voice.fail"),
+urlpatterns = patterns('django_verispeak.views',
+    (r'^$', direct_to_template, {'template': 'django_verispeak/index.html'}, "django_verispeak.index"),
+    (r'^success/$', direct_to_template, {'template': 'django_verispeak/success.html'}, "django_verispeak.success"),
+    (r'^fail/$', direct_to_template, {'template': 'django_verispeak/fail.html'}, "django_verispeak.fail"),
 
     (r'^retrain/$', 'retrain'),
 
@@ -15,9 +15,9 @@ urlpatterns = patterns('voice.views',
     (r'^verification/cancel/$', 'verification_cancel'),
 
     (r'^enrollment/initial/$', direct_to_template,
-        {'template': 'voice/enrollment_initial.html',
+        {'template': 'django_verispeak/enrollment_initial.html',
             'extra_context': {'registration_opened': settings.REGISTRATION_OPENED}},
-        "voice.enrollment.initial"),
+        "django_verispeak.enrollment.initial"),
     (r'^enrollment/$', 'enrollment'),
     (r'^enrollment/confirm/$', 'enrollment_confirm'),
     (r'^enrollment/state/$', 'enrollment_state'),

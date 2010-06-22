@@ -8,26 +8,20 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'LearningProcess.retrain_model'
-        db.add_column('voice_learningprocess', 'retrain_model', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['voice.SpeakerModel'], null=True, blank=True), keep_default=False)
-
-        # Adding field 'LearningProcess.result_model'
-        db.add_column('voice_learningprocess', 'result_model', self.gf('django.db.models.fields.related.OneToOneField')(blank=True, related_name='learning_process', unique=True, null=True, to=orm['voice.SpeakerModel']), keep_default=False)
-
-        # Deleting field 'SpeakerModel.learning_process'
-        db.delete_column('voice_speakermodel', 'learning_process_id')
+        # Adding model 'Settings'
+        db.create_table('django_verispeak_settings', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('global_llr_threshold', self.gf('django.db.models.fields.FloatField')()),
+            ('min_utterance_count_to_enroll', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
+            ('speaker_model_parameters', self.gf('django.db.models.fields.CharField')(default='{}', max_length=256)),
+        ))
+        db.send_create_signal('django_verispeak', ['Settings'])
 
 
     def backwards(self, orm):
         
-        # Deleting field 'LearningProcess.retrain_model'
-        db.delete_column('voice_learningprocess', 'retrain_model_id')
-
-        # Deleting field 'LearningProcess.result_model'
-        db.delete_column('voice_learningprocess', 'result_model_id')
-
-        # Adding field 'SpeakerModel.learning_process'
-        db.add_column('voice_speakermodel', 'learning_process', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['voice.LearningProcess'], unique=True, null=True, blank=True), keep_default=False)
+        # Deleting model 'Settings'
+        db.delete_table('django_verispeak_settings')
 
 
     models = {
@@ -67,24 +61,24 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'voice.learningprocess': {
+        'django_verispeak.learningprocess': {
             'Meta': {'object_name': 'LearningProcess'},
             'finish_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'result_model': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'learning_process'", 'unique': 'True', 'null': 'True', 'to': "orm['voice.SpeakerModel']"}),
-            'retrain_model': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.SpeakerModel']", 'null': 'True', 'blank': 'True'}),
-            'sample_sessions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['voice.RecordSession']", 'symmetrical': 'False'}),
+            'result_model': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'learning_process'", 'unique': 'True', 'null': 'True', 'to': "orm['django_verispeak.SpeakerModel']"}),
+            'retrain_model': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_verispeak.SpeakerModel']", 'null': 'True', 'blank': 'True'}),
+            'sample_sessions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['django_verispeak.RecordSession']", 'symmetrical': 'False'}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'state_id': ('django.db.models.fields.CharField', [], {'max_length': '24'})
         },
-        'voice.llrverificator': {
+        'django_verispeak.llrverificator': {
             'Meta': {'object_name': 'LLRVerificator'},
-            'alternative_estimator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.UniversalBackgroundModel']", 'blank': 'True'}),
+            'alternative_estimator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_verispeak.UniversalBackgroundModel']", 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'null_estimator': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'llr_verificator'", 'unique': 'True', 'to': "orm['voice.SpeakerModel']"}),
+            'null_estimator': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'llr_verificator'", 'unique': 'True', 'to': "orm['django_verispeak.SpeakerModel']"}),
             'treshhold': ('django.db.models.fields.FloatField', [], {})
         },
-        'voice.recordsession': {
+        'django_verispeak.recordsession': {
             'Meta': {'object_name': 'RecordSession'},
             'authentic': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'created_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -93,49 +87,56 @@ class Migration(SchemaMigration):
             'session_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '32'}),
             'target_speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
         },
-        'voice.recordsessionmeta': {
+        'django_verispeak.recordsessionmeta': {
             'Meta': {'object_name': 'RecordSessionMeta'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'prompt': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'record_session': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['voice.RecordSession']", 'unique': 'True'})
+            'record_session': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['django_verispeak.RecordSession']", 'unique': 'True'})
         },
-        'voice.speaker': {
+        'django_verispeak.settings': {
+            'Meta': {'object_name': 'Settings'},
+            'global_llr_threshold': ('django.db.models.fields.FloatField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'min_utterance_count_to_enroll': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
+            'speaker_model_parameters': ('django.db.models.fields.CharField', [], {'default': "'{}'", 'max_length': '256'})
+        },
+        'django_verispeak.speaker': {
             'Meta': {'object_name': 'Speaker', 'db_table': "'auth_user'", '_ormbases': ['auth.User']}
         },
-        'voice.speakermodel': {
+        'django_verispeak.speakermodel': {
             'Meta': {'object_name': 'SpeakerModel'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'model_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'speaker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
-        'voice.universalbackgroundmodel': {
+        'django_verispeak.universalbackgroundmodel': {
             'Meta': {'object_name': 'UniversalBackgroundModel'},
             'created_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
         },
-        'voice.uploadedutterance': {
+        'django_verispeak.uploadedutterance': {
             'Meta': {'object_name': 'UploadedUtterance'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_trash': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.RecordSession']"}),
+            'session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_verispeak.RecordSession']"}),
             'uploaded_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'utterance_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
         },
-        'voice.verificationprocess': {
+        'django_verispeak.verificationprocess': {
             'Meta': {'object_name': 'VerificationProcess'},
             'finish_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'state_id': ('django.db.models.fields.CharField', [], {'max_length': '24'}),
-            'target_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.RecordSession']"}),
-            'verificated_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['voice.LLRVerificator']", 'null': 'True', 'blank': 'True'}),
+            'target_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_verispeak.RecordSession']"}),
+            'verificated_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_verispeak.LLRVerificator']", 'null': 'True', 'blank': 'True'}),
             'verification_result': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'verification_score': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         }
     }
 
-    complete_apps = ['voice']
+    complete_apps = ['django_verispeak']

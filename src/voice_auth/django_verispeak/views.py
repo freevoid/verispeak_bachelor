@@ -31,7 +31,7 @@ DEFAULT_APPLET_PARAMS = {
         'showVUMeter': 'no',
         'bevelSize': '0',
         'background': 'EEEEEE', 
-        'uploadFileName': 'voice.wav',
+        'uploadFileName': 'django_verispeak.wav',
         'requestStateChanges': 'yes',
         'stateChangeCallback': 'recordStateChanged',
         'requestTimeChanges': 'yes',
@@ -122,7 +122,7 @@ def verification(request):
         verification_process = VerificationProcess.objects.create(target_session=session)
 
         applet_params = DEFAULT_APPLET_PARAMS.copy()
-        applet_params['uploadURL'] = reverse('voice.views.upload_handler')
+        applet_params['uploadURL'] = reverse('django_verispeak.views.upload_handler')
         applet_params['uploadFileName'] = session_id
         applet_params['maxRecordTime'] = '3.0'
         #applet_params['trimEnable'] = 'yes'
@@ -148,7 +148,7 @@ def verification_confirm(request):
         verification_process = form.cleaned_data['verification_process']
         assert verification_process.target_session.utterance_count > 0, "Need at least 1 utterance to authenticate"
         verification_process.transition(VerificationProcess.STARTED)
-        send_message("voice.verification",
+        send_message("django_verispeak.verification",
                 verification_process_id=verification_process.id,
                 speaker_model_id=speaker_model.id)
 
@@ -201,7 +201,7 @@ def enrollment(request):
         enrollment_process.sample_sessions.add(session)
 
         applet_params = DEFAULT_APPLET_PARAMS.copy()
-        applet_params['uploadURL'] = reverse('voice.views.upload_handler')
+        applet_params['uploadURL'] = reverse('django_verispeak.views.upload_handler')
         applet_params['uploadFileName'] = session_id
         return {'username': target_speaker.username,
                 'session_id': session_id,
@@ -235,7 +235,7 @@ def enrollment_confirm(request):
         target_speaker = target_speakers[0][0]
         assert request.user.id == target_speaker, _("Enrollment can be confirmed only by original person")
         enrollment_process.transition(LearningProcess.STARTED)
-        send_message("voice.enrollment",
+        send_message("django_verispeak.enrollment",
                 enrollment_process_id=enrollment_process.id,
                 target_speaker_id=target_speaker)
 
@@ -264,7 +264,7 @@ def upload(request):
             initial={'session_id': session_id})
     applet_params = DEFAULT_APPLET_PARAMS.copy()
     applet_params['uploadFileName'] = session_id
-    applet_params['uploadURL'] = reverse('voice.views.upload_handler')
+    applet_params['uploadURL'] = reverse('django_verispeak.views.upload_handler')
     return {'applet_params': applet_params,
                 'applet_width': DEFAULT_APPLET_WIDTH,
                 'applet_height': DEFAULT_APPLET_HEIGHT,
@@ -282,7 +282,7 @@ def upload_confirm(request):
 
     if confirm_form.is_valid():
         confirm_form.save()
-        return redirect('voice.index')
+        return redirect('django_verispeak.index')
     raise TypeError
 
 @api_enabled()
@@ -302,11 +302,11 @@ def retrain(request):
             logging.info("Starting retrain process. Enrollment process: %s", enrollment_process.id)
             enrollment_process.save()
             enrollment_process.transition(enrollment_process.STARTED)
-            send_message('voice.enrollment',
+            send_message('django_verispeak.enrollment',
                     enrollment_process_id=enrollment_process.id,
                     target_speaker_id=speaker.id)
             speaker.message_set.create(message=_('Selected model has been successfully putted in queue for retraining'))
-            return redirect('voice.index')
+            return redirect('django_verispeak.index')
         else:
             return {'form': form}
     else:
