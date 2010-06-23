@@ -1,0 +1,54 @@
+digraph import_graph {
+node[style="ordnode"];
+
+rankdir=LR;
+ranksep=.1;
+nodesep=.4;
+
+verispeak_api[label="verispeak.api"]
+features_mfcc[label="features.mfcc"]
+features_delta_mfcc[label="features.delta_mfcc"]
+features_mean_norm[label="features.mean_norm"]
+features_util_fft[label="features.util.fft"]
+framing_segmentaxis[label="framing.segmentaxis"]
+framing_framed_speech[label="framing.framed_speech"]
+normalization_silence_remover[label="normalization.silence_remover"]
+normalization_zero_energy_frames[label="normalization.zero_energy"]
+util_soundfile[label="util.soundfile"]
+
+verispeak_api -> processors;
+verispeak_api -> training;
+verispeak_api -> model;
+
+processors -> speech_processing;
+processors -> normalization;
+processors -> wave;
+processors -> features;
+processors -> framing;
+
+model -> features [style="invis"];
+model -> training [style="invis"];
+
+wave -> util_soundfile
+
+features -> features_feature_vectors -> features_mfcc;
+                               features_mfcc -> features_util_fft;
+            features_feature_vectors -> base;
+
+features -> features_delta_mfcc;
+features -> features_mean_norm;
+
+training -> training_em -> training_base -> base;
+training -> training_map -> training_base -> base;
+
+model -> model_gmm;
+model_gmm -> model_gmm_diagonal_gmm -> model_gmm_base;
+model_gmm -> model_gmm_full_gmm -> model_gmm_base -> model_base -> base;
+
+framing -> framing_segmentaxis;
+framing -> framing_framed_speech -> base;
+
+normalization -> normalization_silence_remover;
+normalization -> normalization_zero_energy_frames;
+}
+
