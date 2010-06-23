@@ -16,12 +16,12 @@ def filenames_to_features(filenames, processor=processor):
     '''
     Shortcut function to convert iterable of filenames to unite numpy array.
 
-    @var filenames: iterable of filepaths to sound files that we need to
+    @param filenames: iterable of filepaths to sound files that we need to
         convert (*.wav, etc.)
-    @var processor: verispeak.speech_processing.FileToFeaturesStack subclass
+    @param processor: verispeak.speech_processing.FileToFeaturesStack subclass
         instance (or something that has attribute 'process' that takes filename
         as an argument and returns verispeak.features.feature_vectors.FeatureVectors instance
-    @retval: numpy.ndarray instance representing all the features
+    @return: numpy.ndarray instance representing all the features
     '''
     return concatenate_vectors(imap(processor.process, filenames))
 
@@ -31,12 +31,14 @@ def score(null_model, alternative_model, filenames):
     hypothesises.
     
     Null hypothesis: speech in filenames was spoken by claimed speaker,
-        represented by null_model;
-    Alternative hypothethis: speech in filenames was spoken NOT BY claimed
-        speaker. To estimate latter likelihood we use alternative_model (UBM).
+    represented by null_model;
 
-    @var filenames: iterable of filepaths to sound files, that we need to score
-    @retval: float, representing LLR between two hypothesises
+    Alternative hypothethis: speech in filenames was spoken NOT BY claimed
+    speaker. To estimate latter likelihood we use alternative_model (UBM).
+
+    @param filenames: iterable of filepaths to sound files, that we need to score
+    @rtype: float
+    @return: float number representing LLR between two hypothesises
     '''
     test_samples = filenames_to_features(filenames)
     null_likelihood = null_model.loglikelihood(test_samples)
@@ -68,14 +70,14 @@ def enroll(sample_files, model_classname='CournapeauGMM', model_parameters={}, r
     '''
     High-level function to train a speaker model from sample sound files.
     
-    @var model_classname: string, representing one of available model classes
+    @param model_classname: string, representing one of available model classes
         (currently only Gaussian Mixture Models from verispeak.gmm)
-    @var model_parameters: dict-like object that will be passed to model
+    @param model_parameters: dict-like object that will be passed to model
         constructor
-    @var retries: int, number of retries of training phase (it can be failed
+    @param retries: int, number of retries of training phase (it can be failed
         because of small amount of train data and bad initialization try
         (initialization of initial model parameters involves random picking).
-    @retval: verispeak.gmm.base.Codebook instance, trained from provided sample
+    @return: verispeak.gmm.base.Codebook instance, trained from provided sample
         files
     '''
     gmm = _model_factory(model_classname, model_parameters)

@@ -18,8 +18,8 @@ class GMM(GMMBase):
 
     def __init__(self, K=16, D=24):
         """
-        @var D: number of dimensions
-        @var K: quantity of Gaussian components
+        @param D: number of dimensions
+        @param K: quantity of Gaussian components
         """
         super(GMM, self).__init__()
         self._k = K
@@ -135,4 +135,8 @@ class DiagonalGMM(GMM):
     def set_params(self, w, mu, va):
         self.weights = w
         self.reload_components(mu, va)
+
+from verispeak.training import MAPAdaptation
+class AdaptedGMM(GMM):
+    training_procedure = MAPAdaptation()
 

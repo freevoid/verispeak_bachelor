@@ -13,8 +13,8 @@ class Codebook(SerializableObject):
         """
         Train the codebook on a train samples.
 
-        @retval: number of iterations
-        @val train_samples: iterable of numpy arrays (feature vectors)
+        @return: number of iterations
+        @param train_samples: iterable of numpy arrays (feature vectors)
         """
         iterations = self.training_procedure(self, train_samples, *args, **kwargs)
         if kwargs.get('no_init'):
