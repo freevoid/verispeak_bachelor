@@ -1,6 +1,6 @@
 .PHONY: force clean bib 
 
-LATEX=pdflatex
+LATEX=pdflatex --shell-escape
 CROPPAGE=pdfcrop
 
 CSF=/usr/share/texmf-texlive/bibtex/csf/gost/utf8-ru.csf

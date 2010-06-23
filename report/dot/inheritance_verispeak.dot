@@ -1,0 +1,41 @@
+digraph inheritance_verispeak {
+node [fontname="times",fontsize="10",style="ordnode"]
+edge [fontname="times",fontsize="10"]
+ranksep=.2
+;nodesep=.3
+
+/* Nodes */
+node16 [width="0",shape="plaintext",href="verispeak.base.Object-class.html",tooltip="verispeak.base.Object",height="0",label=Object]
+node30 [width="0",shape="plaintext",href="verispeak.MAPAdaptation-class.html",tooltip="verispeak.MAPAdaptation",height="0",label=MAPAdaptation]
+node26 [width="0",shape="plaintext",href="verispeak.CommonStack-class.html",tooltip="verispeak.CommonStack",height="0",label=CommonStack]
+node31 [width="0",shape="plaintext",href="verispeak.CommonMFCCStack-class.html",tooltip="verispeak.CommonMFCCStack",height="0",label=CommonMFCCStack]
+node29 [width="0",shape="plaintext",href="verispeak.EM-class.html",tooltip="verispeak.EM",height="0",label=EM]
+node27 [width="0",shape="plaintext",href="verispeak.MFCCFeatureVectors-class.html",tooltip="verispeak.MFCCFeatureVectors",height="0",label=MFCCFeatureVectors]
+node18 [width="0",shape="plaintext",href="verispeak.Wave-class.html",tooltip="verispeak.Wave",height="0",label=Wave]
+node17 [width="0",shape="plaintext",href="verispeak.FileTotack-class.html",tooltip="verispeak.FileTotack",height="0",label=FileToFeaturesStack]
+node35 [width="0",shape="plaintext",href="verispeak.DiagonalGMM-class.html",tooltip="verispeak.DiagonalGMM",height="0",label=DiagonalGMM]
+node23 [width="0",shape="plaintext",href="verispeak.FeatureVectors-class.html",tooltip="verispeak.FeatureVectors",height="0",label=FeatureVectors]
+node21 [width="0",shape="plaintext",href="verispeak.TrainingProcedure-class.html",tooltip="verispeak.TrainingProcedure",height="0",label=TrainingProcedure]
+node24 [width="0",shape="plaintext",href="verispeak.Codebook-class.html",tooltip="verispeak.Codebook",height="0",label=Codebook]
+node20 [width="0",shape="plaintext",href="verispeak.base.SerializableObject-class.html",tooltip="verispeak.base.SerializableObject",height="0",label=SerializableObject]
+node32 [width="0",shape="plaintext",href="verispeak.GMM-class.html",tooltip="verispeak.GMM",height="0",label=GMM]
+node28 [width="0",shape="plaintext",href="verispeak.GMMBase-class.html",tooltip="verispeak.GMMBase",height="0",label=GMMBase]
+node19 [width="0",shape="plaintext",href="verispeak.framing.FramedSpeech-class.html",tooltip="verispeak.framing.FramedSpeech",height="0",label=FramedSpeech]
+
+/* Edges */
+node28 -> node35 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node21 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node21 -> node30 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node26 -> node31 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node24 -> node28 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node28 -> node32 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node19 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node21 -> node29 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node17 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node20 -> node24 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node20 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node23 -> node27 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node20 -> node23 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node18 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node17 -> node26 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+}

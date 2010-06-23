@@ -20,9 +20,20 @@
 
 % Прочие пакетики
 % Графика.
-\usepackage{graphicx}
+% Картинки и tikz
+\usepackage[pdftex]{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{arrows,shapes,calc,decorations,chains,scopes,positioning,snakes,shadows}
+\usepackage{tikz-er2}
+
 \usepackage{amssymb}
 \usepackage{amsmath}
+
+
+\usepackage[underline=true,rounded corners=false]{pgf-umlsd}
+
 
 \newcommand{\important}[1]{\emph{#1}}
 
@@ -190,13 +201,23 @@ LR_{H_0, H_1} = \frac{p(X|H_0)}{p(X|H_1)},
 \section{Диаграмма сущность-связь системы хранения}
 
 \begin{figure}[h!]
-\center{\includegraphics[height=.8\textheight]{../include/er_main_tikz}}
+%\center{\includegraphics[height=.8\textheight]{../include/er_main_tikz}}
 \end{figure}
 
 \section{Диаграмма состояний для процесса регистрации в системе}
 
 \begin{figure}[h!]
-\center{\includegraphics[height=.8\textheight]{../include/learning_fsm_times_dia}}
+\center{\includegraphics[height=.8\textheight]{../include/enrollment_server_sd_dia}}
+\end{figure}
+
+\section{Диаграмма последовательности для процесса регистрации в системе}
+\begin{figure}[hp!]
+    \center{
+        \fontsize{12}{14}\selectfont
+        \input{../tex_include/seq_enrollment_embedded.tex}
+    }
+    \caption{Диаграмма последовательности: процесс регистрации в системе}
+    \label{fig:seq_enrollment}
 \end{figure}
 
 \section{Исследование показателей качества системы}
