@@ -35,12 +35,12 @@ class RecordSession(models.Model):
         verbose_name_plural = _("Record sessions")
 
 
-    session_id = models.CharField(max_length=32, unique=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    target_speaker = models.ForeignKey(Speaker, null=True)
-    authentic = models.NullBooleanField(blank=True, null=True)
+    session_id = models.CharField(max_length=32, unique=True, verbose_name=_('session id'))
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('created time'))
+    target_speaker = models.ForeignKey(Speaker, null=True, verbose_name=_('target speaker'))
+    authentic = models.NullBooleanField(blank=True, null=True, verbose_name=_('authentic'))
 
-    remote_ip = models.IntegerField()
+    remote_ip = models.IntegerField(verbose_name=_('remote ip'))
     remote_ip_dotted_quad = ip_wrapper_property('remote_ip')
 
     @staticmethod
@@ -68,9 +68,9 @@ class SpeakerModel(models.Model):
 
     MODELS_PATH = 'speaker_models'
 
-    model_file = models.FileField(upload_to=MODELS_PATH)
-    speaker = models.ForeignKey(Speaker)
-    is_active = models.BooleanField(default=False)
+    model_file = models.FileField(upload_to=MODELS_PATH, verbose_name=_('model file'))
+    speaker = models.ForeignKey(Speaker, verbose_name=_('speaker'))
+    is_active = models.BooleanField(default=False, verbose_name=_('is active'))
 
     def _set_active(self, active):
         if self.is_active != active:
@@ -150,13 +150,13 @@ class LearningProcess(StateMachine):
             STARTED: (FAILED, FINISHED, WAIT_FOR_DATA, INTERRUPTED),
             }
 
-    start_time = models.DateTimeField(auto_now_add=True)
-    finish_time = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField(auto_now_add=True, verbose_name=_('start time'))
+    finish_time = models.DateTimeField(blank=True, null=True, verbose_name=_('finish time'))
 
-    sample_sessions = models.ManyToManyField(RecordSession)
+    sample_sessions = models.ManyToManyField(RecordSession, verbose_name=_('sample sessions'))
 
-    retrain_model = models.ForeignKey(SpeakerModel, blank=True, null=True)
-    result_model = models.OneToOneField(SpeakerModel, related_name='learning_process', blank=True, null=True)
+    retrain_model = models.ForeignKey(SpeakerModel, blank=True, null=True, verbose_name=_('retrain model'))
+    result_model = models.OneToOneField(SpeakerModel, related_name='learning_process', blank=True, null=True, verbose_name=_('result model'))
 
     def sample_sessions_count(self):
         return self.sample_sessions.count()
@@ -168,8 +168,8 @@ class LearningProcess(StateMachine):
                 .values_list('utterance_file') for s in self.sample_sessions.all()))
 
 class UniversalBackgroundModel(models.Model):
-    model_file = models.FileField(upload_to='ubm')
-    created_time = models.DateTimeField(auto_now_add=True)
+    model_file = models.FileField(upload_to='ubm', verbose_name=_('model file'))
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name=_('created time'))
 
     class Meta:
         get_latest_by = 'created_time'
@@ -193,11 +193,11 @@ class UploadedUtterance(models.Model):
         base_dir = settings.RECORDING_SESSION_DIR
         return '%s/%s/%s.wav' % (base_dir, instance.session.id, stamp)
 
-    utterance_file = models.FileField(upload_to=get_filename)
-    uploaded_date = models.DateTimeField(auto_now_add=True)
-    is_trash = models.BooleanField(default=False)
+    utterance_file = models.FileField(upload_to=get_filename, verbose_name=_('utterance file'))
+    uploaded_date = models.DateTimeField(auto_now_add=True, verbose_name=_('uploaded date'))
+    is_trash = models.BooleanField(default=False, verbose_name=_('is trash'))
     
-    session = models.ForeignKey(RecordSession)
+    session = models.ForeignKey(RecordSession, verbose_name=_('session'))
 
     @staticmethod
     def save_uploaded_utterance(request, uploaded_file, record_session):
@@ -231,9 +231,9 @@ class LLRVerificator(models.Model):
     class Meta:
         verbose_name = _("Verificator")
         verbose_name_plural = _("Verificators")
-    treshhold = models.FloatField(verbose_name=_("entry threshold"))
-    null_estimator = models.OneToOneField(SpeakerModel, verbose_name=_("null estimator"), related_name='llr_verificator')
-    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, verbose_name=_("alternative estimator"), blank=True)
+    treshhold = models.FloatField(verbose_name=_("entry threshold"), verbose_name=_('treshhold'))
+    null_estimator = models.OneToOneField(SpeakerModel, verbose_name=_("null estimator"), related_name='llr_verificator', verbose_name=_('null estimator'))
+    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, verbose_name=_("alternative estimator"), blank=True, verbose_name=_('alternative estimator'))
     
     def save(self, *args, **kwargs):
         # if alternative estimator was not set, trying to set most recent one
@@ -265,7 +265,7 @@ class VerificationProcess(StateMachine):
             (FAILED, _('Error occured during verification'))
             )
 
-    state_id = models.CharField(max_length=24, choices=states, verbose_name=_('state'))
+    state_id = models.CharField(max_length=24, choices=states, verbose_name=_('state'), verbose_name=_('state id'))
     #STATE_DISPLAY = dict(states)
 
     transition_table = {

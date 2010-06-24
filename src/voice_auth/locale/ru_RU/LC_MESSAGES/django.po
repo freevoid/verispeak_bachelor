@@ -1,3 +1,4 @@
+
 # Russian translation of voice verification package.
 # Copyright (C) 2010
 # This file is distributed under the same license as the voice_auth package.
@@ -8,241 +9,309 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-22 02:36+0400\n"
+"POT-Creation-Date: 2010-06-25 02:52+0400\n"
 "PO-Revision-Date: 2010-06-05 18:10+0400\n"
 "Last-Translator: Zakharov Nikolay <nikolay.desh@gmail.com>\n"
 "Language-Team: Zakharov Nikolay <nikolay.desh@gmail.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 
-#: templates/registration/registration.html:7
-msgid "Confirm"
-msgstr "Подтвердить"
-
-#: voice/admin.py:37
+#: django_verispeak/admin.py:37
 msgid "Set selected model active"
 msgstr "Сделать выбранную модель активной"
 
-#: voice/admin.py:58
+#: django_verispeak/admin.py:58
 msgid "Set active state to model created by selected process"
 msgstr "Сделать активной модель, полученную в результате выбранного процесса"
 
-#: voice/exceptions.py:46
+#: django_verispeak/exceptions.py:46
 msgid "Target speaker"
 msgstr "Целевой источник речи"
 
-#: voice/exceptions.py:53 voice/models.py:66
+#: django_verispeak/exceptions.py:53 django_verispeak/models.py:66
 msgid "Speaker model"
 msgstr "Модель источника речи"
 
-#: voice/exceptions.py:60 voice/models.py:34
+#: django_verispeak/exceptions.py:60 django_verispeak/models.py:34
 msgid "Record session"
 msgstr "Сессия записи"
 
-#: voice/exceptions.py:65
+#: django_verispeak/exceptions.py:65
 msgid "Need more speech to verificate"
 msgstr "Необходимо больше данных для верификации"
 
-#: voice/forms.py:89
+#: django_verispeak/forms.py:89
 msgid "Description"
 msgstr "Описание"
 
-#: voice/forms.py:119 voice/models.py:67
+#: django_verispeak/forms.py:119 django_verispeak/models.py:67
 msgid "Speaker models"
 msgstr "Модели источника речи"
 
-#: voice/forms.py:123 voice/models.py:35
+#: django_verispeak/forms.py:123 django_verispeak/models.py:35
 msgid "Record sessions"
 msgstr "Сессии записи"
 
-#: voice/models.py:24
+#: django_verispeak/models.py:24
 msgid "Speaker"
 msgstr "Источник речи"
 
-#: voice/models.py:25
+#: django_verispeak/models.py:25
 msgid "Speakers"
 msgstr "Источники речи"
 
-#: voice/models.py:127
+#: django_verispeak/models.py:38
+msgid "session id"
+msgstr "идентификатор сессии"
+
+#: django_verispeak/models.py:39 django_verispeak/models.py:172
+msgid "created time"
+msgstr "время создания"
+
+#: django_verispeak/models.py:40
+msgid "target speaker"
+msgstr "целевой источник речи"
+
+#: django_verispeak/models.py:41
+msgid "authentic"
+msgstr "аутентична"
+
+#: django_verispeak/models.py:43
+msgid "remote ip"
+msgstr "IP-адрес"
+
+#: django_verispeak/models.py:71 django_verispeak/models.py:171
+msgid "model file"
+msgstr "файл модели"
+
+#: django_verispeak/models.py:72
+msgid "speaker"
+msgstr "источник речи"
+
+#: django_verispeak/models.py:73
+msgid "is active"
+msgstr "активна"
+
+#: django_verispeak/models.py:127
 msgid "Learning process"
 msgstr "Процесс обучения"
 
-#: voice/models.py:128
+#: django_verispeak/models.py:128
 msgid "Learning processes"
 msgstr "Процессы обучения"
 
-#: voice/models.py:138 voice/models.py:261
+#: django_verispeak/models.py:138 django_verispeak/models.py:261
 msgid "Waiting for speech data"
 msgstr "Ожидание речевых данных"
 
-#: voice/models.py:139 voice/models.py:262
+#: django_verispeak/models.py:139 django_verispeak/models.py:262
 msgid "Processing.."
 msgstr "В процессе.."
 
-#: voice/models.py:140
+#: django_verispeak/models.py:140
 msgid "Learning failed"
 msgstr "Обучение завершилось неудачно"
 
-#: voice/models.py:141
+#: django_verispeak/models.py:141
 msgid "Learning canceled"
 msgstr "Обучение отменено"
 
-#: voice/models.py:142
+#: django_verispeak/models.py:142
 msgid "Learning finished"
 msgstr "Обучение завершено"
 
-#: voice/models.py:176
-msgid "Universal background model"
-msgstr "Универсальная фоновая модель"
-
-#: voice/models.py:177
-msgid "Universal background models"
-msgstr "Универсальные фоновые модели"
-
-#: voice/models.py:185
-msgid "Uploaded utterance"
-msgstr "Загруженная запись фразы"
-
-#: voice/models.py:186
-msgid "Uploaded utterances"
-msgstr "Загруженные записи фраз"
-
-#: voice/models.py:232
-msgid "Verificator"
-msgstr "Верификатор"
-
-#: voice/models.py:233
-msgid "Verificators"
-msgstr "Верификаторы"
-
-#: voice/models.py:234
-msgid "entry threshold"
-msgstr "порог вхождения"
-
-#: voice/models.py:235
-msgid "null estimator"
-msgstr "модель для основной гипотезы"
-
-#: voice/models.py:236
-msgid "alternative estimator"
-msgstr "модель для альтернативной гипотезы"
-
-#: voice/models.py:249
-msgid "Verification process"
-msgstr "Процесс аутентификации"
-
-#: voice/models.py:250
-msgid "Verification processes"
-msgstr "Процессы аутентификации"
-
-#: voice/models.py:263
-msgid "Verification has been canceled"
-msgstr "Аутентификация отменена"
-
-#: voice/models.py:264
-msgid "Verification finished"
-msgstr "Аутентификация завершена"
-
-#: voice/models.py:265
-msgid "Error occured during verification"
-msgstr "Ошибка при аутентификации"
-
-#: voice/models.py:268
-msgid "state"
-msgstr "состояние"
-
-#: voice/models.py:276
+#: django_verispeak/models.py:153 django_verispeak/models.py:276
 msgid "start time"
 msgstr "время начала"
 
-#: voice/models.py:277
-msgid "target session"
-msgstr "сессия записи"
-
-#: voice/models.py:278
+#: django_verispeak/models.py:154 django_verispeak/models.py:278
 msgid "finish time"
 msgstr "время завершения"
 
-#: voice/models.py:279
+#: django_verispeak/models.py:156
+msgid "sample sessions"
+msgstr "сессии записи"
+
+#: django_verispeak/models.py:158
+msgid "retrain model"
+msgstr "модель для переобучения"
+
+#: django_verispeak/models.py:159
+msgid "result model"
+msgstr ""
+
+#: django_verispeak/models.py:176
+msgid "Universal background model"
+msgstr "Универсальная фоновая модель"
+
+#: django_verispeak/models.py:177
+msgid "Universal background models"
+msgstr "Универсальные фоновые модели"
+
+#: django_verispeak/models.py:185
+msgid "Uploaded utterance"
+msgstr "Загруженная запись фразы"
+
+#: django_verispeak/models.py:186
+msgid "Uploaded utterances"
+msgstr "Загруженные записи фраз"
+
+#: django_verispeak/models.py:196
+msgid "utterance file"
+msgstr "путь к файлу записи"
+
+#: django_verispeak/models.py:197
+msgid "uploaded date"
+msgstr "время загрузки"
+
+#: django_verispeak/models.py:198
+msgid "is trash"
+msgstr "неудачная запись"
+
+#: django_verispeak/models.py:200
+msgid "session"
+msgstr "сессия записи"
+
+#: django_verispeak/models.py:232
+msgid "Verificator"
+msgstr "Верификатор"
+
+#: django_verispeak/models.py:233
+msgid "Verificators"
+msgstr "Верификаторы"
+
+#: django_verispeak/models.py:234
+msgid "entry threshold"
+msgstr "порог вхождения"
+
+#: django_verispeak/models.py:234
+msgid "treshhold"
+msgstr "порог вхождения"
+
+#: django_verispeak/models.py:235
+msgid "null estimator"
+msgstr "модель для основной гипотезы"
+
+#: django_verispeak/models.py:236
+msgid "alternative estimator"
+msgstr "модель для альтернативной гипотезы"
+
+#: django_verispeak/models.py:249
+msgid "Verification process"
+msgstr "Процесс аутентификации"
+
+#: django_verispeak/models.py:250
+msgid "Verification processes"
+msgstr "Процессы аутентификации"
+
+#: django_verispeak/models.py:263
+msgid "Verification has been canceled"
+msgstr "Аутентификация отменена"
+
+#: django_verispeak/models.py:264
+msgid "Verification finished"
+msgstr "Аутентификация завершена"
+
+#: django_verispeak/models.py:265
+msgid "Error occured during verification"
+msgstr "Ошибка при аутентификации"
+
+#: django_verispeak/models.py:268
+msgid "state"
+msgstr "состояние"
+
+#: django_verispeak/models.py:268
+msgid "state id"
+msgstr "состояние"
+
+#: django_verispeak/models.py:277
+msgid "target session"
+msgstr "сессия записи"
+
+#: django_verispeak/models.py:279
 msgid "verification result"
 msgstr "результат аутентификации"
 
-#: voice/models.py:280
+#: django_verispeak/models.py:280
 msgid "verification score"
 msgstr "мера правдоподобия"
 
-#: voice/models.py:281
+#: django_verispeak/models.py:281
 msgid "verificated by"
 msgstr "проверено"
 
-#: voice/models.py:285
+#: django_verispeak/models.py:285
 msgid "Record session meta data"
 msgstr "Описание сессии записи"
 
-#: voice/models.py:286
+#: django_verispeak/models.py:286
 msgid "Record sessions meta data"
 msgstr "Описания сессий записи"
 
-#: voice/models.py:290
+#: django_verispeak/models.py:290
 msgid "gender"
 msgstr "пол"
 
-#: voice/models.py:291
+#: django_verispeak/models.py:291
 msgid "Male"
 msgstr "Мужчина"
 
-#: voice/models.py:291
+#: django_verispeak/models.py:291
 msgid "Female"
 msgstr "Женщина"
 
-#: voice/models.py:293
+#: django_verispeak/models.py:293
 msgid "prompt"
 msgstr "фраза"
 
-#: voice/models.py:295
+#: django_verispeak/models.py:295
 msgid "description"
 msgstr "описание"
 
-#: voice/models.py:339 voice/models.py:349
+#: django_verispeak/models.py:339 django_verispeak/models.py:349
 msgid "Settings"
 msgstr "Настройки"
 
-#: voice/models.py:342
+#: django_verispeak/models.py:342
 msgid "global entry threshold"
 msgstr "глобальный порог вхождения"
 
-#: voice/models.py:343
+#: django_verispeak/models.py:343
 msgid "minimal count of utterances needed to enroll"
 msgstr "минимальное количество записанных фраз для регистрации"
 
-#: voice/models.py:345
+#: django_verispeak/models.py:345
 msgid "parameters of speaker model instance"
 msgstr "параметры модели источника речи"
 
-#: voice/views.py:155
+#: django_verispeak/views.py:155
 msgid "Verification in progress"
 msgstr "Аутентификация в процессе.."
 
-#: voice/views.py:229
+#: django_verispeak/views.py:230
 #, python-format
 msgid "Need at least %(count)d utterance to enroll"
 msgstr "Для регистрации необходимо не менее %(count)d записанных фраз"
 
-#: voice/views.py:232
+#: django_verispeak/views.py:233
 msgid "More than one speaker tagged as target in sample sessions"
 msgstr "В обучаемых Более одного пользователя"
 
-#: voice/views.py:235
+#: django_verispeak/views.py:236
 msgid "Enrollment can be confirmed only by original person"
 msgstr ""
 "Подтверждение может быть получено только от лица, инициировавшего регистрацию"
 
-#: voice/views.py:241
+#: django_verispeak/views.py:242
 msgid "Enrollment in progress"
 msgstr "Обучение в процессе.."
 
-#: voice/views.py:307
+#: django_verispeak/views.py:308
 msgid "Selected model has been successfully putted in queue for retraining"
 msgstr "Выбранная модель успешно поставлена в очередь на переобучение"
+
+#: templates/registration/registration.html:7
+msgid "Confirm"
+msgstr "Подтвердить"
