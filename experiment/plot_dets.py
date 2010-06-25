@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#-*- coding: utf-8 -*-
 from micromake import walk_on_files
 
 import os
@@ -15,15 +16,31 @@ def plot_overall(det_list, outdir, format=DEFAULT_FORMAT):
 
     logging.info("Plotting aggregated info..")
     pyplot.figure()
+    n = len(det_list)
+    omega0 = det_list[0][0]
+    target_y_sum = numpy.zeros(omega0.shape)
+    impostor_y_sum = target_y_sum.copy()
+
     for det in det_list:
         omega, target_y, impostor_y = det
         target_y = 1 - target_y
-        pyplot.plot(omega, target_y, color='green')
-        pyplot.plot(omega, impostor_y, color='red')
+        target_y *= 100
+        impostor_y *= 100
+        target_y_sum += target_y
+        impostor_y_sum += impostor_y
+        pyplot.plot(omega, target_y, color='lightgreen')
+        pyplot.plot(omega, impostor_y, color='#ffaaaa')
     logging.info("Saving aggregated info in '%s'", outfile)
+
+    pyplot.plot(omega0, target_y_sum / n, color='green')
+    pyplot.plot(omega0, impostor_y_sum / n, color='red')
+
+    pyplot.ylabel(u'Вероятность ошибки, %')
+    pyplot.xlabel(u'Порог вхождения')
     pyplot.savefig(outfile)
 
 def plot_det(det, outfile):
+    return
     #ext = os.path.splitext(outfile)[1]
     omega, target_y, impostor_y = det
 
@@ -39,6 +56,7 @@ def plot_dets_from_txt(idfiles, out_dir, format=DEFAULT_FORMAT):
     for id, filename in idfiles:
         logging.info("Opening datafile '%s'..", filename)
         det = numpy.loadtxt(filename, unpack=True)
+        print "OPENED", det.shape
         outfile = os.path.join(out_dir, '.'.join([id, format]))
         plot_det(det, outfile)
         yield det

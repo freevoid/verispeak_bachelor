@@ -101,7 +101,7 @@ VerificationBlock.method('cancel_verification', function (args) {
 
 VerificationBlock.method('to_verificating', function (args) {
     this.state = "verificating";
-    this.setLoading("Подождите, идёт процесс верификации..");
+    this.setLoading("Подождите, идёт процесс аутентификации...");
     this.maskButtons(false, false);
     this.monitorProgress();
 });
@@ -123,7 +123,7 @@ VerificationBlock.method('to_error_in_verification', function (args) {
 
 VerificationBlock.method('to_verification_failed', function (args) {
     this.state = "verification_failed";
-    this.pasteError("Аутентификация завершилась неудачно. Попробуйте ещё раз или воспользуйтесь обычным способом, нажав кнопку &laquo;Возврат&raquo;.");
+    this.pasteError("Аутентификация завершена. В доступе отказано. Повторите попытку или воспользуйтесь формой для ввода пароля.");
     this.maskButtons(false, true);
     this.block.find(".voice_auth_inputs").append('<input id="id_retry_button" type="button" onclick="window.location = \'\';" value="Повтор" />')
 });

@@ -1,6 +1,7 @@
 from helpers import relative_path_generator
 
-relpath = relative_path_generator(__file__)
+_relpath = relative_path_generator(__file__)
+relpath = lambda path: _relpath('../' + path)
 
 WAV_DIR = relpath('data/wav_male')
 FEATURES_DIR = relpath('data/features_male')

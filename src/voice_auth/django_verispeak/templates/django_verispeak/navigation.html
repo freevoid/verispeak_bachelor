@@ -1,13 +1,17 @@
 <li><a href="/">Главная страница</a></li>
 <li><a href="{% url django_verispeak.enrollment.initial %}">Регистрация в системе</a></li>
-<li><a href="{% url django_verispeak.views.upload %}">Анонимная загрузка голосовых данных</a></li>
 {% if not user.is_authenticated %}
 <li><a href="{% url login %}">Вход</a></li>
-{% comment %}<li><a href="{% url registration %}">Регистрация</a></li>{% endcomment %}
+{% comment %}
+<li><a href="{% url registration %}">Регистрация</a></li>
+<li><a href="{% url django_verispeak.views.upload %}">Анонимная загрузка голосовых данных</a></li>
+
+{% endcomment %}
 {% else %}
-{% comment %}XXX: rude code (voice_stats should be independent from voice app, so we need to extract another app (voice_pages) and put all non-core UI there{% endcomment %}
+{% comment %}XXX: rude code (voice_stats should be independent from voice app, so we need to extract another app (voice_pages) and put all non-core UI there
 <li><a href="{% url voice_stats.user_profile request.user.username %}">Приветствие</a></li>
 <li><a href="{% url django_verispeak.views.retrain %}">Дополнительное обучение персональной модели</a></li>
+{% endcomment %}
 <li><a href="{% url logout %}">Выход</a></li>
 {% endif %}
 

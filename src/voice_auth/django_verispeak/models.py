@@ -55,6 +55,13 @@ class RecordSession(models.Model):
     def utterance_count(self):
         return self.uploadedutterance_set.count()
 
+    def utterance_filepath_iterator(self):
+        media_root = settings.MEDIA_ROOT
+        return (os.path.join(media_root, filename) for filename in flatiter(self.uploadedutterance_set\
+                .filter(is_trash=False)\
+                .values_list('utterance_file')))
+
+
     def __unicode__(self):
         return u'%d %s - %s - %s' % (self.pk, self.created_time.strftime('%d.%m.%Y %H:%M:%S'),
                 self.target_speaker,
@@ -231,9 +238,9 @@ class LLRVerificator(models.Model):
     class Meta:
         verbose_name = _("Verificator")
         verbose_name_plural = _("Verificators")
-    treshhold = models.FloatField(verbose_name=_("entry threshold"), verbose_name=_('treshhold'))
-    null_estimator = models.OneToOneField(SpeakerModel, verbose_name=_("null estimator"), related_name='llr_verificator', verbose_name=_('null estimator'))
-    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, verbose_name=_("alternative estimator"), blank=True, verbose_name=_('alternative estimator'))
+    treshhold = models.FloatField(verbose_name=_("entry threshold"))
+    null_estimator = models.OneToOneField(SpeakerModel, verbose_name=_("null estimator"), related_name='llr_verificator')
+    alternative_estimator = models.ForeignKey(UniversalBackgroundModel, verbose_name=_("alternative estimator"), blank=True)
     
     def save(self, *args, **kwargs):
         # if alternative estimator was not set, trying to set most recent one
@@ -265,7 +272,7 @@ class VerificationProcess(StateMachine):
             (FAILED, _('Error occured during verification'))
             )
 
-    state_id = models.CharField(max_length=24, choices=states, verbose_name=_('state'), verbose_name=_('state id'))
+    state_id = models.CharField(max_length=24, choices=states, verbose_name=_('state'))
     #STATE_DISPLAY = dict(states)
 
     transition_table = {

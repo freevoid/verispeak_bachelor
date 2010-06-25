@@ -166,7 +166,7 @@ RegistrationBlock.method('to_learning', function (args) {
 RegistrationBlock.method('to_error_in_learning', function (args) {
     this.state = "error_in_learning";
     this.pasteError(args.description +
-            '. Попробуйте ещё раз. Если ошибка возникает снова, обратитесь в службу поддержки.');
+            '. Дальнейшее продолжение невозможно. Пожалуйста, повторите процесс регистрации.');
     this.maskButtons(false, true);
 });
 

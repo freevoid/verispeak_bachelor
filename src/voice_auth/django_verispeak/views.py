@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import never_cache
 from django.db import transaction
 from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
@@ -49,7 +49,7 @@ DEFAULT_APPLET_WIDTH = 200
 DEFAULT_APPLET_HEIGHT = 50
 
 @allowed_methods('POST')
-@cache_control(private=True)
+@never_cache
 def upload_handler(request):
     try:
         uploaded_file = request.FILES['userfile']
@@ -75,7 +75,7 @@ def upload_handler(request):
         response = 'SUCCESS'
     return HttpResponse(response, mimetype='text/plain')
 
-@cache_control(private=True)
+@never_cache
 @api_enabled()
 def verification_state(request):
     session_id = request.GET.get('session_id')
@@ -168,7 +168,7 @@ def verification_cancel(request):
     else:
         raise NotImplementedError
 
-@cache_control(private=True)
+@never_cache
 @api_enabled()
 def enrollment_state(request):
     session_id = request.GET.get('session_id')
