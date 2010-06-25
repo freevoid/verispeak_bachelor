@@ -2,15 +2,15 @@ digraph import_graph {
 node[style="ordnode"];
 
 rankdir=LR;
-ranksep=.2;
+ranksep=.1;
 nodesep=.3;
 controller[label="django_verispeak.views"]
 sm_models[label="state_machine.models"]
 verispeak_api[label="verispeak.api"]
 
-controller -> services;
+controller -> enrollment -> services;
+controller -> verification -> services;
 controller -> models -> sm_models;
-controller -> logic;
 controller -> forms;
 controller -> amqp;
 controller -> signature;

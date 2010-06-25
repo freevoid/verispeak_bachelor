@@ -11,7 +11,7 @@ PRESENTATION_DIR=presentation
 REPORT_NAME=report
 TEXFILE=$(REPORT_NAME).tex
 
-PARTS=intro abbreviations analytic construct technological research bzhd economic conclusion appendix
+PARTS=intro abbreviations analytic construct technological research bzhd economic conclusion appendix ui_manual
 
 BIBLE_BASE=biblio
 BIBLE=$(REPORT_NAME).bbl
@@ -21,7 +21,7 @@ HEADER=header.tex
 INCLUDEDIR=include
 
 TEX_INCLUDEDIR=tex_include
-TEX_INCL=er_main
+TEX_INCL=er_main seq_enrollment seq_verification
 TEX_NOPDF_INCL=
 
 DIAINCL= use_cases idef0_main idef0_pre enrollment_server_sd verification_server_sd enrollment_client_sd verification_client_sd main_arch deployment

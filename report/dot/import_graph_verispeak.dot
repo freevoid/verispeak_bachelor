@@ -3,9 +3,9 @@ node[style="ordnode"];
 
 rankdir=LR;
 ranksep=.1;
-nodesep=.4;
+nodesep=.3;
 
-verispeak_api[label="verispeak.api"]
+verispeak_api[label="verispeak.api", style="ordnode"]
 features_mfcc[label="features.mfcc"]
 features_delta_mfcc[label="features.delta_mfcc"]
 features_mean_norm[label="features.mean_norm"]
@@ -15,38 +15,57 @@ framing_framed_speech[label="framing.framed_speech"]
 normalization_silence_remover[label="normalization.silence_remover"]
 normalization_zero_energy_frames[label="normalization.zero_energy"]
 util_soundfile[label="util.soundfile"]
+util_resample[label="util.resample"]
+stats_mvn[label="stats.mvn"]
+
+speech_processing[style="last"]
+
+model_gmm[label="model.gmm"]
+model_gmm_diagonal_gmm[label="gmm.diagonal_gmm"]
+model_gmm_full_gmm[label="gmm.full_gmm"]
+model_gmm_base[label="gmm.base", style="last"]
+model_base[label="model.base"]
+
+training_em[label="training.em"]
+training_map[label="training.map"]
+training_base[label="training.base", style="last"]
 
 verispeak_api -> processors;
 verispeak_api -> training;
 verispeak_api -> model;
 
-processors -> speech_processing;
+processors -> speech_processing ;//-> base;
 processors -> normalization;
 processors -> wave;
 processors -> features;
 processors -> framing;
 
+processors -> model_gmm[style="invis"];
 model -> features [style="invis"];
-model -> training [style="invis"];
+training -> model_gmm [style="invis"];
 
 wave -> util_soundfile
+wave -> util_resample
 
 features -> features_feature_vectors -> features_mfcc;
                                features_mfcc -> features_util_fft;
-            features_feature_vectors -> base;
+            features_feature_vectors ;//-> base;
 
 features -> features_delta_mfcc;
 features -> features_mean_norm;
 
-training -> training_em -> training_base -> base;
-training -> training_map -> training_base -> base;
+training -> training_em -> training_base ;//-> base;
+training -> training_map -> training_base;
 
 model -> model_gmm;
 model_gmm -> model_gmm_diagonal_gmm -> model_gmm_base;
-model_gmm -> model_gmm_full_gmm -> model_gmm_base -> model_base -> base;
+model_gmm -> model_gmm_full_gmm -> model_gmm_base -> model_base ;//-> base;
+
+model_gmm_diagonal_gmm -> stats_mvn
+model_gmm_full_gmm -> stats_mvn
 
 framing -> framing_segmentaxis;
-framing -> framing_framed_speech -> base;
+framing -> framing_framed_speech ;//-> base;
 
 normalization -> normalization_silence_remover;
 normalization -> normalization_zero_energy_frames;
