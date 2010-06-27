@@ -53,6 +53,9 @@ class Wave(Object):
     def timelength(self):
         return 1000*len(self.waveform) / float(self.samplerate) # in ms
 
+    def set_data(self, waveform, samplerate):
+        self._data = waveform, samplerate
+
     def resample(self, new_fs=16000):
         self._data = misc.resample(self.waveform, self.samplerate, new_fs), new_fs
         return self

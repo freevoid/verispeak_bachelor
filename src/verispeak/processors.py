@@ -5,6 +5,13 @@ from features import framing, feature_vectors
 import exceptions
 import numpy as np
 
+import itertools
+def remove_zero_offset(wave):
+    offset = itertools.dropwhile(lambda (i, a): a==0.0, enumerate(wave.waveform)).next()[0]
+    wave.set_data(wave.waveform[offset:], wave.samplerate)
+    return wave
+
+
 def remove_zero_frames(framed_speech, treshhold=1e-5):
     framed_speech.frames = np.array([frame for frame in framed_speech.frames if np.abs(frame).sum() > treshhold])
     return framed_speech
@@ -19,7 +26,7 @@ def check_length(wave, min_timelength_ms=1200, max_timelength_ms=3500):
     return wave
 
 class CommonStack(TemplatedFileToFeaturesStack):
-    raw_norm = (Wave.resample, gaussian_remover.remove_silence_noisy_env)
+    raw_norm = (Wave.resample, remove_zero_offset, gaussian_remover.remove_silence_noisy_env)
     frame_norm = (remove_zero_frames,)
 
 class CommonMFCCStack(CommonStack):

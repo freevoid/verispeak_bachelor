@@ -46,7 +46,7 @@ def score(null_model, alternative_model, filenames):
 
     return null_likelihood - alt_likelihood
 
-def _enroll(sample_features, model, retries=5, train_parameters={}):
+def _enroll(sample_features, model, retries=5, train_parameters={}, fail_silently=False):
     retry = 0
     while retry < retries:
         try:
@@ -60,7 +60,11 @@ def _enroll(sample_features, model, retries=5, train_parameters={}):
         else:
             return model
 
-    raise EnrollmentError("Failing after %d unsuccessfull retries to train a model." % retry)
+    if not fail_silently:
+        raise EnrollmentError("Failing after %d unsuccessfull retries to train a model." % retry)
+    else:
+        logging.warning("Enrollment failed after %d unsuccessfull attempts. Ommiting, because set up to fail silently.", retry)
+        return None
 
 def _model_factory(model_classname, model_parameters={}):
     model_cls = getattr(verispeak.gmm, model_classname)
