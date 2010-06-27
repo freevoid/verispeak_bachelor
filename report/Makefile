@@ -1,7 +1,7 @@
 .PHONY: force clean bib 
 
 LATEX=pdflatex --shell-escape
-CROPPAGE=pdfcrop
+CROPPAGE=pdfcrop --verbose -d -gs ./pdfbb.py
 
 CSF=/usr/share/texmf-texlive/bibtex/csf/gost/utf8-ru.csf
 TEXCRAP=*.log *.out *.aux
@@ -21,7 +21,7 @@ HEADER=header.tex
 INCLUDEDIR=include
 
 TEX_INCLUDEDIR=tex_include
-TEX_INCL=er_main seq_enrollment seq_verification
+TEX_INCL=er_main seq_enrollment seq_verification import_graph silence_remove_flowchart
 TEX_NOPDF_INCL=
 
 DIAINCL= use_cases idef0_main idef0_pre enrollment_server_sd verification_server_sd enrollment_client_sd verification_client_sd main_arch deployment
