@@ -9,6 +9,9 @@ import numpy as np
 import os
 import logging
 import glob
+import itertools
+
+from util import save_det_to_txt, load_det_from_txt
 
 def preload_features(features_dir):
     features = {}
@@ -17,7 +20,13 @@ def preload_features(features_dir):
         features[id] = [load_pickled_file(features_file) for features_file in walk_on_files(subdir)]
     return features
 
-def find_err(det):
+def canonize_det(det):
+    if det.shape[0] == 3 and det.shape != (3,3):
+        det = det.T
+    return det
+
+def find_eer(det):
+    det = canonize_det(det)
     for omega, target, impostor in det:
         target = 1 - target
         if impostor <= target:
@@ -27,7 +36,7 @@ def find_err(det):
                 return target
     return None
 
-def calc_dets(models_dir, features_dir, ubm_file, target_offset=10, max_per_impostor=10):
+def calc_dets(models_dir, features_dir, ubm_file, target_offset=10, max_per_impostor=None):
     ubm = load_pickled_file(ubm_file)
     
     logging.info("Preloading feature vectors..")
@@ -53,7 +62,8 @@ def calc_and_write_dets(models_dir, features_dir, ubm_file, out_dir, scores_dir,
 
     for id, dets, scores in dets_iterator:
         outfile = os.path.join(out_dir, id + '.txt')
-        np.savetxt(outfile, dets)
+
+        save_det_to_txt(outfile, dets)
 
         target_scores_file = os.path.join(scores_dir,  id + '_target_scores.txt')
         impostor_scores_file = os.path.join(scores_dir, id + '_impostor_scores.txt')
@@ -63,26 +73,67 @@ def calc_and_write_dets(models_dir, features_dir, ubm_file, out_dir, scores_dir,
 
         logging.info("DETS for %s saved to `%s`", id, outfile)
 
-def calc_overall(cfg):
-    
-    count = 0
-    det_files = glob.iglob(os.path.join(cfg.DETS_DIR, "*.txt"))
-    omega0, t, i = np.loadtxt(det_files.next(), unpack=True)
+def calc_overall_det(dets_dir):
+    count = 1
+    det_files = glob.iglob(os.path.join(dets_dir,  "???.txt"))
+    omega0, t, i = load_det_from_txt(det_files.next())
     n = len(omega0)
     total_t = t
     total_i = i
     for det_file in det_files:
-        omega, t, i = np.loadtxt(det_file, unpack=True)
+        omega, t, i = load_det_from_txt(det_file)
         assert all(omega == omega0)
         total_t += t
         total_i += i
+        count += 1
 
-    t = total_t / n
-    i = total_i / n
+    t = total_t / count
+    i = total_i / count
 
-    print find_err(zip(*(omega, t, i)))
-    logging.info("Saving average DET curve in '%s'" % cfg.DETS_DIR)
-    np.savetxt(os.path.join(cfg.DETS_DIR, 'overall.txt'), np.array([omega, t, i]))
+    return np.array([omega, t, i]).transpose()
+
+def calc_and_save_overall(dets_dir):
+    det = calc_overall_det(dets_dir)
+    #print find_eer(det)
+    logging.info("Saving average DET curve in '%s'" % dets_dir)
+    save_det_to_txt(os.path.join(dets_dir, 'overall.txt'), det)
+    return det
+
+def calc_overall_configured(cfg):
+    return calc_and_save_overall(cfg.DETS_DIR)
+
+def obrain_overall(dets_dir):
+    overall_filename = os.path.join(dets_dir, 'overall.txt')
+    if os.access(overall_filename, os.F_OK):
+        overall = load_det_from_txt(overall_filename)
+    else:
+        overall = calc_and_save_overall(dets_dir)
+    return overall
+
+def calc_eer(dets_dir):
+    overall = obrain_overall(dets_dir)
+    print overall.shape
+    return find_eer(overall)
+
+def _calc_delta(det):
+    det = canonize_det(det)
+    a = b = None
+    for omega, t, i in det:
+        if t < 1.0 and a is None:
+            a = omega
+            if b is not None: break
+        if i < 1e-10 and b is None:
+            b = omega
+            if a is not None: break
+
+    if a is None or b is None:
+        raise ValueError("Can't find start points of FA and FP curves")
+    return a, b, b - a
+
+
+def calc_delta(dets_dir):
+    overall = obrain_overall(dets_dir)
+    return _calc_delta(overall)
 
 def configured_calc_and_write_dets(cfg):
     return calc_and_write_dets(cfg.MODELS_DIR, cfg.FEATURES_DIR,

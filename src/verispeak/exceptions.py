@@ -10,8 +10,8 @@ class InsufficientUtteranceLength(VerispeakException):
         self.min_length = min_length
         super(InsufficientUtteranceLength, self).__init__()
 
-    def __repr__(self):
-        return "Insufficient to adequately verificate: %.2f < %.2f" (self.length, self.min_length)
+    def __str__(self):
+        return "Insufficient to adequately verificate: %.2f < %.2f" % (self.length, self.min_length)
 
 class TooBigUtteranceLength(VerispeakException):
     def __init__(self, length, max_length):

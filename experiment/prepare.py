@@ -5,15 +5,20 @@ import logging
 
 import verispeak
 from micromake import walk_on_files, need_rebuild, dir_is_older
+from util import force_existence
 
 def _wav_to_features(dirpath, processor):
+    def try_to_process(filename):
+        try:
+            w = processor.process(filename)
+        except verispeak.exceptions.InsufficientUtteranceLength, e:
+            return None
+        else:
+            return w
+
     for subdir in os.listdir(dirpath):
         listing = verispeak.wave.listdir(os.path.join(dirpath, subdir))
-        yield (subdir, imap(processor.process, listing))
-
-def force_existence(path):
-    if not os.access(path, os.F_OK):
-        os.system('mkdir -p "%s"' % path)
+        yield (subdir, imap(try_to_process, listing))
 
 def wav_to_features(wav_dir, features_dir, processor=verispeak.processors.CommonMFCCStack()):
     for id, features in _wav_to_features(wav_dir, processor):
@@ -25,7 +30,10 @@ def wav_to_features(wav_dir, features_dir, processor=verispeak.processors.Common
         if not dir_is_older(outdir, os.path.join(wav_dir, id)):
             logging.info("Everything seems to be up to date, omitting.")
             continue
-        for (i, feature) in enumerate(features):
+        for i, feature in enumerate(features):
+            if feature is None:
+                logging.warning("SKIPPED FILE %s", i)
+                continue
             outfile = os.path.join(outdir, '%02d.mfcc' % i)
             logging.info("Saving features to file '%s'..", outfile)
             feature.dump_to_file(outfile)
@@ -44,9 +52,13 @@ def features_to_models(features_dir, models_dir, model_factory,
             model = model_factory()
             train_samples = verispeak.features.concatenate_vectors(
                     imap(verispeak.util.load_pickled_file, enroll_samples))
-            verispeak.api._enroll(train_samples, model, train_parameters=train_parameters)
-            model.dump_to_file(outfile)
+            trained_model = verispeak.api._enroll(train_samples, model, train_parameters=train_parameters, fail_silently=True)
+            if trained_model is not None:
+                model.dump_to_file(outfile)
     logging.info("Everything is up to date!")
+
+#def silence_test(cfg):
+#    for w in cfg.W_RANGE:
 
 def main(cfg):
     wav_to_features(cfg.WAV_DIR, cfg.FEATURES_DIR)
