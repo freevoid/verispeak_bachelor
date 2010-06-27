@@ -1,0 +1,13 @@
+\begin{tikzpicture}[text height=0.7em,text depth=0.25ex]
+    \tikzset{
+        >=latex',
+        ordnode/.style = draw,fill=gray!10,shape=rectangle,
+    }
+
+    \small\ttfamily{
+    \begin{dot2tex}[dot,tikz,styleonly]
+        \input{dot/import_graph.dot}
+    \end{dot2tex}
+    }
+\end{tikzpicture}
+
