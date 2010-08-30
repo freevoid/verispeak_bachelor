@@ -93,16 +93,31 @@ class ExperimentConfig(Config):
         return ExperimentConfig(**self.__dict__)
 
     def __iter__(self):
-        return config_generator(self._copy())
+        return old_config_generator(self._copy())
  
     def vector(self):
-        return (self.K, self.ENROLL_COUNT, self.W)
+        return (self.K, self.ENROLL_COUNT)#, self.W)
 
     def make_wave_postfix(self):
         return str(self.W).replace('.', '_')
 
     def make_postfix(self):
         return os.path.join(self.TRAINING_PROC_NAME, *map(str, self.vector()))
+
+def old_config_generator(experiment_config):
+    skeleton_config = experiment_config
+    for k in experiment_config.K_RANGE:
+        skeleton_config.K = k
+        for enroll_count in experiment_config.ENROLL_COUNTS:
+            skeleton_config.ENROLL_COUNT = enroll_count
+            postfix = experiment_config.make_postfix()
+            skeleton_config.MODELS_DIR = make_factor_dir(experiment_config, experiment_config.BASE_MODELS_DIR, postfix)
+            skeleton_config.DETS_DIR = make_factor_dir(experiment_config, experiment_config.BASE_DETS_DIR, postfix)
+            skeleton_config.PLOT_DIR = make_factor_dir(experiment_config, experiment_config.BASE_PLOT_DIR, postfix)
+            skeleton_config.MODEL_FACTORY = None # forces to setup new model factory
+
+            skeleton_config.setup()
+            yield skeleton_config
 
 def config_generator(experiment_config):
     skeleton_config = experiment_config

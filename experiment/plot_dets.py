@@ -58,6 +58,9 @@ def _plot_prob(det, eer=None, delta=None, axes=None,
     else:
         f = axes.figure
         ax = axes
+
+    if label_postfix:
+        label_postfix = '(%s)' % label_postfix
     det = calc_data.canonize_det(det)
     if eer is None: eer = calc_data.find_eer(det)
     if delta is None: delta = calc_data._calc_delta(det)
@@ -78,10 +81,10 @@ def _plot_prob(det, eer=None, delta=None, axes=None,
     imax = omega.searchsorted(max_impostor) + 1
     tmin = omega.searchsorted(min_target)
 
-    ax.plot(omega[tmin:], target_y[tmin:], fn_style, label=u'Ложный отрицательный (%s)' % label_postfix)
-    ax.plot(omega[:imax], impostor_y[:imax], fp_style, label=u'Ложный положительный (%s)' % label_postfix)
+    ax.plot(omega[tmin:], target_y[tmin:], fn_style, label=u'Ложный отрицательный %s' % label_postfix)
+    ax.plot(omega[:imax], impostor_y[:imax], fp_style, label=u'Ложный положительный %s' % label_postfix)
 
-    ax.vlines([min_target, max_impostor], *ax.get_ylim(), linestyles='dashed', color='lightgreen', label='_nolegend_')
+    ax.vlines([min_target, max_impostor], *ax.get_ylim(), linestyles='dotted', color='lightgreen', label='_nolegend_')
     ax.hlines([eer], *ax.get_xlim(), linestyles='dashed', label=u'Граница частоты равнозначной ошибки')
     
     ax.legend()

@@ -1,4 +1,4 @@
 from config_female import *
-K_RANGE = range(2,33,2)
-ENROLL_COUNTS = (10,)
+K_RANGE = (16,)
+ENROLL_COUNTS = range(5,20)
 

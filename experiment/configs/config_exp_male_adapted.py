@@ -5,3 +5,5 @@ TRAINING_PROC_NAME = 'MAPAdaptation'
 K_RANGE = (32,)
 MODEL_CLS='AdaptedCournapeauGMM'
 
+ENROLL_COUNTS = range(5, 21)
+
