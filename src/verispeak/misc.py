@@ -20,7 +20,6 @@ def resample(source, source_sf, target_sf):
 def detect_noise(source, sf):
     utterance_time = get_timelength(source, sf)
     edge = sf*SILENCE_TIME // 1000
-    print 'edge:', edge
     max_level = abs(source[:edge]).max()
     return max_level
 
@@ -40,7 +39,6 @@ def naive_noise_filter(source, noise_level):
     for j, amp in enumerate(reversed(source)):
         if abs(amp) > noise_level:
             break
-    print "NAIVE_NOISE_FILTER:", noise_level, i, j
     return source[i:len(source)-j]
 
 def normalize(array, sample_frequency):
@@ -98,6 +96,5 @@ def calc_treshhold(score_class, sample_features, other_features):
 
     min_impostor = get_min_score(other_features)
     average_self = get_ave_score(sample_features)
-    print "Score limits: %s %s" % (min_impostor, average_self)
     return min(min_impostor, average_self)
 

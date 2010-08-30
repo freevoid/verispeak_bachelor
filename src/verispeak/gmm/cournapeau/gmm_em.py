@@ -116,7 +116,6 @@ class GMM(ExpMixtureModel):
         try:
             self.gm.check_state()
         except GmParamError, e:
-            print "Model is not properly initalized, cannot init EM."
             raise ValueError("Message was %s" % str(e))
         
     def __init__(self, gm, init = 'kmean'):
@@ -493,7 +492,7 @@ def has_em_converged(like, plike, thresh):
     diff    = N.abs(like - plike)
     avg     = 0.5 * (N.abs(like) + N.abs(plike))
     
-    print like > plike, like - plike
+    #print like > plike, like - plike
     if like - plike is N.nan:
         raise ValueError("Error in maximization step (bad training data)")
     if diff / avg < thresh:

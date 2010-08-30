@@ -11,7 +11,6 @@ def remove_silence(wave, empirical_silence_time=50, window_length_ms=10, w=0.5):
     n = len(slice)
     mu = slice.mean()
     triple_sigma = 3*np.sqrt(np.square(slice - mu).sum() / n)
-    print mu, triple_sigma
 
     def is_voiced(window):
         #return abs(window.mean() - mu) > triple_sigma

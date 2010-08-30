@@ -1,12 +1,15 @@
 """
 Wrapper around GMM/EM implementation from scikits project
 """
+import logging
+
 import numpy as np
+
 from base import GMMBase
+from verispeak.training import MAPAdaptation
+import cournapeau as backend
 
 __all__ = ['CournapeauGMM', 'CournapeauDiagonalGMM', 'AdaptedCournapeauGMM']
-
-import cournapeau as backend
 
 class UntrainedCournapeauGMM(GMMBase):
     model_cls = backend.GM
@@ -48,7 +51,6 @@ class UntrainedCournapeauGMM(GMMBase):
     def set_params(self, w, mu, va):
         self.gm.set_param(w, mu, va)
 
-from verispeak.training import MAPAdaptation
 class AdaptedCournapeauGMM(UntrainedCournapeauGMM):
     training_procedure = MAPAdaptation()
 
@@ -59,7 +61,7 @@ class CournapeauGMM(UntrainedCournapeauGMM):
         if not isinstance(train_samples, np.ndarray):
             train_samples = np.array(list(train_samples))
 
-        print "Training GMM from %s feature vectors" % (train_samples.shape,)
+        logging.info("Training GMM from %s feature vectors", train_samples.shape)
 
         init = 'test' if no_init else 'kmean'
         gmm = backend.GMM(self.gm, init=init)

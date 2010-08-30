@@ -2,6 +2,8 @@
 Reference implementation of Gaussian Mixture Model with K-means initialization.
 Using reference EM training algorithm.
 """
+import logging
+
 import numpy as np
 import math
 from itertools import imap
@@ -11,6 +13,9 @@ from verispeak.training import EM, DiagonalCovarianceEM
 from verispeak.stats import mvn
 
 __all__ = ['GMM', 'DiagonalGMM']
+
+log = logging.getLogger(__name__)
+
 class GMM(GMMBase):
     training_procedure = EM()
     mvn_dist = mvn.MultiVariateNormalDistribution
@@ -33,16 +38,6 @@ class GMM(GMMBase):
             ) for i in xrange(K)]
 
         self.reset_weights()
-
-    def initialize(self, samples):
-        initial_cov = np.eye(self.d)
-        import random
-        initial_cov = np.eye(self.d)
-        self._components = [
-                self.mvn_dist(
-                    random.choice(samples),
-                    initial_cov.copy())
-                for j in range(self.k)]
 
     def initialize(self, data, niter=5):
         from scipy.cluster.vq import kmeans2 as kmeans
@@ -74,7 +69,7 @@ class GMM(GMMBase):
 
         self.weights = w
         self.reload_components(mu, va)
-        print "K-MEANS initialization done!"
+        log.info("K-MEANS initialization done")
 
     def reload_components(self, mu_vector_list, cov_matrix_list):
         self._components = [self.mvn_dist(mu_vector, cov_matrix)\
