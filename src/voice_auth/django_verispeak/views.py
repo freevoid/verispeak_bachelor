@@ -124,7 +124,7 @@ def verification(request):
         applet_params = DEFAULT_APPLET_PARAMS.copy()
         applet_params['uploadURL'] = reverse('django_verispeak.views.upload_handler')
         applet_params['uploadFileName'] = session_id
-        applet_params['maxRecordTime'] = '3.0'
+        applet_params['maxRecordTime'] = '5.0'
         #applet_params['trimEnable'] = 'yes'
         return {'username': target_speaker.username,
                 'session_id': session_id,
