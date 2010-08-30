@@ -1,0 +1,22 @@
+\input{../header.tex}
+
+\pgfplotsset{width=15cm}
+\begin{document}
+\thispagestyle{empty}
+
+\begin{tikzpicture}
+\begin{axis}[
+ylabel=Частота равнозначной ошибки, %,
+xlabel=Количество компонент,
+mark=x] 
+\addplot[smooth] coordinates {
+( 1, 3.23 )
+( 2, 2.12 )
+( 4, 1.15 )
+( 8, 0.58 )
+( 16, 0.41 )
+( 32, 0.21 )};
+\end{axis}
+\end{tikzpicture}
+
+\end{document}

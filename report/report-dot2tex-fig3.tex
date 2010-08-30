@@ -1,0 +1,65 @@
+
+\begin{tikzpicture}[>=latex,line join=bevel,]
+%%
+\node (features_delta_mfcc) at (518bp,482bp) [ordnode] {features.delta\_mfcc};
+  \node (features_mean_norm) at (518bp,424bp) [ordnode] {features.mean\_norm};
+  \node (training_base) at (518bp,656bp) [last] {training.base};
+  \node (model_gmm_full_gmm) at (518bp,598bp) [ordnode] {gmm.full\_gmm};
+  \node (model_gmm_diagonal_gmm) at (518bp,540bp) [ordnode] {gmm.diagonal\_gmm};
+  \node (processors) at (173bp,366bp) [ordnode] {processors};
+  \node (features_mfcc) at (710bp,366bp) [ordnode] {features.mfcc};
+  \node (features_util_fft) at (843bp,366bp) [ordnode] {features.util.fft};
+  \node (model_gmm) at (308bp,540bp) [ordnode] {model.gmm};
+  \node (model_gmm_base) at (710bp,598bp) [last] {gmm.base};
+  \node (features_feature_vectors) at (518bp,366bp) [ordnode] {features\_feature\_vectors};
+  \node (features) at (308bp,424bp) [ordnode] {features};
+  \node (normalization_silence_remover) at (518bp,308bp) [ordnode] {normalization.silence\_remover};
+  \node (framing_segmentaxis) at (518bp,76bp) [ordnode] {framing.segmentaxis};
+  \node (util_resample) at (518bp,134bp) [ordnode] {util.resample};
+  \node (stats_mvn) at (710bp,540bp) [ordnode] {stats.mvn};
+  \node (framing) at (308bp,76bp) [ordnode] {framing};
+  \node (wave) at (308bp,192bp) [ordnode] {wave};
+  \node (training_map) at (308bp,598bp) [ordnode] {training.map};
+  \node (normalization) at (308bp,308bp) [ordnode] {normalization};
+  \node (training) at (173bp,569bp) [ordnode] {training};
+  \node (normalization_zero_energy_frames) at (518bp,250bp) [ordnode] {normalization.zero\_energy};
+  \node (framing_framed_speech) at (518bp,18bp) [ordnode] {framing.framed\_speech};
+  \node (verispeak_api) at (58bp,467bp) [ordnode] {verispeak.api};
+  \node (model_base) at (843bp,598bp) [ordnode] {model.base};
+  \node (training_em) at (308bp,656bp) [ordnode] {training.em};
+  \node (speech_processing) at (308bp,366bp) [last] {speech\_processing};
+  \node (model) at (173bp,467bp) [ordnode] {model};
+  \node (util_soundfile) at (518bp,192bp) [ordnode] {util.soundfile};
+  \draw [->] (processors) ..controls (210bp,346.32bp) and (220.34bp,341.24bp)  .. (230bp,337bp) .. controls (239.13bp,333bp) and (249bp,329.04bp)  .. (normalization);
+  \draw [->] (model) ..controls (216.92bp,490.75bp) and (246.83bp,506.92bp)  .. (model_gmm);
+  \draw [->] (features_feature_vectors) ..controls (625.49bp,366bp) and (632.72bp,366bp)  .. (features_mfcc);
+  \draw [->] (verispeak_api) ..controls (96.412bp,501.07bp) and (125.95bp,527.27bp)  .. (training);
+  \draw [->] (training) ..controls (196.82bp,598.74bp) and (212.82bp,615.87bp)  .. (230bp,627bp) .. controls (238.46bp,632.48bp) and (248.1bp,637.13bp)  .. (training_em);
+  \draw [->] (model_gmm) ..controls (360.1bp,558.56bp) and (377.79bp,564.38bp)  .. (394bp,569bp) .. controls (413.92bp,574.67bp) and (435.86bp,580.08bp)  .. (model_gmm_full_gmm);
+  \draw [->] (model_gmm_base) ..controls (765.33bp,598bp) and (773.82bp,598bp)  .. (model_base);
+  \draw [->] (features_mfcc) ..controls (770.44bp,366bp) and (770.6bp,366bp)  .. (features_util_fft);
+  \draw [->] (training) ..controls (221.65bp,579.45bp) and (236.44bp,582.63bp)  .. (training_map);
+  \draw [->] (features) ..controls (355.45bp,441.01bp) and (375.66bp,447.78bp)  .. (394bp,453bp) .. controls (411.85bp,458.08bp) and (431.33bp,462.95bp)  .. (features_delta_mfcc);
+  \draw [->] (model_gmm_diagonal_gmm) ..controls (620bp,540bp) and (637.71bp,540bp)  .. (stats_mvn);
+  \draw [->] (verispeak_api) ..controls (96.373bp,433.3bp) and (125.11bp,408.06bp)  .. (processors);
+  \draw [->] (features) ..controls (355.45bp,406.99bp) and (375.66bp,400.22bp)  .. (394bp,395bp) .. controls (409.94bp,390.46bp) and (427.17bp,386.09bp)  .. (features_feature_vectors);
+  \draw [->] (processors) ..controls (221.83bp,366bp) and (221.92bp,366bp)  .. (speech_processing);
+  \draw [->] (processors) ..controls (194.53bp,330.16bp) and (212.39bp,301.9bp)  .. (230bp,279bp) .. controls (247.58bp,256.13bp) and (269.7bp,231.82bp)  .. (wave);
+  \draw [->] (processors) ..controls (180.47bp,311.04bp) and (195.54bp,225.72bp)  .. (230bp,163bp) .. controls (243.38bp,138.64bp) and (264.78bp,115.43bp)  .. (framing);
+  \draw [->] (normalization) ..controls (374.19bp,308bp) and (378.92bp,308bp)  .. (normalization_silence_remover);
+  \draw [->] (features) ..controls (368.9bp,424bp) and (395.48bp,424bp)  .. (features_mean_norm);
+  \draw [->] (wave) ..controls (350.07bp,176.8bp) and (373.24bp,168.91bp)  .. (394bp,163bp) .. controls (415.29bp,156.94bp) and (438.89bp,151.18bp)  .. (util_resample);
+  \draw [->] (training_em) ..controls (388bp,656bp) and (421.6bp,656bp)  .. (training_base);
+  \draw [->] (processors) ..controls (210bp,385.68bp) and (220.34bp,390.76bp)  .. (230bp,395bp) .. controls (241.68bp,400.12bp) and (254.58bp,405.16bp)  .. (features);
+  \draw [->] (model_gmm) ..controls (380.67bp,540bp) and (402.07bp,540bp)  .. (model_gmm_diagonal_gmm);
+  \draw [->] (framing) ..controls (368.9bp,76bp) and (395.48bp,76bp)  .. (framing_segmentaxis);
+  \draw [->] (verispeak_api) ..controls (120.75bp,467bp) and (125.32bp,467bp)  .. (model);
+  \draw [->] (wave) ..controls (365.74bp,192bp) and (411.52bp,192bp)  .. (util_soundfile);
+  \draw [->] (training_map) ..controls (360.76bp,616.77bp) and (378.09bp,622.47bp)  .. (394bp,627bp) .. controls (415.57bp,633.14bp) and (439.51bp,638.97bp)  .. (training_base);
+  \draw [->] (framing) ..controls (355.45bp,58.987bp) and (375.66bp,52.223bp)  .. (394bp,47bp) .. controls (410.35bp,42.342bp) and (428.07bp,37.866bp)  .. (framing_framed_speech);
+  \draw [->] (model_gmm_full_gmm) ..controls (594.17bp,582.64bp) and (619.52bp,576.36bp)  .. (642bp,569bp) .. controls (651.51bp,565.89bp) and (661.52bp,561.98bp)  .. (stats_mvn);
+  \draw [->] (model_gmm_diagonal_gmm) ..controls (600.05bp,556.85bp) and (622.14bp,562.5bp)  .. (642bp,569bp) .. controls (651.51bp,572.11bp) and (661.52bp,576.02bp)  .. (model_gmm_base);
+  \draw [->] (normalization) ..controls (361.75bp,288.9bp) and (378.54bp,283.4bp)  .. (394bp,279bp) .. controls (409.41bp,274.61bp) and (426.03bp,270.38bp)  .. (normalization_zero_energy_frames);
+  \draw [->] (model_gmm_full_gmm) ..controls (606.77bp,598bp) and (631.23bp,598bp)  .. (model_gmm_base);
+%
+\end{tikzpicture}

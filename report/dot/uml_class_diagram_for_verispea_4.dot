@@ -1,0 +1,89 @@
+digraph uml_class_diagram_for_verispea_4 {
+node [fontname="times",fontsize="10"]
+edge [fontname="times",fontsize="10"]
+ranksep=.2
+;nodesep=.3
+
+/* Nodes */
+node56 [width="0",shape="plaintext",href="verispeak.base.Object-class.html",tooltip="verispeak.base.Object",height="0",label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+      <TR><TD ROWSPAN="1">
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0"
+               CELLPADDING="0" PORT="body" BGCOLOR="#e0b0a0">
+          <TR><TD>Object</TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD></TD></TR></TABLE></TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__unicode__" TOOLTIP="verispeak.base.Object.__unicode__">__unicode__(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__str__" TOOLTIP="str(x)">__str__(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__repr__" TOOLTIP="repr(x)">__repr__(self)</TD></TR>
+    </TABLE></TD></TR>
+        </TABLE>
+      </TD></TR>
+      
+    </TABLE>>]
+node57 [width="0",shape="plaintext",href="verispeak.features.feature_vectors.FeatureVectors-class.html",tooltip="verispeak.features.feature_vectors.FeatureVectors",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>features.feature_vectors.FeatureVectors</TD></TR>
+    </TABLE>>]
+node59 [width="0",shape="plaintext",href="verispeak.features.feature_vectors.MFCCFeatureVectors-class.html",tooltip="verispeak.features.feature_vectors.MFCCFeatureVectors",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>features.feature_vectors.MFCCFeatureVectors</TD></TR>
+    </TABLE>>]
+node55 [width="0",shape="plaintext",href="verispeak.base.SerializableObject-class.html",tooltip="verispeak.base.SerializableObject",height="0",label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+      <TR><TD ROWSPAN="1">
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0"
+               CELLPADDING="0" PORT="body" BGCOLOR="#ffd0d0">
+          <TR><TD>SerializableObject</TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD></TD></TR></TABLE></TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.SerializableObject-class.html#serialize" TOOLTIP="verispeak.base.SerializableObject.serialize">serialize(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.SerializableObject-class.html#dump_to_file" TOOLTIP="verispeak.base.SerializableObject.dump_to_file">dump_to_file(self, filename_or_file)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.SerializableObject-class.html#serializable" TOOLTIP="verispeak.base.SerializableObject.serializable">serializable(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.SerializableObject-class.html#deserialize" TOOLTIP="verispeak.base.SerializableObject.deserialize">deserialize(unpickled_data)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.SerializableObject-class.html#load" TOOLTIP="verispeak.base.SerializableObject.load">load(cls, filename)</TD></TR>
+    </TABLE></TD></TR>
+        </TABLE>
+      </TD></TR>
+      
+    </TABLE>>]
+node62 [width="0",shape="plaintext",href="verispeak.gmm.reference.AdaptedGMM-class.html",tooltip="verispeak.gmm.reference.AdaptedGMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>gmm.reference.AdaptedGMM</TD></TR>
+    </TABLE>>]
+node58 [width="0",shape="plaintext",href="verispeak.gmm.base.Codebook-class.html",tooltip="verispeak.gmm.base.Codebook",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>gmm.base.Codebook</TD></TR>
+    </TABLE>>]
+node63 [width="0",shape="plaintext",href="verispeak.gmm.reference.DiagonalGMM-class.html",tooltip="verispeak.gmm.reference.DiagonalGMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>gmm.reference.DiagonalGMM</TD></TR>
+    </TABLE>>]
+node61 [width="0",shape="plaintext",href="verispeak.gmm.reference.GMM-class.html",tooltip="verispeak.gmm.reference.GMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>gmm.reference.GMM</TD></TR>
+    </TABLE>>]
+node60 [width="0",shape="plaintext",href="verispeak.gmm.base.GMMBase-class.html",tooltip="verispeak.gmm.base.GMMBase",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>gmm.base.GMMBase</TD></TR>
+    </TABLE>>]
+/* Edges */
+node55 -> node57 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node57 -> node59 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node61 -> node62 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node61 -> node63 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node58 -> node60 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node55 -> node58 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node56 -> node55 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node60 -> node61 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+}

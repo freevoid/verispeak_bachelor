@@ -1,0 +1,108 @@
+digraph inheritance_verispeak {
+node [fontname="times",fontsize="10"]
+edge [fontname="times",fontsize="10"]
+ranksep=.2
+;nodesep=.3
+
+/* Nodes */
+node16 [width="0",shape="plaintext",href="verispeak.base.Object-class.html",tooltip="verispeak.base.Object",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+    <TR><TD>Object</TD></TR>
+    </TABLE>>]
+node19 [width="0",shape="plaintext",href="verispeak.framing.FramedSpeech-class.html",tooltip="verispeak.framing.FramedSpeech",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>framing.FramedSpeech</TD></TR>
+    </TABLE>>]
+node30 [width="0",shape="plaintext",href="verispeak.MAPAdaptation-class.html",tooltip="verispeak.MAPAdaptation",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>MAPAdaptation</TD></TR>
+    </TABLE>>]
+node26 [width="0",shape="plaintext",href="verispeak.CommonStack-class.html",tooltip="verispeak.CommonStack",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>CommonStack</TD></TR>
+    </TABLE>>]
+node31 [width="0",shape="plaintext",href="verispeak.CommonMFCCStack-class.html",tooltip="verispeak.CommonMFCCStack",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>CommonMFCCStack</TD></TR>
+    </TABLE>>]
+node33 [width="0",shape="plaintext",href="verispeak.DiagonalCovarianceEM-class.html",tooltip="verispeak.DiagonalCovarianceEM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>DiagonalCovarianceEM</TD></TR>
+    </TABLE>>]
+node25 [width="0",shape="plaintext",href="verispeak.GMMTrainingProcedure-class.html",tooltip="verispeak.GMMTrainingProcedure",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>GMMTrainingProcedure</TD></TR>
+    </TABLE>>]
+node29 [width="0",shape="plaintext",href="verispeak.EM-class.html",tooltip="verispeak.EM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>EM</TD></TR>
+    </TABLE>>]
+node27 [width="0",shape="plaintext",href="verispeak.MFCCFeatureVectors-class.html",tooltip="verispeak.MFCCFeatureVectors",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>MFCCFeatureVectors</TD></TR>
+    </TABLE>>]
+node18 [width="0",shape="plaintext",href="verispeak.Wave-class.html",tooltip="verispeak.Wave",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>Wave</TD></TR>
+    </TABLE>>]
+node17 [width="0",shape="plaintext",href="verispeak.FileTotack-class.html",tooltip="verispeak.FileTotack",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>FileToFeaturesStack</TD></TR>
+    </TABLE>>]
+node35 [width="0",shape="plaintext",href="verispeak.DiagonalGMM-class.html",tooltip="verispeak.DiagonalGMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>DiagonalGMM</TD></TR>
+    </TABLE>>]
+node23 [width="0",shape="plaintext",href="verispeak.FeatureVectors-class.html",tooltip="verispeak.FeatureVectors",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>FeatureVectors</TD></TR>
+    </TABLE>>]
+node21 [width="0",shape="plaintext",href="verispeak.TrainingProcedure-class.html",tooltip="verispeak.TrainingProcedure",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>TrainingProcedure</TD></TR>
+    </TABLE>>]
+node34 [width="0",shape="plaintext",href="verispeak.AdaptedGMM-class.html",tooltip="verispeak.AdaptedGMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>AdaptedGMM</TD></TR>
+    </TABLE>>]
+node24 [width="0",shape="plaintext",href="verispeak.Codebook-class.html",tooltip="verispeak.Codebook",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>Codebook</TD></TR>
+    </TABLE>>]
+node20 [width="0",shape="plaintext",href="verispeak.base.SerializableObject-class.html",tooltip="verispeak.base.SerializableObject",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>SerializableObject</TD></TR>
+    </TABLE>>]
+node32 [width="0",shape="plaintext",href="verispeak.GMM-class.html",tooltip="verispeak.GMM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>GMM</TD></TR>
+    </TABLE>>]
+node28 [width="0",shape="plaintext",href="verispeak.GMMBase-class.html",tooltip="verispeak.GMMBase",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>GMMBase</TD></TR>
+    </TABLE>>]
+node22 [width="0",shape="plaintext",href="verispeak.TemplatedFileTotack-class.html",tooltip="verispeak.TemplatedFileTotack",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#eeeeee" PORT="body">
+      <TR><TD>TemplatedFileToFeaturesStack</TD></TR>
+    </TABLE>>]
+/* Edges */
+node29 -> node33 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node22 -> node26 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node32 -> node34 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node21 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node21 -> node25 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node26 -> node31 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node24 -> node28 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node28 -> node32 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node25 -> node30 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node19 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node25 -> node29 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node17 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node32 -> node35 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node20 -> node24 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node20 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node23 -> node27 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node20 -> node23 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node16 -> node18 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node17 -> node22 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+}

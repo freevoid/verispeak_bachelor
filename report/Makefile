@@ -79,7 +79,7 @@ $(REPORT_NAME).ps: $(TEXFILE) $(HEADER) ${PARTS:%=%.tex} $(BIBLE) tex_include di
 draft:
 	$(LATEX) -draftmode $(TEXFILE)
 
-beamer:
+slides:
 	cd $(PRESENTATION_DIR); make
 
 eps: ${EPSINCL:%=$(INCLUDEDIR)/%_eps.pdf}

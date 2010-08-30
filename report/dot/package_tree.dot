@@ -1,0 +1,58 @@
+digraph package_tree {
+    rankdir=LR;
+    ranksep=.2;
+    nodesep=.3;
+    node[style="ordnode"];
+
+
+    v_exceptions[label="exceptions"];
+    dv_exceptions [label="exceptions"];
+
+    django_verispeak -> admin;
+    django_verispeak -> backends;
+    django_verispeak -> services;
+    django_verispeak -> dv_exceptions;
+    
+    django_verispeak -> forms;
+    django_verispeak -> logic;
+    django_verispeak -> models;
+    django_verispeak -> queues;
+    django_verispeak -> urls;
+    django_verispeak -> views;
+
+    util -> json;
+    util -> amqp;
+    util -> signature;
+    util -> ip;
+    
+    state_machine -> models;
+
+    verispeak -> api;
+    verispeak -> base;
+    verispeak -> serialize;
+    verispeak -> benchmarking;
+    verispeak -> v_exceptions;
+    verispeak -> processors;
+    verispeak -> speech_processing;
+    verispeak -> training -> base;
+                 training -> em;
+                 training -> map;
+    verispeak -> util -> soundfile;
+                 util -> resample;
+                 util -> misc;
+    verispeak -> wave;
+    verispeak -> normalization -> silence_remover;
+                 normalization -> zero_frames_remover;
+    verispeak -> features -> feature_vectors;
+                 features -> mfcc;
+                 features -> util -> fft;
+    verispeak -> framing -> segmentaxis;
+                 framing -> framed_speech;
+    verispeak -> model -> base;
+                 model -> gmm -> base;
+                          gmm -> full_gmm;
+                          gmm -> diagonal_gmm;
+                 
+    verispeak -> stats -> mvn;
+}
+

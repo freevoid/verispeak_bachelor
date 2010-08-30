@@ -1,0 +1,30 @@
+
+\begin{tikzpicture}[>=latex,line join=bevel,]
+%%
+\node (sm_models) at (615bp,244bp) [ordnode] {state\_machine.models};
+  \node (amqp) at (251bp,18bp) [ordnode] {amqp};
+  \node (models) at (458bp,226bp) [ordnode] {models};
+  \node (ip) at (615bp,128bp) [ordnode] {ip};
+  \node (enrollment) at (251bp,272bp) [ordnode] {enrollment};
+  \node (verispeak_api) at (458bp,284bp) [ordnode] {verispeak.api};
+  \node (forms) at (251bp,76bp) [ordnode] {forms};
+  \node (controller) at (95bp,174bp) [ordnode] {django\_verispeak.views};
+  \node (verification) at (251bp,330bp) [ordnode] {verification};
+  \node (signature) at (615bp,186bp) [ordnode] {signature};
+  \node (services) at (352bp,278bp) [ordnode] {services};
+  \draw [->] (controller) ..controls (298.19bp,178.69bp) and (473.01bp,182.72bp)  .. (signature);
+  \draw [->] (services) ..controls (392.31bp,258.23bp) and (408.48bp,250.29bp)  .. (models);
+  \draw [->] (services) ..controls (391.57bp,280.24bp) and (391.66bp,280.25bp)  .. (verispeak_api);
+  \draw [->] (models) ..controls (512.79bp,212.04bp) and (542.67bp,204.43bp)  .. (signature);
+  \draw [->] (controller) ..controls (150bp,139.45bp) and (192.1bp,113bp)  .. (forms);
+  \draw [->] (controller) ..controls (123.78bp,129.22bp) and (158.75bp,79.724bp)  .. (198bp,47bp) .. controls (203.87bp,42.105bp) and (210.69bp,37.647bp)  .. (amqp);
+  \draw [->] (models) ..controls (482.35bp,193.32bp) and (502.06bp,170.69bp)  .. (524bp,157bp) .. controls (540.7bp,146.58bp) and (561.47bp,139.59bp)  .. (ip);
+  \draw [->] (enrollment) ..controls (302.02bp,275.03bp) and (302.25bp,275.04bp)  .. (services);
+  \draw [->] (controller) ..controls (296.46bp,156.18bp) and (495.95bp,138.53bp)  .. (ip);
+  \draw [->] (controller) ..controls (176.82bp,187.75bp) and (187.69bp,189.46bp)  .. (198bp,191bp) .. controls (272.8bp,202.2bp) and (359.96bp,213.6bp)  .. (models);
+  \draw [->] (controller) ..controls (123.78bp,218.78bp) and (158.75bp,268.28bp)  .. (198bp,301bp) .. controls (201.98bp,304.32bp) and (206.39bp,307.43bp)  .. (verification);
+  \draw [->] (controller) ..controls (148.89bp,207.86bp) and (188.73bp,232.88bp)  .. (enrollment);
+  \draw [->] (verification) ..controls (291.52bp,309.14bp) and (304.57bp,302.42bp)  .. (services);
+  \draw [->] (models) ..controls (503.49bp,231.22bp) and (514.66bp,232.5bp)  .. (sm_models);
+%
+\end{tikzpicture}

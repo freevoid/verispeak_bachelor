@@ -1,0 +1,68 @@
+digraph uml_class_diagram_for_verispea_32 {
+node [fontname="times",fontsize="10"]
+edge [fontname="times",fontsize="10"]
+ranksep=.2
+;nodesep=.3
+
+/* Nodes */
+node202 [width="0",shape="plaintext",href="verispeak.training.TrainingProcedure-class.html",tooltip="verispeak.training.TrainingProcedure",height="0",label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+      <TR><TD ROWSPAN="1">
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0"
+               CELLPADDING="0" PORT="body" BGCOLOR="#ffd0d0">
+          <TR><TD>TrainingProcedure</TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD></TD></TR></TABLE></TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            
+    <TR><TD ALIGN="LEFT" HREF="verispeak.training.TrainingProcedure-class.html#train" TOOLTIP="verispeak.training.TrainingProcedure.train">train(model, train_data, *args, **kwargs)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.training.TrainingProcedure-class.html#__call__" TOOLTIP="verispeak.training.TrainingProcedure.__call__">__call__(self, *args, **kwargs)</TD></TR>
+    </TABLE></TD></TR>
+        </TABLE>
+      </TD></TR>
+      
+    </TABLE>>]
+node203 [width="0",shape="plaintext",href="verispeak.base.Object-class.html",tooltip="verispeak.base.Object",height="0",label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+      <TR><TD ROWSPAN="1">
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0"
+               CELLPADDING="0" PORT="body" BGCOLOR="#e0b0a0">
+          <TR><TD>base.Object</TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD></TD></TR></TABLE></TD></TR>
+          <TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__unicode__" TOOLTIP="verispeak.base.Object.__unicode__">__unicode__(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__str__" TOOLTIP="str(x)">__str__(self)</TD></TR>
+    
+    <TR><TD ALIGN="LEFT" HREF="verispeak.base.Object-class.html#__repr__" TOOLTIP="repr(x)">__repr__(self)</TD></TR>
+    </TABLE></TD></TR>
+        </TABLE>
+      </TD></TR>
+      
+    </TABLE>>]
+node207 [width="0",shape="plaintext",href="verispeak.training.DiagonalCovarianceEM-class.html",tooltip="verispeak.training.DiagonalCovarianceEM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>DiagonalCovarianceEM</TD></TR>
+    </TABLE>>]
+node206 [width="0",shape="plaintext",href="verispeak.training.MAPAdaptation-class.html",tooltip="verispeak.training.MAPAdaptation",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>MAPAdaptation</TD></TR>
+    </TABLE>>]
+node205 [width="0",shape="plaintext",href="verispeak.training.EM-class.html",tooltip="verispeak.training.EM",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>EM</TD></TR>
+    </TABLE>>]
+node204 [width="0",shape="plaintext",href="verispeak.training.GMMTrainingProcedure-class.html",tooltip="verispeak.training.GMMTrainingProcedure",height="0",label=<
+    <TABLE CELLBORDER="0" BGCOLOR="#e0b0a0" PORT="body">
+      <TR><TD>GMMTrainingProcedure</TD></TR>
+    </TABLE>>]
+/* Edges */
+node203 -> node202 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node204 -> node206 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node202 -> node204 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node205 -> node207 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+node204 -> node205 [style="bold",arrowtail="empty",weight="100",headport="body",color="#800000",tailport="body",dir="back"]
+}

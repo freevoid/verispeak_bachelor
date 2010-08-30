@@ -1,0 +1,76 @@
+%% Creator: Inkscape inkscape 0.48pre0, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'silence_remove_flowchart' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def{\svgwidth}{<desired width>}
+%%   \input{<filename>.tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+
+\begingroup
+  \makeatletter
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}
+    \renewcommand\color[2][]{}%
+  }
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}
+    \renewcommand\transparent[1]{}%
+  }
+  \providecommand\rotatebox[2]{#2}
+  \ifx\svgwidth\undefined
+    \setlength{\unitlength}{1382.06240051pt}
+  \else
+    \setlength{\unitlength}{\svgwidth}
+  \fi
+  \global\let\svgwidth\undefined
+  \makeatother
+  \begin{picture}(1,1.05176148)%
+    \put(0,0){\includegraphics[width=\unitlength]{silence_remove_flowchart}}%
+    \put(0.2349765,0.96805325){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Начало}}}%
+    \put(0.59012279,0.02097183){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Конец}}}%
+    \put(0.20600966,0.77401562){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$n_т := \frac{f_{сэмпл}}{1000} \cdot \tau_{т}$}}}%
+    \put(0.20885704,0.88616377){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$\mathbf{X} = (x_1\ x_2\ \cdots\ x_m),$}}}}%
+    \put(0.2019109,0.8583792){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$f_{сэмпл}, \tau_{т}, \tau_{окна}, \omega$}}}}%
+    \put(0.19785017,0.47212167){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$n_{окна} := \frac{f_{сэмпл}}{1000} \cdot \tau_{окна}$}}}}%
+    \put(0.20472267,0.68584665){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$\mu := \sum\limits_{i=1}^{n_т} x_i / n_т$}}}%
+    \put(0.20108575,0.56791792){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$\sigma := \sqrt{\frac{\sum\limits_{i=1}^{n_т}(\mu - x_i)^2}{n_т-1}}$}}}%
+    \put(0.57248519,0.53113087){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$j < n_{окна}$}}}%
+    \put(0.56540734,0.12550346){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$i < \lfloor \frac{m}{n_{окна}} \rfloor$ }}}%
+    \put(0.240473,0.16368677){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$i := 0$}}}%
+    \put(0.57175413,0.22977541){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$i := i +1$}}}%
+    \put(0.21151141,0.39107983){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$\mathbf{F} := $}}}%
+    \put(0.21236611,0.36610573){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{сегментирован-}}}}%
+    \put(0.21239053,0.34074082){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{ный сигнал $\mathbf{X}$}}}}%
+    \put(0.21696584,0.25732694){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$\mathbf{F}_{голос} := (\,)$}}}%
+    \put(0.55803493,0.97548947){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$m_{голос} := 0$}}}%
+    \put(0.57279309,0.62997119){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$j := j + 1$}}}%
+    \put(0.54459096,0.80506384){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$\mu\!+\!3\sigma > \mathbf{F}[i][j] > \mu\!-\!3\sigma$}}}}%
+    \put(0.54850064,0.70484571){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$m_{голос} := m_{голос} + 1$}}}}%
+    \put(0.54989398,0.29999246){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$\mathbf{F}_{голос} \longleftarrow \mathbf{F}[i]$}}}%
+    \put(0.56001476,0.40146597){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{$m_{голос} > \omega \cdot n_{окна}$}}}}%
+    \put(0.58347709,0.90692851){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$j := 0$}}}%
+    \put(-0.00002442,0.40644406){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{Исходный сигнал}
+}}}%
+    \put(-0.00002442,0.38379495){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{сегментируется}
+}}}%
+    \put(-0.00002442,0.36195472){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{на $\lfloor m/n_{окна}\rfloor$ кадров,}
+}}}%
+    \put(-0.00002442,0.34011452){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{по $n_{окна}$ сэмплов в}
+}}}%
+    \put(-0.00002442,0.31989207){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\scriptsize{каждом кадре}}}}%
+    \put(0.71160613,0.54163251){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{да}}}%
+    \put(0.62048255,0.33805435){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{да}}}%
+    \put(0.71461087,0.13526024){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{да}}}%
+    \put(0.620579,0.46461209){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{нет}}}%
+    \put(0.61964057,0.74089706){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{нет}}}%
+    \put(0.49674594,0.40918245){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{нет}}}%
+    \put(0.62047563,0.06460008){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{нет}}}%
+    \put(0.50411077,0.81412863){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{да}}}%
+  \end{picture}%
+\endgroup
